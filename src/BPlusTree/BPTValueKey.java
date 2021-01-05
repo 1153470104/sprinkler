@@ -8,4 +8,8 @@ public class BPTValueKey<K, V> extends BPTKey<K>{
         super(key);
         this.value = value;
     }
+
+    public BPTKey<K> getValueKey(){
+        return new BPTValueKey<K, V>(this.key, this.value);
+    }
 }

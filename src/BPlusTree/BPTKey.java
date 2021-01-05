@@ -6,4 +6,8 @@ public class BPTKey<K>{
     public BPTKey(K key) {
         this.key = key;
     }
+
+    public BPTKey<K> getKey() {
+        return new BPTKey<K>(this.key);
+    }
 }

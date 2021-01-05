@@ -12,10 +12,10 @@ public class BPTNodeCommon implements BPTNode{
     protected int childLength;
     protected List<BPTKey<Integer>> keyList;
     protected List<BPTNode> childernList;
-    private BPTNode fatherNode;
+    private BPTNonLeaf fatherNode;
     protected boolean isLeaf;
 
-    public BPTNodeCommon(int m, BPTNode fatherNode){
+    public BPTNodeCommon(int m, BPTNonLeaf fatherNode){
         this.m = m;
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
@@ -54,7 +54,7 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public BPTNode getFather() {
+    public BPTNonLeaf getFather() {
         return this.fatherNode;
     }
 
@@ -78,7 +78,22 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
+    public BPTKey<Integer> getKey(int index) {
+        return this.keyList.get(index);
+    }
+
+    @Override
+    public void deleteKey(int index) {
+        this.keyList.remove(index);
+    }
+
+    @Override
     public BPTNode getChild(int index) {
-        return null;
+        return this.childernList.get(index);
+    }
+
+    @Override
+    public void deleteChild(int index) {
+        this.childernList.remove(index);
     }
 }
