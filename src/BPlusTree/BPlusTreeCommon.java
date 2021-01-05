@@ -1,7 +1,9 @@
 package BPlusTree;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.function.ToDoubleBiFunction;
 
 public class BPlusTreeCommon implements BPlusTree{
     private boolean onlyRoot;
@@ -58,8 +60,28 @@ public class BPlusTreeCommon implements BPlusTree{
     }
 
     @Override
-    public void print() {
-        Queue<Integer> nodeQueue = new LinkedList<>();
+    public void printbasic() {
+        Queue<BPTNode> nodeQueue = new LinkedList<>();
+        nodeQueue.add(root);
+        int levelNum = 1;
+        int levelCount = 0;
+        int currentOut = 0;
+        while (!nodeQueue.isEmpty()) {
+            BPTNode node = nodeQueue.remove();
+            int childNum = node.childLength();
+            for(int i = 0; i < childNum; i++) {
+                if (i < childNum-1) {
+                    System.out.print(node.getKey(i).key.toString() + " ");
+                }
+                nodeQueue.add(node.getChild(i));
+                levelCount += 1;
+            }
+            currentOut += 1;
+            if (currentOut == levelNum) {
+                System.out.println();
+                levelNum = levelCount;
+            }
+        }
     }
 
     @Override
