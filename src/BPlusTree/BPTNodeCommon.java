@@ -1,5 +1,6 @@
 package BPlusTree;
 
+import javax.xml.stream.FactoryConfigurationError;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,9 +10,10 @@ public class BPTNodeCommon implements BPTNode{
     private int minNumber;
     private int keyLength;
     protected int childLength;
-    protected List<BPTKey<String>> keyList;
+    protected List<BPTKey<Integer>> keyList;
     protected List<BPTNode> childernList;
     private BPTNode fatherNode;
+    protected boolean isLeaf;
 
     public BPTNodeCommon(int m, BPTNode fatherNode){
         this.m = m;
@@ -21,11 +23,12 @@ public class BPTNodeCommon implements BPTNode{
         this.childLength = 0;
         this.keyList = new ArrayList<>();
         this.fatherNode = fatherNode;
+        this.isLeaf = true;
     }
 
     @Override
-    public int addKey(BPTKey<String> key) {
-        this.keyList.add(key);
+    public int insertKey(int index, BPTKey<Integer> key) {
+        this.keyList.add(index, key);
         this.keyLength += 1;
         return this.checkout();
     }
@@ -53,5 +56,29 @@ public class BPTNodeCommon implements BPTNode{
     @Override
     public BPTNode getFather() {
         return this.fatherNode;
+    }
+
+    @Override
+    public int searchKey(BPTKey<Integer> key) {
+        for(int i = 0; i < this.keyLength; i++){
+            int listKey = this.keyList.get(i).key;
+            int inputKey = key.key;
+            if (inputKey < listKey) {
+                return i;
+            } else if (inputKey == listKey){
+                return i+1;
+            }
+        }
+        return this.keyLength;
+    }
+
+    @Override
+    public boolean isLeaf() {
+        return this.isLeaf;
+    }
+
+    @Override
+    public BPTNode getChild(int index) {
+        return null;
     }
 }
