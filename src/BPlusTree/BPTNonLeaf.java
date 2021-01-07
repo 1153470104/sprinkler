@@ -10,7 +10,4 @@ public class BPTNonLeaf extends BPTNodeCommon{
     }
 
 
-    public BPTNode getChild(int index){
-        return this.childernList.get(index);
-    }
 }

@@ -52,28 +52,35 @@ class BPlusTreeCommonTest {
      */
     @org.junit.jupiter.api.Test
     void addKeySimple() {
-//        makeBPT(5, 3);
-//        assertEquals("| 0 1 2 |", bpt.printbasic());
-//        System.out.println();
-//        makeBPT(5, 5);
-//        assertEquals("| 2 |\n| 0 1 | 2 3 4 |", bpt.printbasic());
-//        System.out.println();
-//        makeBPT(5, 10);
-//        assertEquals("| 2 4 6 |\n| 0 1 | 2 3 | 4 5 | 6 7 8 9 |", bpt.printbasic());
-//        System.out.println();
+        makeBPT(5, 0);
+        assertEquals("| |", bpt.printbasic());
+        System.out.println();
+        makeBPT(5, 3);
+        assertEquals("| 0 1 2 |", bpt.printbasic());
+        System.out.println();
+        makeBPT(5, 5);
+        assertEquals("| 2 |\n| 0 1 | 2 3 4 |", bpt.printbasic());
+        System.out.println();
+        makeBPT(5, 10);
+        assertEquals("| 2 4 6 |\n| 0 1 | 2 3 | 4 5 | 6 7 8 9 |", bpt.printbasic());
     }
 
     /**
      * test content
      * 1. 2 level bigger data input
-     * 2. 3 level
+     * 2. 3 level edge split
+     * 3. 3 level inner split
      */
     @org.junit.jupiter.api.Test
     void addKeyComplex() {
-//        makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31));
-//        assertEquals("| 4 7 10 30 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 35 45 |", bpt.printbasic());
+        makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31));
+        assertEquals("| 4 7 10 30 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 35 45 |", bpt.printbasic());
+        System.out.println();
         makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36/*, 39, 49*/));
-        assertEquals("| 10 |\n| 4 7 | 10 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 45 |", bpt.printbasic());
+        assertEquals("| 10 |\n| 4 7 | 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 45 |", bpt.printbasic());
+        System.out.println();
+        makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
+        assertEquals("| 10 |\n| 4 7 | 15 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 13 | 15 21 22 | 30 31 | 35 36 45 |", bpt.printbasic());
     }
 
     @org.junit.jupiter.api.Test

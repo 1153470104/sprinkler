@@ -7,7 +7,7 @@ public interface BPTNode {
     public int checkout();
     public int keyLength();
     public int childLength();
-    public BPTNonLeaf getFather();
+    public BPTNode getFather();
     public void setIsLeaf(boolean bool);
     public int searchKey(BPTKey<Integer> key);
     public boolean isLeaf();
@@ -15,5 +15,5 @@ public interface BPTNode {
     public void deleteKey(int index);
     public BPTNode getChild(int index);
     public BPTNode deleteChild(int index);
-    public void setFather(BPTNonLeaf father);
+    public void setFather(BPTNode father);
 }

@@ -102,23 +102,28 @@ public class BPlusTreeCommon implements BPlusTree{
     public int split(BPTNode node) {
         int returnNum;
 //        System.out.println(node);
+        int siblingIsLeaf = 0;
         if(node.getFather() == null) {
             BPTNonLeaf father = new BPTNonLeaf(this.m, null);
+            father.insertKey(0, node.getKey(minNumber));
             BPTNode siblingNode = new BPTNodeCommon(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
-            for(int i = minNumber; i < m; i++) {
-                siblingNode.insertKey(i-minNumber, node.getKey(i));
+            if (!siblingNode.isLeaf()) {
+                siblingIsLeaf = 1;
+            }
+            for(int i = minNumber+siblingIsLeaf; i < m; i++) {
+                siblingNode.insertKey(i-(minNumber+siblingIsLeaf), node.getKey(i));
             }
             for(int i = m-1; i > minNumber-1; i--) {
                 node.deleteKey(i);
                 BPTNode childNode = node.deleteChild(i+1);
                 if (childNode != null) {
                     siblingNode.insertChild(0, childNode);
+                    childNode.setFather(siblingNode);
                 }
 //                System.out.print("root: ");
 //                System.out.println(node.childLength());
             }
-            father.insertKey(0, siblingNode.getKey(0).getKey());
             father.insertChild(0, node);
             father.insertChild(1, siblingNode);
 
@@ -129,19 +134,23 @@ public class BPlusTreeCommon implements BPlusTree{
             this.root = father;
             this.onlyRoot = false;
         } else {
-            BPTNonLeaf father = node.getFather();
+            BPTNode father = node.getFather();
             int fatherIndex = father.searchKey(node.getKey(0));
             father.insertKey(fatherIndex, new BPTKey<Integer>(node.getKey(minNumber).key));
             BPTNode siblingNode = new BPTNodeCommon(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
-            for(int i = minNumber; i < m; i++) {
-                siblingNode.insertKey(i-minNumber, node.getKey(i));
+            if (!siblingNode.isLeaf()) {
+                siblingIsLeaf = 1;
+            }
+            for(int i = minNumber+siblingIsLeaf; i < m; i++) {
+                siblingNode.insertKey(i-(minNumber+siblingIsLeaf), node.getKey(i));
             }
             for(int i = m-1; i > minNumber-1; i--) {
                 node.deleteKey(i);
                 BPTNode childNode = node.deleteChild(i+1);
                 if (childNode != null) {
                     siblingNode.insertChild(0, childNode);
+                    childNode.setFather((BPTNonLeaf)siblingNode);
                 }
 //                System.out.print("root: ");
 //                System.out.println(node.childLength());
