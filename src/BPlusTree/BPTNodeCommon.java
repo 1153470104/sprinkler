@@ -6,9 +6,9 @@ import java.util.List;
 
 public class BPTNodeCommon implements BPTNode{
     protected int m;
-    private int maxNumber;
-    private int minNumber;
-    private int keyLength;
+    protected int maxNumber;
+    protected int minNumber;
+    protected int keyLength;
     protected int childLength;
     protected List<BPTKey<Integer>> keyList;
     protected List<BPTNode> childernList;
@@ -85,6 +85,7 @@ public class BPTNodeCommon implements BPTNode{
     @Override
     public void deleteKey(int index) {
         this.keyList.remove(index);
+        this.keyLength -= 1;
     }
 
     @Override
@@ -94,6 +95,24 @@ public class BPTNodeCommon implements BPTNode{
 
     @Override
     public void deleteChild(int index) {
-        this.childernList.remove(index);
+        if (index < this.childLength) {
+            this.childernList.remove(index);
+            this.childLength -= 1;
+        }
+    }
+
+    @Override
+    public void setFather(BPTNonLeaf father) {
+        this.fatherNode = father;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Node Key: ");
+        for (BPTKey<Integer> key: this.keyList) {
+            sb.append(key.key.toString()).append(" ");
+        }
+        return sb.toString();
     }
 }

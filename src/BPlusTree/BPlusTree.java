@@ -6,5 +6,5 @@ public interface BPlusTree {
     public String search(String key);
     public void Combine(BPTNode childNode1, BPTNode childNode2);
     public int split(BPTNode node);
-    public void printbasic();
+    public String printbasic();
 }

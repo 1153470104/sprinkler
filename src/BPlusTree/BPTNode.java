@@ -12,4 +12,5 @@ public interface BPTNode {
     public void deleteKey(int index);
     public BPTNode getChild(int index);
     public void deleteChild(int index);
+    public void setFather(BPTNonLeaf father);
 }

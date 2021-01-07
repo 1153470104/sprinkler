@@ -1,6 +1,11 @@
 package BPlusTree;
 
 public class BPTKey<K>{
+    @Override
+    public String toString() {
+        return "Key: " + this.key;
+    }
+
     protected K key;
 
     public BPTKey(K key) {
