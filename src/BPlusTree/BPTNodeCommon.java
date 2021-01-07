@@ -22,6 +22,7 @@ public class BPTNodeCommon implements BPTNode{
         this.keyLength = 0;
         this.childLength = 0;
         this.keyList = new ArrayList<>();
+        this.childernList = new ArrayList<>();
         this.fatherNode = fatherNode;
         this.isLeaf = true;
     }
@@ -31,6 +32,17 @@ public class BPTNodeCommon implements BPTNode{
         this.keyList.add(index, key);
         this.keyLength += 1;
         return this.checkout();
+    }
+
+    @Override
+    public void addChild(BPTNode child) {
+        this.childernList.add(child);
+        this.childLength += 1;
+    }
+
+    public void insertChild( int index, BPTNode childNode){
+        this.childernList.add(index, childNode);
+        this.childLength += 1;
     }
 
     @Override
@@ -56,6 +68,11 @@ public class BPTNodeCommon implements BPTNode{
     @Override
     public BPTNonLeaf getFather() {
         return this.fatherNode;
+    }
+
+    @Override
+    public void setIsLeaf(boolean bool) {
+        this.isLeaf = bool;
     }
 
     @Override
@@ -94,11 +111,13 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public void deleteChild(int index) {
+    public BPTNode deleteChild(int index) {
+        BPTNode node = null;
         if (index < this.childLength) {
-            this.childernList.remove(index);
+            node = this.childernList.remove(index);
             this.childLength -= 1;
         }
+        return node;
     }
 
     @Override

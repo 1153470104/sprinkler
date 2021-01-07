@@ -73,7 +73,7 @@ class BPlusTreeCommonTest {
 //        makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31));
 //        assertEquals("| 4 7 10 30 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 35 45 |", bpt.printbasic());
         makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36/*, 39, 49*/));
-        assertEquals("| 10 |\n| 4 7 | 10 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 39 |", bpt.printbasic());
+        assertEquals("| 10 |\n| 4 7 | 10 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 45 |", bpt.printbasic());
     }
 
     @org.junit.jupiter.api.Test
