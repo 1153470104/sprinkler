@@ -56,9 +56,10 @@ public class BPlusTreeCommon implements BPlusTree{
     }
 
     @Override
-    public String search(String key) {
+    public String search(BPTKey<Integer> key1, BPTKey<Integer> key2) {
         return null;
     }
+
 
     @Override
     public String printbasic() {

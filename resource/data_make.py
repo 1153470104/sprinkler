@@ -9,7 +9,7 @@ class data_process(object):
         f = open(self.data_path)
         # jf = open("data/json/100000.json", "w")
         # jf.close()
-        plainf = open(output_path)
+        plainf = open(output_path, 'w')
         line = f.readline()
         line = f.readline()
         countMax = number
@@ -45,5 +45,5 @@ class data_process(object):
 
 if __name__=="__main__":
     pp = data_process()
-    # pp.make_txt("data/100000.txt", 200)
-    pp.print_data(5)
+    pp.make_txt("data/200.txt", 200)
+    # pp.print_data(5)

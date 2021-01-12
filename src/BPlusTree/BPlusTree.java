@@ -1,9 +1,11 @@
 package BPlusTree;
 
+import javax.swing.*;
+
 public interface BPlusTree {
     public void addKey(BPTKey<Integer> key);
     public void balance(int checkNum, BPTNode node);
-    public String search(String key);
+    public String search(BPTKey<Integer> key1, BPTKey<Integer> key2);
     public void Combine(BPTNode childNode1, BPTNode childNode2);
     public int split(BPTNode node);
     public String printbasic();
