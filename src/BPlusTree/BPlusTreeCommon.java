@@ -51,15 +51,15 @@ public class BPlusTreeCommon implements BPlusTree{
         }
     }
 
-    @Override
-    public void balance(int checkNum, BPTNode node) {
-    }
+//    @Override
+//    public void balance(int checkNum, BPTNode node) {
+//    }
 
     @Override
-    public String search(BPTKey<Integer> key1, BPTKey<Integer> key2) {
+    public List<BPTKey> search(BPTKey<Integer> key1, BPTKey<Integer> key2) {
+
         return null;
     }
-
 
     @Override
     public String printbasic() {
@@ -99,12 +99,29 @@ public class BPlusTreeCommon implements BPlusTree{
         return sb.toString();
     }
 
+    public String printData() {
+        StringBuilder sb = new StringBuilder();
+        BPTNode node = root;
+        while(node.childLength() > 0) {
+            node = root.getChild(0);
+        }
+        while(node.getLeafNext() != null) {
+            for(int i = 0; i < node.keyLength(); i++){
+                sb.append("| ").append(node.getKey(i).key.toString());
+            }
+            node = node.getLeafNext();
+        }
+        sb.append(" |");
+        return sb.toString();
+    }
+
     @Override
     public int split(BPTNode node) {
         int returnNum;
 //        System.out.println(node);
         int siblingIsLeaf = 0;
         if(node.getFather() == null) {
+            /* 需要新建父节点的情况 */
             BPTNonLeaf father = new BPTNonLeaf(this.m, null);
             father.insertKey(0, node.getKey(minNumber));
             BPTNode siblingNode = new BPTNodeCommon(this.m, father);
@@ -122,11 +139,17 @@ public class BPlusTreeCommon implements BPlusTree{
                     siblingNode.insertChild(0, childNode);
                     childNode.setFather(siblingNode);
                 }
-//                System.out.print("root: ");
-//                System.out.println(node.childLength());
             }
+
             father.insertChild(0, node);
             father.insertChild(1, siblingNode);
+
+            /* 接下来的部分直接对node和sibling进行处理，
+             * 并不讨论是否为叶节点，因为在node内部方法中已经规避掉非叶问题了
+             * */
+            siblingNode.setLeafPrev(node);
+            siblingNode.setLeafNext(node.getLeafNext());
+            node.setLeafNext(siblingNode);
 
             node.setFather(father);
 //            System.out.println("length of 1 child: " + Integer.toString(father.getChild(0).childLength()));
@@ -135,6 +158,7 @@ public class BPlusTreeCommon implements BPlusTree{
             this.root = father;
             this.onlyRoot = false;
         } else {
+            /* 父节点已经存储在的情况 */
             BPTNode father = node.getFather();
             int fatherIndex = father.searchKey(node.getKey(0));
             father.insertKey(fatherIndex, new BPTKey<Integer>(node.getKey(minNumber).key));
@@ -158,6 +182,11 @@ public class BPlusTreeCommon implements BPlusTree{
             }
             father.insertChild(fatherIndex+1, siblingNode);
             returnNum = 0;
+
+            /* 需要说明的内容同上 */
+            siblingNode.setLeafPrev(node);
+            siblingNode.setLeafNext(node.getLeafNext());
+            node.setLeafNext(siblingNode);
         }
 
         return returnNum;

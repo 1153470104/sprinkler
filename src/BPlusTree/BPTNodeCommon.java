@@ -13,6 +13,8 @@ public class BPTNodeCommon implements BPTNode{
     protected List<BPTNode> childernList;
     protected BPTNode fatherNode;
     protected boolean isLeaf;
+    private BPTNode leafPrev;
+    private BPTNode leafnext;
 
     public BPTNodeCommon(int m, BPTNode fatherNode){
         this.m = m;
@@ -54,6 +56,13 @@ public class BPTNodeCommon implements BPTNode{
         return 0;
     }
 
+    public void checkLeafLink() {
+        if(!isLeaf){
+            BPTNode LeafPrev = null;
+            BPTNode Leafnext = null;
+        }
+    }
+
     @Override
     public int keyLength() {
         return this.keyLength;
@@ -73,6 +82,31 @@ public class BPTNodeCommon implements BPTNode{
     public void setIsLeaf(boolean bool) {
         this.isLeaf = bool;
     }
+
+    @Override
+    public BPTNode getLeafPrev() {
+        return leafPrev;
+    }
+
+    @Override
+    public BPTNode getLeafNext() {
+        return leafnext;
+    }
+
+    @Override
+    public void setLeafNext(BPTNode next) {
+        if(isLeaf) {
+            leafnext = next;
+        }
+    }
+
+    @Override
+    public void setLeafPrev(BPTNode prev) {
+        if(isLeaf) {
+            leafPrev = prev;
+        }
+    }
+
 
     @Override
     public int searchKey(BPTKey<Integer> key) {
@@ -126,6 +160,7 @@ public class BPTNodeCommon implements BPTNode{
     public void setFather(BPTNode father) {
         this.fatherNode = father;
     }
+
 
     @Override
     public String toString() {

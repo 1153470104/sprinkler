@@ -16,4 +16,10 @@ public interface BPTNode {
     public BPTNode getChild(int index);
     public BPTNode deleteChild(int index);
     public void setFather(BPTNode father);
+
+    public void checkLeafLink();
+    public void setLeafPrev(BPTNode prev);
+    public void setLeafNext(BPTNode next);
+    public BPTNode getLeafPrev();
+    public BPTNode getLeafNext();
 }
