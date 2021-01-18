@@ -1,5 +1,6 @@
 package BPlusTree;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -57,8 +58,35 @@ public class BPlusTreeCommon implements BPlusTree{
 
     @Override
     public List<BPTKey> search(BPTKey<Integer> key1, BPTKey<Integer> key2) {
+        if(key1.key > key2.key) {
+            System.out.println("wrong input, key1 should less than key2");
+            return null;
+        }
+        List<BPTKey> nodeList = new ArrayList<>();
+        BPTNode node = root;
+        while(node.childLength() > 0) {
+            node = node.getChild(0);
+        }
+        boolean start = false;
+        boolean end = false;
+        do {
+            for(int i = 0; i < node.keyLength(); i++){
+                if(node.getKey(i).equals(key1)) {
+                    start = true;
+                } else if(node.getKey(i).equals(key2)) {
+                    end = true;
+                }
+                if(start && !end) {
+                    nodeList.add(node.getKey(i));
+                }
+            }
+            node = node.getLeafNext();
+        } while(node != null);
 
-        return null;
+        if(nodeList.size() == 0) {
+            return null;
+        }
+        return nodeList;
     }
 
     @Override
