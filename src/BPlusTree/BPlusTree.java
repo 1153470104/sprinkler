@@ -10,4 +10,5 @@ public interface BPlusTree {
     public void Combine(BPTNode childNode1, BPTNode childNode2);
     public int split(BPTNode node);
     public String printbasic();
+    public String printData();
 }

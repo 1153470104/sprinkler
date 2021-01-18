@@ -103,15 +103,20 @@ public class BPlusTreeCommon implements BPlusTree{
         StringBuilder sb = new StringBuilder();
         BPTNode node = root;
         while(node.childLength() > 0) {
-            node = root.getChild(0);
+            node = node.getChild(0);
+//            System.out.println(node.childLength());
+//            System.out.println("here");
         }
-        while(node.getLeafNext() != null) {
+        do {
             for(int i = 0; i < node.keyLength(); i++){
-                sb.append("| ").append(node.getKey(i).key.toString());
+                sb.append("| ").append(node.getKey(i).key.toString()).append(" ");
+//                System.out.print(node.getKey(i).key.toString());
             }
             node = node.getLeafNext();
-        }
-        sb.append(" |");
+        } while(node != null);
+        sb.append("|");
+//        System.out.print("|");
+//        System.out.print(sb.toString());
         return sb.toString();
     }
 

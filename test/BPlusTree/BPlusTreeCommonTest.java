@@ -1,5 +1,7 @@
 package BPlusTree;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -93,6 +95,18 @@ class BPlusTreeCommonTest {
         makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
         assertEquals("| 10 |\n| 4 7 | 15 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 13 | 15 21 22 | 30 31 | 35 36 45 |", bpt.printbasic());
     }
+
+    @org.junit.jupiter.api.Test
+    void printData() {
+        System.out.print("damn");
+        makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36/*, 39, 49*/));
+        System.out.print("damn");
+        assertEquals("| 1 | 2 | 4 | 6 | 7 | 9 | 10 | 21 | 22 | 30 | 31 | 35 | 36 | 45 |", bpt.printData());
+
+        makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
+        assertEquals("| 1 | 2 | 4 | 6 | 7 | 9 | 10 | 13 | 15 | 21 | 22 | 30 | 31 | 35 | 36 | 45 |", bpt.printData());
+    }
+
 //    @org.junit.jupiter.api.Test
 //    void search() {
 //    }

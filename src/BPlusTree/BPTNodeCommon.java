@@ -13,8 +13,8 @@ public class BPTNodeCommon implements BPTNode{
     protected List<BPTNode> childernList;
     protected BPTNode fatherNode;
     protected boolean isLeaf;
-    private BPTNode leafPrev;
-    private BPTNode leafnext;
+    private BPTNode leafPrev = null;
+    private BPTNode leafnext = null;
 
     public BPTNodeCommon(int m, BPTNode fatherNode){
         this.m = m;
