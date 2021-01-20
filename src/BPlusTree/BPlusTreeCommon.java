@@ -12,6 +12,7 @@ public class BPlusTreeCommon implements BPlusTree{
     private int maxNumber;
     private int minNumber;
     private BPTNode root;
+    private boolean templateBased;
 
     public BPlusTreeCommon(int m){
         this.m = m;
@@ -19,6 +20,7 @@ public class BPlusTreeCommon implements BPlusTree{
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
         this.onlyRoot = true;
         this.root = new BPTLeaf(m, null);
+        this.templateBased = false;
     }
 
     @Override
@@ -57,8 +59,8 @@ public class BPlusTreeCommon implements BPlusTree{
 //    }
 
     @Override
-    public List<BPTKey> search(BPTKey<Integer> key1, BPTKey<Integer> key2) {
-        if(key1.key > key2.key) {
+    public List<BPTKey> search(Integer key1, Integer key2) {
+        if(key1 > key2) {
             System.out.println("wrong input, key1 should less than key2");
             return null;
         }
@@ -71,9 +73,11 @@ public class BPlusTreeCommon implements BPlusTree{
         boolean end = false;
         do {
             for(int i = 0; i < node.keyLength(); i++){
-                if(node.getKey(i).equals(key1)) {
+                // 这里上面的start判断需要大于等于，下面的end判断需要大于
+                if(node.getKey(i).key >= key1) {
                     start = true;
-                } else if(node.getKey(i).equals(key2)) {
+                }
+                if(node.getKey(i).key > key2) {
                     end = true;
                 }
                 if(start && !end) {
@@ -90,7 +94,7 @@ public class BPlusTreeCommon implements BPlusTree{
     }
 
     @Override
-    public String printbasic() {
+    public String printBasic() {
         Queue<BPTNode> nodeQueue = new LinkedList<>();
         nodeQueue.add(root);
         StringBuilder sb = new StringBuilder();

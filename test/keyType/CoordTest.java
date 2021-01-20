@@ -1,4 +1,4 @@
-package Coordinate;
+package keyType;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package Coordinate;
+package keyType;
 
 import java.util.StringTokenizer;
 
