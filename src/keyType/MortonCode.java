@@ -2,7 +2,7 @@ package keyType;
 
 import java.util.StringTokenizer;
 
-public class MortonCode {
+public class MortonCode implements Comparable{
     private int code;
 
     public MortonCode(){
@@ -35,5 +35,11 @@ public class MortonCode {
             round = round + 2;
         }
         return zCode;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        //这里idea叫我替换，那就替换了，原来并不知道还能这样子
+        return Integer.compare(this.code, ((MortonCode) o).code);
     }
 }

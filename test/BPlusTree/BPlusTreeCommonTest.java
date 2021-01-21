@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BPlusTreeCommonTest {
     private List<BPTKey<Integer>> keyList;
-    private BPlusTree bpt;
+    private BPlusTree<Integer> bpt;
 
     public void initBPT(int m) {
-        bpt = new BPlusTreeCommon(m);
+        bpt = new BPlusTreeCommon<Integer>(m);
     }
 
     public void initKeyList(int number) {
@@ -46,10 +46,10 @@ class BPlusTreeCommonTest {
         addList(list);
     }
 
-    public String keyListString(List<BPTKey> kList) {
+    public String keyListString(List<BPTKey<Integer>> kList) {
         StringBuilder sb = new StringBuilder();
         sb.append("|");
-        for(BPTKey n: kList) {
+        for(BPTKey<Integer> n: kList) {
             sb.append(" ").append(n.key).append(" |");
         }
         return sb.toString();

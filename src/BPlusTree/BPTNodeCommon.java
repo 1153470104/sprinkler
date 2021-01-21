@@ -1,22 +1,23 @@
 package BPlusTree;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class BPTNodeCommon implements BPTNode{
+public class BPTNodeCommon<K extends Comparable> implements BPTNode<K>{
     protected int m;
     protected int maxNumber;
     protected int minNumber;
     protected int keyLength;
     protected int childLength;
-    protected List<BPTKey<Integer>> keyList;
-    protected List<BPTNode> childernList;
-    protected BPTNode fatherNode;
+    protected List<BPTKey<K>> keyList;
+    protected List<BPTNode<K>> childernList;
+    protected BPTNode<K> fatherNode;
     protected boolean isLeaf;
-    private BPTNode leafPrev = null;
-    private BPTNode leafnext = null;
+    private BPTNode<K> leafPrev = null;
+    private BPTNode<K> leafnext = null;
 
-    public BPTNodeCommon(int m, BPTNode fatherNode){
+    public BPTNodeCommon(int m, BPTNode<K> fatherNode){
         this.m = m;
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
@@ -29,19 +30,19 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public int insertKey(int index, BPTKey<Integer> key) {
+    public int insertKey(int index, BPTKey<K> key) {
         this.keyList.add(index, key);
         this.keyLength += 1;
         return this.checkout();
     }
 
     @Override
-    public void addChild(BPTNode child) {
+    public void addChild(BPTNode<K> child) {
         this.childernList.add(child);
         this.childLength += 1;
     }
 
-    public void insertChild( int index, BPTNode childNode){
+    public void insertChild( int index, BPTNode<K> childNode){
         this.childernList.add(index, childNode);
         this.childLength += 1;
     }
@@ -58,8 +59,8 @@ public class BPTNodeCommon implements BPTNode{
 
     public void checkLeafLink() {
         if(!isLeaf){
-            BPTNode LeafPrev = null;
-            BPTNode Leafnext = null;
+            BPTNode<K> LeafPrev = null;
+            BPTNode<K> Leafnext = null;
         }
     }
 
@@ -74,7 +75,7 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public BPTNode getFather() {
+    public BPTNode<K> getFather() {
         return this.fatherNode;
     }
 
@@ -84,24 +85,24 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public BPTNode getLeafPrev() {
+    public BPTNode<K> getLeafPrev() {
         return leafPrev;
     }
 
     @Override
-    public BPTNode getLeafNext() {
+    public BPTNode<K> getLeafNext() {
         return leafnext;
     }
 
     @Override
-    public void setLeafNext(BPTNode next) {
+    public void setLeafNext(BPTNode<K> next) {
         if(isLeaf) {
             leafnext = next;
         }
     }
 
     @Override
-    public void setLeafPrev(BPTNode prev) {
+    public void setLeafPrev(BPTNode<K> prev) {
         if(isLeaf) {
             leafPrev = prev;
         }
@@ -109,11 +110,11 @@ public class BPTNodeCommon implements BPTNode{
 
 
     @Override
-    public int searchKey(BPTKey<Integer> key) {
+    public int searchKey(BPTKey<K> key) {
         for(int i = 0; i < this.keyLength; i++){
-            int listKey = this.keyList.get(i).key;
-            int inputKey = key.key;
-            if (inputKey < listKey) {
+            K listKey = this.keyList.get(i).key;
+            K inputKey = key.key;
+            if (inputKey.compareTo(listKey) == -1) {
                 return i;
             } else if (inputKey == listKey){
                 return i+1;
@@ -128,7 +129,7 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public BPTKey<Integer> getKey(int index) {
+    public BPTKey<K> getKey(int index) {
         return this.keyList.get(index);
     }
 
@@ -139,7 +140,7 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public BPTNode getChild(int index) {
+    public BPTNode<K> getChild(int index) {
         if (index > this.childLength-1) {
             return null;
         }
@@ -147,8 +148,8 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public BPTNode deleteChild(int index) {
-        BPTNode node = null;
+    public BPTNode<K> deleteChild(int index) {
+        BPTNode<K> node = null;
         if (index < this.childLength) {
             node = this.childernList.remove(index);
             this.childLength -= 1;
@@ -157,7 +158,7 @@ public class BPTNodeCommon implements BPTNode{
     }
 
     @Override
-    public void setFather(BPTNode father) {
+    public void setFather(BPTNode<K> father) {
         this.fatherNode = father;
     }
 
@@ -166,7 +167,7 @@ public class BPTNodeCommon implements BPTNode{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Node Key: ");
-        for (BPTKey<Integer> key: this.keyList) {
+        for (BPTKey<K> key: this.keyList) {
             sb.append(key.key.toString()).append(" ");
         }
         return sb.toString();

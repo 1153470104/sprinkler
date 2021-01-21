@@ -2,7 +2,7 @@ package BPlusTree;
 
 import java.util.Objects;
 
-public class BPTKey<K>{
+public class BPTKey<K extends Comparable>{
 
     protected K key;
 

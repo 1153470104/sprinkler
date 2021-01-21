@@ -1,6 +1,6 @@
 package BPlusTree;
 
-public class BPTValueKey<K, V> extends BPTKey<K>{
+public class BPTValueKey<K extends Comparable, V> extends BPTKey<K>{
     private V value;
 
     public BPTValueKey(K key, V value){

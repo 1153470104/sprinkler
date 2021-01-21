@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.function.ToDoubleBiFunction;
 
-public class BPlusTreeCommon implements BPlusTree{
+public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     private boolean onlyRoot;
     private int m;
     private int maxNumber;
     private int minNumber;
-    private BPTNode root;
+    private BPTNode<K> root;
     private boolean templateBased;
 
     public BPlusTreeCommon(int m){
@@ -19,15 +19,15 @@ public class BPlusTreeCommon implements BPlusTree{
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
         this.onlyRoot = true;
-        this.root = new BPTLeaf(m, null);
+        this.root = new BPTLeaf<K>(m, null);
         this.templateBased = false;
     }
 
     @Override
-    public void addKey(BPTKey<Integer> key) {
+    public void addKey(BPTKey<K> key) {
         int checkNum = 0;
         int index = 0;
-        BPTNode node = this.root;
+        BPTNode<K> node = this.root;
         if(onlyRoot) {
             index = node.searchKey(key);
             checkNum = node.insertKey(index, key);
@@ -59,13 +59,13 @@ public class BPlusTreeCommon implements BPlusTree{
 //    }
 
     @Override
-    public List<BPTKey> search(Integer key1, Integer key2) {
-        if(key1 > key2) {
+    public List<BPTKey<K>> search(K key1, K key2) {
+        if(key1.compareTo(key2) == 1) {
             System.out.println("wrong input, key1 should less than key2");
             return null;
         }
-        List<BPTKey> nodeList = new ArrayList<>();
-        BPTNode node = root;
+        List<BPTKey<K>> nodeList = new ArrayList<>();
+        BPTNode<K> node = root;
         while(node.childLength() > 0) {
             node = node.getChild(0);
         }
@@ -74,10 +74,10 @@ public class BPlusTreeCommon implements BPlusTree{
         do {
             for(int i = 0; i < node.keyLength(); i++){
                 // 这里上面的start判断需要大于等于，下面的end判断需要大于
-                if(node.getKey(i).key >= key1) {
+                if(node.getKey(i).key.compareTo(key1) != -1) {
                     start = true;
                 }
-                if(node.getKey(i).key > key2) {
+                if(node.getKey(i).key.compareTo(key2) == 1) {
                     end = true;
                 }
                 if(start && !end) {
@@ -95,14 +95,14 @@ public class BPlusTreeCommon implements BPlusTree{
 
     @Override
     public String printBasic() {
-        Queue<BPTNode> nodeQueue = new LinkedList<>();
+        Queue<BPTNode<K>> nodeQueue = new LinkedList<>();
         nodeQueue.add(root);
         StringBuilder sb = new StringBuilder();
         int levelNum = 1;  // how many keys in this level
         int levelCount = 0;  // how many keys in next level so far we know
         int currentOut = 0;  // how many keys are been printed in this level
         while (!nodeQueue.isEmpty()) {
-            BPTNode node = nodeQueue.remove();
+            BPTNode<K> node = nodeQueue.remove();
             int keyNum = node.keyLength();
 //            System.out.println("node key length: " + Integer.toString(keyNum) + " child length" + Integer.toString(node.childLength()));
             sb.append("| ");
@@ -114,7 +114,7 @@ public class BPlusTreeCommon implements BPlusTree{
             int childNum = node.childLength();
             levelCount += childNum;
             for(int i = 0; i < childNum; i++) {
-                BPTNode child = node.getChild(i);
+                BPTNode<K> child = node.getChild(i);
                 nodeQueue.add(child);
             }
             currentOut += 1;
@@ -133,7 +133,7 @@ public class BPlusTreeCommon implements BPlusTree{
 
     public String printData() {
         StringBuilder sb = new StringBuilder();
-        BPTNode node = root;
+        BPTNode<K> node = root;
         while(node.childLength() > 0) {
             node = node.getChild(0);
 //            System.out.println(node.childLength());
@@ -153,15 +153,15 @@ public class BPlusTreeCommon implements BPlusTree{
     }
 
     @Override
-    public int split(BPTNode node) {
+    public int split(BPTNode<K> node) {
         int returnNum;
 //        System.out.println(node);
         int siblingIsLeaf = 0;
         if(node.getFather() == null) {
             /* 需要新建父节点的情况 */
-            BPTNonLeaf father = new BPTNonLeaf(this.m, null);
+            BPTNonLeaf<K> father = new BPTNonLeaf<K>(this.m, null);
             father.insertKey(0, node.getKey(minNumber));
-            BPTNode siblingNode = new BPTNodeCommon(this.m, father);
+            BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {
                 siblingIsLeaf = 1;
@@ -171,7 +171,7 @@ public class BPlusTreeCommon implements BPlusTree{
             }
             for(int i = m-1; i > minNumber-1; i--) {
                 node.deleteKey(i);
-                BPTNode childNode = node.deleteChild(i+1);
+                BPTNode<K> childNode = node.deleteChild(i+1);
                 if (childNode != null) {
                     siblingNode.insertChild(0, childNode);
                     childNode.setFather(siblingNode);
@@ -196,10 +196,10 @@ public class BPlusTreeCommon implements BPlusTree{
             this.onlyRoot = false;
         } else {
             /* 父节点已经存储在的情况 */
-            BPTNode father = node.getFather();
+            BPTNode<K> father = node.getFather();
             int fatherIndex = father.searchKey(node.getKey(0));
-            father.insertKey(fatherIndex, new BPTKey<Integer>(node.getKey(minNumber).key));
-            BPTNode siblingNode = new BPTNodeCommon(this.m, father);
+            father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).key));
+            BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {
                 siblingIsLeaf = 1;
@@ -209,10 +209,10 @@ public class BPlusTreeCommon implements BPlusTree{
             }
             for(int i = m-1; i > minNumber-1; i--) {
                 node.deleteKey(i);
-                BPTNode childNode = node.deleteChild(i+1);
+                BPTNode<K> childNode = node.deleteChild(i+1);
                 if (childNode != null) {
                     siblingNode.insertChild(0, childNode);
-                    childNode.setFather((BPTNonLeaf)siblingNode);
+                    childNode.setFather(siblingNode);
                 }
 //                System.out.print("root: ");
 //                System.out.println(node.childLength());
@@ -230,6 +230,6 @@ public class BPlusTreeCommon implements BPlusTree{
     }
 
     @Override
-    public void Combine(BPTNode childNode1, BPTNode childNode2) {
+    public void Combine(BPTNode<K> childNode1, BPTNode<K> childNode2) {
     }
 }

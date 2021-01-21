@@ -1,25 +1,25 @@
 package BPlusTree;
 
-public interface BPTNode {
-    public int insertKey( int index, BPTKey<Integer> key);
-    public void addChild(BPTNode child);
-    public void insertChild( int index, BPTNode childNode);
+public interface BPTNode<K extends Comparable> {
+    public int insertKey( int index, BPTKey<K> key);
+    public void addChild(BPTNode<K> child);
+    public void insertChild( int index, BPTNode<K> childNode);
     public int checkout();
     public int keyLength();
     public int childLength();
-    public BPTNode getFather();
+    public BPTNode<K> getFather();
     public void setIsLeaf(boolean bool);
-    public int searchKey(BPTKey<Integer> key);
+    public int searchKey(BPTKey<K> key);
     public boolean isLeaf();
-    public BPTKey<Integer> getKey(int index);
+    public BPTKey<K> getKey(int index);
     public void deleteKey(int index);
-    public BPTNode getChild(int index);
-    public BPTNode deleteChild(int index);
-    public void setFather(BPTNode father);
+    public BPTNode<K> getChild(int index);
+    public BPTNode<K> deleteChild(int index);
+    public void setFather(BPTNode<K> father);
 
     public void checkLeafLink();
-    public void setLeafPrev(BPTNode prev);
-    public void setLeafNext(BPTNode next);
-    public BPTNode getLeafPrev();
-    public BPTNode getLeafNext();
+    public void setLeafPrev(BPTNode<K> prev);
+    public void setLeafNext(BPTNode<K> next);
+    public BPTNode<K> getLeafPrev();
+    public BPTNode<K> getLeafNext();
 }
