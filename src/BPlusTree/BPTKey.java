@@ -10,7 +10,7 @@ public class BPTKey<K extends Comparable>{
         this.key = key;
     }
 
-    public BPTKey<K> getKey() {
+    public BPTKey<K> copyKey() {
         return new BPTKey<K>(this.key);
     }
 
@@ -31,4 +31,9 @@ public class BPTKey<K extends Comparable>{
     public int hashCode() {
         return Objects.hash(key);
     }
+
+    public K getKey() {
+        return key;
+    }
+
 }

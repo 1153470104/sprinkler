@@ -54,10 +54,6 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
         }
     }
 
-//    @Override
-//    public void balance(int checkNum, BPTNode node) {
-//    }
-
     @Override
     public List<BPTKey<K>> search(K key1, K key2) {
         if(key1.compareTo(key2) == 1) {
@@ -227,9 +223,5 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
         }
 
         return returnNum;
-    }
-
-    @Override
-    public void Combine(BPTNode<K> childNode1, BPTNode<K> childNode2) {
     }
 }
