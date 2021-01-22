@@ -1,6 +1,6 @@
 package keyType;
 
-import BPlusTree.BPTKey;
+import BPTKey.BPTKey;
 
 import java.util.ArrayList;
 import java.util.List;

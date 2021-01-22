@@ -1,7 +1,8 @@
-package BPlusTree;
+package BPTNode;
+
+import BPTKey.BPTKey;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class BPTNodeCommon<K extends Comparable> implements BPTNode<K>{
@@ -112,8 +113,8 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K>{
     @Override
     public int searchKey(BPTKey<K> key) {
         for(int i = 0; i < this.keyLength; i++){
-            K listKey = this.keyList.get(i).key;
-            K inputKey = key.key;
+            K listKey = this.keyList.get(i).getKey();
+            K inputKey = key.getKey();
             if (inputKey.compareTo(listKey) == -1) {
                 return i;
             } else if (inputKey == listKey){
@@ -168,7 +169,7 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K>{
         StringBuilder sb = new StringBuilder();
         sb.append("Node Key: ");
         for (BPTKey<K> key: this.keyList) {
-            sb.append(key.key.toString()).append(" ");
+            sb.append(key.getKey().toString()).append(" ");
         }
         return sb.toString();
     }

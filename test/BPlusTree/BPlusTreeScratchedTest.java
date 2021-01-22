@@ -1,5 +1,7 @@
 package BPlusTree;
 
+import BPTKey.BPTKey;
+import BPTKey.BPTValueKey;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -8,12 +10,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BPlusTreeCommonTest {
+class BPlusTreeScratchedTest {
     private List<BPTKey<Integer>> keyList;
     private BPlusTree<Integer> bpt;
 
     public void initBPT(int m) {
-        bpt = new BPlusTreeCommon<Integer>(m);
+        bpt = new BPlusTreeScratched<Integer>(m);
     }
 
     public void initKeyList(int number) {
@@ -50,7 +52,7 @@ class BPlusTreeCommonTest {
         StringBuilder sb = new StringBuilder();
         sb.append("|");
         for(BPTKey<Integer> n: kList) {
-            sb.append(" ").append(n.key).append(" |");
+            sb.append(" ").append(n.getKey()).append(" |");
         }
         return sb.toString();
     }

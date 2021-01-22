@@ -1,5 +1,8 @@
 package BPlusTree;
 
+import BPTKey.BPTKey;
+import BPTKey.BPTValueKey;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +15,7 @@ public class mainDemo {
     }
 
     public void initBPT(int m) {
-        bpt = new BPlusTreeCommon(m);
+        bpt = new BPlusTreeScratched(m);
     }
 
     public void initKeyList(int number) {

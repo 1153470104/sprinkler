@@ -1,4 +1,6 @@
-package BPlusTree;
+package BPTNode;
+
+import BPTKey.BPTKey;
 
 public interface BPTNode<K extends Comparable> {
     public int insertKey( int index, BPTKey<K> key);
