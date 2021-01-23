@@ -7,7 +7,7 @@ import java.util.List;
 public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K> {
 
 
-    public BPlusTreeTemplated(BPlusTreeScratched<K> tree) {
+    public BPlusTreeTemplated(BPlusTreeCommon<K> tree) {
         super(tree.m);
         this.onlyRoot = false;
         this.templateBased = true;
@@ -15,6 +15,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 
     @Override
     public void addKey(BPTKey<K> key) {
+        super.addKey(key);
         //TODO
     }
 
@@ -23,5 +24,9 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         //TODO
 
         return null;
+    }
+
+    public void balance(){
+
     }
 }

@@ -17,6 +17,8 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>
 
     @Override
     public void addKey(BPTKey<K> key) {
+        super.addKey(key);
+
         int checkNum = 0;
         int index = 0;
         BPTNode<K> node = this.root;

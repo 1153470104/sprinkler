@@ -10,4 +10,7 @@ public interface BPlusTree<K extends Comparable> {
 //    public int split(BPlusTree.BPTNode<K> node);
     public String printBasic();
     public String printData();
+    public boolean isBlockFull();
+    public boolean isTemplated();
+//    public String writeInDisk();
 }

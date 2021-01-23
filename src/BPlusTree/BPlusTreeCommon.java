@@ -3,6 +3,7 @@ package BPlusTree;
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
 
+import java.lang.instrument.Instrumentation;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,7 +14,9 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     protected int maxNumber;
     protected int minNumber;
     protected BPTNode<K> root;
-    protected boolean templateBased;
+    protected boolean templateBased = false;
+    private Instrumentation instrumentation;
+    private int entryNum = 0;
 
     public BPlusTreeCommon(int m){
         this.m = m;
@@ -23,6 +26,7 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
 
     @Override
     public void addKey(BPTKey<K> key) {
+        entryNum = entryNum+1;
     }
 
     @Override
@@ -88,5 +92,23 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
 //        System.out.print(sb.toString());
         return sb.toString();
     }
+
+    @Override
+    public boolean isBlockFull() {
+        if (this.entryNum < 10000) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isTemplated() {
+        return this.templateBased;
+    }
+
+//    @Override
+//    public String writeInDisk() {
+//
+//    }
 
 }
