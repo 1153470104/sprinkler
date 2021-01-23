@@ -1,6 +1,4 @@
-package BPTKey;
-
-import keyType.MortonCode;
+package BPlusTree.BPTKey;
 
 import java.util.Objects;
 

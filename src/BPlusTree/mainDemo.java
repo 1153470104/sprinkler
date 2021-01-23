@@ -1,7 +1,7 @@
 package BPlusTree;
 
-import BPTKey.BPTKey;
-import BPTKey.BPTValueKey;
+import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTKey.BPTValueKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;

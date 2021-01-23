@@ -1,4 +1,4 @@
-package BPTNode;
+package BPlusTree.BPTNode;
 
 public class BPTNonLeaf<K extends Comparable> extends BPTNodeCommon<K>{
 

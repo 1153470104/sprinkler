@@ -1,7 +1,6 @@
 package BPlusTree;
 
-import BPTKey.BPTKey;
-import BPTNode.BPTLeaf;
+import BPlusTree.BPTKey.BPTKey;
 
 import java.util.List;
 
