@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class MortonCode implements Comparable{
+
     private int code;
     private int x;
     private int y;
@@ -80,5 +81,10 @@ public class MortonCode implements Comparable{
             }
         }
         return rList;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(code);
     }
 }
