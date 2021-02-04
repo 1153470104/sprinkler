@@ -18,6 +18,7 @@ public interface BPTNode<K extends Comparable> {
     public BPTNode<K> getChild(int index);
     public BPTNode<K> deleteChild(int index);
     public void setFather(BPTNode<K> father);
+    public BPTNode<K> valueCopy();
 
     public void checkLeafLink();
     public void setLeafPrev(BPTNode<K> prev);

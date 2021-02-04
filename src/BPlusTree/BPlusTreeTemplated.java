@@ -11,7 +11,9 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         super(tree.m);
         this.onlyRoot = false;
         this.templateBased = true;
+        this.root = tree.rootCopy();
     }
+
 
     @Override
     public void addKey(BPTKey<K> key) {

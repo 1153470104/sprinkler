@@ -1,6 +1,7 @@
 package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTNode.BPTNode;
 
 import java.util.List;
 
@@ -12,5 +13,6 @@ public interface BPlusTree<K extends Comparable> {
     public String printData();
     public boolean isBlockFull();
     public boolean isTemplated();
+    public BPTNode<K> rootCopy();
 //    public String writeInDisk();
 }

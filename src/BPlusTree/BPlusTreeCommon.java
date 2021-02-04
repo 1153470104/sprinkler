@@ -4,6 +4,7 @@ import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
 
 import java.lang.instrument.Instrumentation;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -104,6 +105,25 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     @Override
     public boolean isTemplated() {
         return this.templateBased;
+    }
+
+    @Override
+    public BPTNode<K> rootCopy() {
+        BPTNode<K> newRoot = new BPTNodeCommon<>(m, null);
+        BPTNode<K> tempNewRoot = newRoot;
+        BPTNode<K> tempRoot;
+
+        Deque<BPTNode> nodeDeque = new LinkedList<>();
+        nodeDeque.add(root);
+        tempRoot = root;
+        while(!tempRoot.isLeaf()) {
+            newRoot = tempRoot.valueCopy();
+            for(int i = 0; i < tempRoot.childLength(); i++) {
+                nodeDeque.add(tempRoot.getChild(i));
+            }
+            tempRoot = nodeDeque.remove();
+        }
+        return newRoot;
     }
 
 //    @Override

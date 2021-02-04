@@ -2,10 +2,11 @@ package BPlusTree.BPTNode;
 
 import BPlusTree.BPTKey.BPTKey;
 
+import javax.xml.stream.FactoryConfigurationError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BPTNodeCommon<K extends Comparable> implements BPTNode<K>{
+public class BPTNodeCommon<K extends Comparable> implements BPTNode<K> {
     protected int m;
     protected int maxNumber;
     protected int minNumber;
@@ -56,6 +57,18 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K>{
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public BPTNode<K> valueCopy() {
+        BPTNodeCommon<K> node = new BPTNodeCommon(this.m, this.fatherNode.valueCopy());
+        node.keyList = new ArrayList<>();
+        node.childernList = new ArrayList<>();
+        node.keyList.addAll(this.keyList);
+        node.keyLength = this.keyLength;
+        node.childLength = 0;
+        node.isLeaf = false;
+        return node;
     }
 
     public void checkLeafLink() {
