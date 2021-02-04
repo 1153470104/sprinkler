@@ -4,9 +4,9 @@ import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
 
 import java.lang.instrument.Instrumentation;
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
@@ -109,20 +109,60 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
 
     @Override
     public BPTNode<K> rootCopy() {
-        BPTNode<K> newRoot = new BPTNodeCommon<>(m, null);
-        BPTNode<K> tempNewRoot = newRoot;
+        BPTNode<K> newRoot;
+        BPTNode<K> tempNewRoot;
         BPTNode<K> tempRoot;
 
-        Deque<BPTNode> nodeDeque = new LinkedList<>();
-        nodeDeque.add(root);
+        Queue<BPTNode<K>> nodeQueue = new LinkedList<>();
+        Queue<BPTNode<K>> copyQueue = new LinkedList<>();
         tempRoot = root;
-        while(!tempRoot.isLeaf()) {
-            newRoot = tempRoot.valueCopy();
-            for(int i = 0; i < tempRoot.childLength(); i++) {
-                nodeDeque.add(tempRoot.getChild(i));
+        newRoot = tempRoot.valueCopy(null);
+        tempNewRoot = newRoot;
+
+        try{
+            while(true) {
+                for(int i = 0; i < tempRoot.childLength(); i++) {
+                    BPTNode<K> theChild = tempRoot.getChild(i);
+                    if (theChild.isLeaf()) {
+                        tempNewRoot.addChild(new BPTNodeCommon<>(m, tempNewRoot));
+                    } else {
+                        nodeQueue.add(theChild);
+                        BPTNode<K> copyChild = theChild.valueCopy(tempNewRoot);
+                        tempNewRoot.addChild(copyChild);
+                        copyQueue.add(copyChild);
+                    }
+                }
+                tempNewRoot = copyQueue.remove();
+                tempRoot = nodeQueue.remove();
             }
-            tempRoot = nodeDeque.remove();
+        } catch(NoSuchElementException e) {
+            System.out.println("copy finish!");
         }
+
+        //维护底层的 prev next 结构
+        Queue<BPTNode<K>> tempQueue = new LinkedList<>();
+        tempQueue.add(newRoot);
+        while(tempQueue.size() > 0){
+            tempNewRoot = tempQueue.peek();
+            if(tempNewRoot.isLeaf()){
+                break;
+            }else{
+                for(int i = 0; i < tempNewRoot.childLength(); i++){
+                    tempQueue.add(tempNewRoot.getChild(i));
+                }
+                tempQueue.remove();
+            }
+        }
+        BPTNode<K> prevNode;
+        BPTNode<K> nextNode;
+        prevNode = tempQueue.remove();
+        while(tempQueue.size() > 0){
+            nextNode = tempQueue.remove();
+            prevNode.setLeafNext(nextNode);
+            nextNode.setLeafPrev(prevNode);
+            prevNode = nextNode;
+        }
+
         return newRoot;
     }
 
@@ -130,5 +170,4 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
 //    public String writeInDisk() {
 //
 //    }
-
 }

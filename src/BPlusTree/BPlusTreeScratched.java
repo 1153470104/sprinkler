@@ -17,6 +17,7 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>
 
     @Override
     public void addKey(BPTKey<K> key) {
+        //super在这里加了一个entryNum
         super.addKey(key);
 
         int checkNum = 0;

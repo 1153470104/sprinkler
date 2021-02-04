@@ -59,9 +59,15 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K> {
         return 0;
     }
 
+    /**
+     * similar to the clone function, but not a whole copy
+     *
+     * this function copy the keyList, assign a fatherNode
+     * childList is left empty
+     */
     @Override
-    public BPTNode<K> valueCopy() {
-        BPTNodeCommon<K> node = new BPTNodeCommon(this.m, this.fatherNode.valueCopy());
+    public BPTNode<K> valueCopy(BPTNode<K> father) {
+        BPTNodeCommon<K> node = new BPTNodeCommon<K>(this.m, father);
         node.keyList = new ArrayList<>();
         node.childernList = new ArrayList<>();
         node.keyList.addAll(this.keyList);
