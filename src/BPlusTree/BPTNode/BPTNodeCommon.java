@@ -131,6 +131,9 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K> {
 
     @Override
     public int searchKey(BPTKey<K> key) {
+        if (this.keyLength == 0) {
+            return 0;
+        }
         for(int i = 0; i < this.keyLength; i++){
             K listKey = this.keyList.get(i).getKey();
             K inputKey = key.getKey();

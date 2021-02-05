@@ -166,6 +166,16 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
         return newRoot;
     }
 
+    @Override
+    public int getM() {
+        return m;
+    }
+
+    @Override
+    public void flushOut() {
+
+    }
+
 //    @Override
 //    public String writeInDisk() {
 //

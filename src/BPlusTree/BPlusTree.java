@@ -14,5 +14,7 @@ public interface BPlusTree<K extends Comparable> {
     public boolean isBlockFull();
     public boolean isTemplated();
     public BPTNode<K> rootCopy();
+    public int getM();
+    public void flushOut();
 //    public String writeInDisk();
 }
