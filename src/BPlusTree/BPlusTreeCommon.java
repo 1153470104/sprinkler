@@ -88,7 +88,11 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
             }
             node = node.getLeafNext();
         } while(node != null);
-        sb.append("|");
+        if (sb.length() == 0) {
+            sb.append("| |");
+        } else {
+            sb.append("|");
+        }
 //        System.out.print("|");
 //        System.out.print(sb.toString());
         return sb.toString();

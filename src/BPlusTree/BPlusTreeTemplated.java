@@ -7,6 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K> {
+    /**
+     * templated tree
+     * @param tree
+     *
+     * 基于模板的B+树有一个比较重要的特点就是它的非叶节点不再出现在子节点中
+     * 所以估计以后要用的时候得注意这一点, 目前还不知道会有什么后果
+     */
 
 
     public BPlusTreeTemplated(BPlusTree<K> tree) {

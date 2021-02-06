@@ -72,9 +72,18 @@ class BPlusTreeTemplatedTest {
     void addkey1() {
         ts.makeBPT(5, 10);
         copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        //use printData to test the
+        assertEquals("| |", copyTree.printData());
         copyTree.addKey(new BPTValueKey<Integer, String>(5, Integer.toString(5)));
+        assertEquals("| 2 4 6 |\n| | | 5 | |", copyTree.printBasic());
+        assertEquals("| 5 |", copyTree.printData());
+        System.out.println();
+        copyTree.addKey(new BPTValueKey<Integer, String>(0, Integer.toString(0)));
+        copyTree.addKey(new BPTValueKey<Integer, String>(10, Integer.toString(10)));
+        copyTree.addKey(new BPTValueKey<Integer, String>(11, Integer.toString(11)));
 //        assertEquals("| 2 4 6 |\n| 0 1 | 2 3 | 4 5 | 6 7 8 9 |", ts.bpt().printBasic());
-        assertEquals("| 2 4 6 |\n| | | | |", copyTree.printBasic());
+        assertEquals("| 2 4 6 |\n| 0 | | 5 | 10 11 |", copyTree.printBasic());
+        assertEquals("| 0 | 5 | 10 | 11 |", copyTree.printData());
     }
 
     /**
