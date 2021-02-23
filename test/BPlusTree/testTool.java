@@ -13,6 +13,10 @@ public class testTool {
     public testTool(){
     }
 
+    public static BPTValueKey<Integer, String> IntegerKey(int i) {
+        return new BPTValueKey<Integer, String>(i, Integer.toString(i));
+    }
+
     public BPlusTree<Integer> bpt() {
         return bpt;
     }

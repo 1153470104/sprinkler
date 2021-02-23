@@ -2,6 +2,7 @@ package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.BPTNode;
+import BPlusTree.BPTNode.BPTNodeCommon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,9 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         /* because the insert of templated tree could only happen in the bottom
            so, increasing layers is not considered*/
         if (checkNum == 1) {
+            /* 判断是否要超出数量限制，超出就split
+             * 有可能成功，有可能不成功
+             */
             this.split(node);
         }
         if (!this.isBalanced()) {
@@ -83,8 +87,46 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         return nodeList;
     }
 
-    public void split(BPTNode<K> node) {
+    public int split(BPTNode<K> node) {
+        int siblingIsLeaf = 0;
 
+        /* 不存在没有父节点的情况，所以套用从头建立B+树中的一种情况 */
+        BPTNode<K> father = node.getFather();
+        int fatherIndex = father.searchKey(node.getKey(0));
+
+        /* 判断父节点还能不能分，不能分就直接返回-1 */
+        if(father.keyLength() == this.maxNumber) {
+            return -1;
+        } else {
+            father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).getKey()));
+            BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
+            siblingNode.setIsLeaf(node.isLeaf());
+            if (!siblingNode.isLeaf()) {
+                siblingIsLeaf = 1;
+            }
+            for (int i = minNumber + siblingIsLeaf; i < m; i++) {
+                siblingNode.insertKey(i - (minNumber + siblingIsLeaf), node.getKey(i));
+            }
+            for (int i = m - 1; i > minNumber - 1; i--) {
+                node.deleteKey(i);
+                BPTNode<K> childNode = node.deleteChild(i + 1);
+                if (childNode != null) {
+                    siblingNode.insertChild(0, childNode);
+                    childNode.setFather(siblingNode);
+                }
+//                System.out.print("root: ");
+//                System.out.println(node.childLength());
+            }
+            father.insertChild(fatherIndex + 1, siblingNode);
+
+            /* 接下来的部分直接对node和sibling进行处理，
+             * 并不讨论是否为叶节点，因为在node内部方法中已经规避掉非叶问题了
+             * */
+            siblingNode.setLeafPrev(node);
+            siblingNode.setLeafNext(node.getLeafNext());
+            node.setLeafNext(siblingNode);
+            return 1;
+        }
     }
 
     public boolean isBalanced() {
