@@ -13,6 +13,12 @@ public class BPTValueKey<K extends Comparable, V> extends BPTKey<K>{
     }
 
     @Override
+    public BPTKey<K> copyKey() {
+//        super.copyKey();
+        return new BPTValueKey<K, V>(this.key, this.value);
+    }
+
+    @Override
     public String toString() {
         return "BPTValueKey{" +
                 "key=" + key +

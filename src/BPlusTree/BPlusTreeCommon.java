@@ -17,7 +17,7 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     protected BPTNode<K> root;
     protected boolean templateBased = false;
     private Instrumentation instrumentation;
-    private int entryNum = 0;
+    protected int entryNum = 0;
 
     public BPlusTreeCommon(int m){
         this.m = m;
@@ -143,7 +143,7 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
             System.out.println("copy finish!");
         }
 
-        //维护底层的 prev next 结构
+        /* 维护底层的 prev next 结构 */
         Queue<BPTNode<K>> tempQueue = new LinkedList<>();
         tempQueue.add(newRoot);
         while(tempQueue.size() > 0){
