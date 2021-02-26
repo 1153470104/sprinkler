@@ -53,9 +53,6 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
              */
             this.split(node);
         }
-        if (!this.isBalanced()) {
-            this.balance();
-        }
     }
 
     @Override
@@ -169,6 +166,12 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
     }
 
     public void balance(){
+        //居然是因为测试方便把 is balance放到balance功能中进行检测
+        //这就要求使用template的人手动balance 而非 add的同时balance
+        if (this.isBalanced()) {
+            return;
+        }
+
         BPTNode<K> searchNode = this.root;
         List<BPTNode<K>> nodeDeque = new LinkedList<>();
         nodeDeque.add(searchNode);
@@ -180,30 +183,32 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             searchNode = nodeDeque.get(0);
         }
 
+        // 对具体的要把leaf接到哪个node上进行跟踪
         int leafCount = 0;
-        BPTNode<K> readNode = nodeDeque.get(0);
+        BPTNode<K> readNode = searchNode.getChild(0);
 //        int readNum = 0;
 //        BPTNode<K> readNode = nodeDeque.get(readNum);
         int writeNum = 0;
         BPTNode<K> writeNode = nodeDeque.get(writeNum);
-
-        /* average是平均数，complement是计算每隔几个要补一个，避免余数的部分在后面溢出 */
-        int averageNum = this.entryNum / this.leafNum;
-        int complement = leafNum / (entryNum - averageNum * leafNum);
-
 //        int readNodeNum = readNode.childLength();
 //        int readNodePos = 0;
         int writeNodeNum = writeNode.childLength();
         int writeNodePos = 0;
+
+        // average是平均数，complement是计算每隔几个要补一个，避免余数的部分在后面溢出
+        int averageNum = this.entryNum / this.leafNum;
+        int complement = leafNum / (entryNum - averageNum * leafNum);
+        int plus = 0; //用于complement的辅助变量，为 1或0
+
         Deque<BPTKey<K>> keyDeque = new LinkedList<>();
         BPTNode<K> prevLeaf = null;
-        int plus = 0;
         for(int i = 0; i < this.leafNum; i++) {
+            //判断要不要加 1
             if(leafCount % complement == 0) {
                 plus = 1;
             }
             // TODO 这里要考虑边界情况，避免死循环
-            while(keyDeque.size() < averageNum+plus) {
+            while(keyDeque.size() < averageNum+plus && leafCount<this.leafNum-1) {
                 for(int j = 0; j < readNode.keyLength(); j++) {
                     keyDeque.add(readNode.getKey(j));
                 }
@@ -213,6 +218,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 //                    readNode = nodeDeque.get(readNum);
 //                }
                 readNode = readNode.getLeafNext();
+                leafCount += 1;
             }
 
             /* build new leaf node and replace old-one */
@@ -223,6 +229,17 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             }
             for(int k = 0; k < averageNum+plus; k++) {
                 newLeaf.insertKey(k, keyDeque.remove());
+            }
+
+            writeNode.insertChild(writeNodePos, newLeaf);
+            writeNodePos += 1;
+            if(writeNodePos >= writeNodeNum) {
+                // nodedeque中跟踪的序号+1 并读取新弄得
+                // node中child位置归零， 重读node child数目
+                writeNum += 1;
+                writeNode = nodeDeque.get(writeNum);
+                writeNodeNum = writeNode.childLength();
+                writeNodePos = 0;
             }
 
         }
