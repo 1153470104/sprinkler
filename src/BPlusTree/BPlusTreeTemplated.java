@@ -45,12 +45,11 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         }
         index = node.searchKey((key));
         checkNum = node.insertKey(index, key);
-        /* because the insert of templated tree could only happen in the bottom
-           so, increasing layers is not considered*/
+        // because the insert of templated tree could only happen in the bottom
+        // so, increasing layers is not considered
         if (checkNum == 1) {
-            /* 判断是否要超出数量限制，超出就split
-             * 有可能成功，有可能不成功
-             */
+            // 判断是否要超出数量限制，超出就split
+            // 有可能成功，有可能不成功
             this.split(node);
         }
     }
@@ -94,11 +93,11 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
     public int split(BPTNode<K> node) {
         int siblingIsLeaf = 0;
 
-        /* 不存在没有父节点的情况，所以套用从头建立B+树中的一种情况 */
+        // 不存在没有父节点的情况，所以套用从头建立B+树中的一种情况
         BPTNode<K> father = node.getFather();
         int fatherIndex = father.searchKey(node.getKey(0));
 
-        /* 判断父节点还能不能分，不能分就直接返回-1 */
+        // 判断父节点还能不能分，不能分就直接返回-1
         if(father.keyLength() == this.maxNumber) {
             return -1;
         } else {
@@ -123,9 +122,8 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             }
             father.insertChild(fatherIndex + 1, siblingNode);
 
-            /* 接下来的部分直接对node和sibling进行处理，
-             * 并不讨论是否为叶节点，因为在node内部方法中已经规避掉非叶问题了
-             * */
+            // 接下来的部分直接对node和sibling进行处理，
+            // 并不讨论是否为叶节点，因为在node内部方法中已经规避掉非叶问题了
             siblingNode.setLeafPrev(node);
             siblingNode.setLeafNext(node.getLeafNext());
             node.setLeafNext(siblingNode);
@@ -158,7 +156,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         this.leafNum = nodeNum;
         averageNum = (double)this.entryNum / (double)nodeNum;
 
-        /* 这里是只检测在超出最大范围的时候，是不是平衡的，用最大节点的数量来计算 */
+        // 这里是只检测在超出最大范围的时候，是不是平衡的，用最大节点的数量来计算
         if((maxNodeNum - averageNum) / averageNum > this.skewness) {
             return false;
         }
@@ -182,6 +180,8 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             nodeDeque.remove(0);
             searchNode = nodeDeque.get(0);
         }
+//        System.out.print("nodeDeque length: ");
+//        System.out.println(nodeDeque.size());
 
         // 对具体的要把leaf接到哪个node上进行跟踪
         int leafCount = 0;
@@ -202,13 +202,14 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 
         Deque<BPTKey<K>> keyDeque = new LinkedList<>();
         BPTNode<K> prevLeaf = null;
+        //下面一大个for循环是为了把底层的顺序做对，然后再接着去写
         for(int i = 0; i < this.leafNum; i++) {
             //判断要不要加 1
             if(leafCount % complement == 0) {
                 plus = 1;
             }
             // TODO 这里要考虑边界情况，避免死循环
-            while(keyDeque.size() < averageNum+plus && leafCount<this.leafNum-1) {
+            while(keyDeque.size() < averageNum+plus && leafCount<this.leafNum) { /*居然边界都能写错*/
                 for(int j = 0; j < readNode.keyLength(); j++) {
                     keyDeque.add(readNode.getKey(j));
                 }
@@ -221,19 +222,33 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
                 leafCount += 1;
             }
 
-            /* build new leaf node and replace old-one */
+            // build new leaf node and replace old-one
             BPTNode<K> newLeaf = new BPTNodeCommon<>(m, writeNode);
             newLeaf.setLeafPrev(prevLeaf);
             if(prevLeaf != null) {
                 prevLeaf.setLeafNext(newLeaf);
             }
+
+//            System.out.print("averageNum+plus: ");
+//            System.out.println(averageNum+plus);
+
             for(int k = 0; k < averageNum+plus; k++) {
+//                System.out.print(keyDeque.getFirst().getKey());
+//                System.out.print(" ");
+                // TODO 避免对空 keyDeque作remove
+                if(keyDeque.size() == 0) {
+                    break;
+                }
+                //
                 newLeaf.insertKey(k, keyDeque.remove());
             }
 
+            /*不能只insert不remove，原有的不会自己扔掉*/
+            writeNode.deleteChild(writeNodePos);
             writeNode.insertChild(writeNodePos, newLeaf);
             writeNodePos += 1;
-            if(writeNodePos >= writeNodeNum) {
+            /*没考虑到循环结束的边界问题*/
+            if(writeNodePos >= writeNodeNum && writeNum < nodeDeque.size()-1) {
                 // nodedeque中跟踪的序号+1 并读取新弄得
                 // node中child位置归零， 重读node child数目
                 writeNum += 1;
@@ -241,8 +256,9 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
                 writeNodeNum = writeNode.childLength();
                 writeNodePos = 0;
             }
-
         }
+
+        //接下来自下而上，把整个树的key调整过来
 
     }
 
