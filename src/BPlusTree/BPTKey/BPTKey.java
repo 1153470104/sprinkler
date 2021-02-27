@@ -32,7 +32,7 @@ public class BPTKey<K extends Comparable>{
         return Objects.hash(key);
     }
 
-    public K getKey() {
+    public K key() {
         return key;
     }
 

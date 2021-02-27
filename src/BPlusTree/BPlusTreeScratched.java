@@ -65,10 +65,10 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>
         do {
             for(int i = 0; i < node.keyLength(); i++){
                 // 这里上面的start判断需要大于等于，下面的end判断需要大于
-                if(node.getKey(i).getKey().compareTo(key1) != -1) {
+                if(node.getKey(i).key().compareTo(key1) != -1) {
                     start = true;
                 }
-                if(node.getKey(i).getKey().compareTo(key2) == 1) {
+                if(node.getKey(i).key().compareTo(key2) == 1) {
                     end = true;
                 }
                 if(start && !end) {
@@ -131,7 +131,7 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>
             /* 父节点已经存储在的情况 */
             BPTNode<K> father = node.getFather();
             int fatherIndex = father.searchKey(node.getKey(0));
-            father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).getKey()));
+            father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).key()));
             BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {

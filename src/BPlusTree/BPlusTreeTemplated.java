@@ -71,10 +71,10 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         do {
             for(int i = 0; i < node.keyLength(); i++){
                 // 这里上面的start判断需要大于等于，下面的end判断需要大于
-                if(node.getKey(i).getKey().compareTo(key1) != -1) {
+                if(node.getKey(i).key().compareTo(key1) != -1) {
                     start = true;
                 }
-                if(node.getKey(i).getKey().compareTo(key2) == 1) {
+                if(node.getKey(i).key().compareTo(key2) == 1) {
                     end = true;
                 }
                 if(start && !end) {
@@ -101,7 +101,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         if(father.keyLength() == this.maxNumber) {
             return -1;
         } else {
-            father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).getKey()));
+            father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).key()));
             BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {
@@ -184,7 +184,6 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 //        System.out.println(nodeDeque.size());
 
         // 对具体的要把leaf接到哪个node上进行跟踪
-        int leafCount = 0;
         BPTNode<K> readNode = searchNode.getChild(0);
 //        int readNum = 0;
 //        BPTNode<K> readNode = nodeDeque.get(readNum);
@@ -202,14 +201,18 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 
         Deque<BPTKey<K>> keyDeque = new LinkedList<>();
         BPTNode<K> prevLeaf = null;
+        int readCount = 1 ; /* readCount 是用来判断读有没有读到边界*/
+        int writeCount = 1 ; /* writeCount是用来计数，判断要不要complement */
         //下面一大个for循环是为了把底层的顺序做对，然后再接着去写
         for(int i = 0; i < this.leafNum; i++) {
             //判断要不要加 1
-            if(leafCount % complement == 0) {
+            if(writeCount % complement == 0) {
                 plus = 1;
+            } else {
+                plus = 0;
             }
             // TODO 这里要考虑边界情况，避免死循环
-            while(keyDeque.size() < averageNum+plus && leafCount<this.leafNum) { /*居然边界都能写错*/
+            while(keyDeque.size() < averageNum+plus && readCount<=this.leafNum) { /*居然边界都能写错*/
                 for(int j = 0; j < readNode.keyLength(); j++) {
                     keyDeque.add(readNode.getKey(j));
                 }
@@ -219,8 +222,10 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 //                    readNode = nodeDeque.get(readNum);
 //                }
                 readNode = readNode.getLeafNext();
-                leafCount += 1;
+                readCount += 1;
             }
+
+            writeCount += 1;
 
             // build new leaf node and replace old-one
             BPTNode<K> newLeaf = new BPTNodeCommon<>(m, writeNode);
@@ -259,7 +264,35 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         }
 
         //接下来自下而上，把整个树的key调整过来
+        BPTNode<K> orderNode = this.root;
+        List<BPTNode<K>> orderList = new LinkedList<>();
+        orderList.add(orderNode);
+        int num = 0;
+        while(!orderNode.getChild(0).isLeaf()) {
+            for(int i = 0; i < orderNode.childLength(); i++) {
+                orderList.add(orderNode.getChild(i));
+            }
+            orderNode = orderList.get(num++);
+        }
 
+        int sum = orderList.size()-1;
+        BPTNode<K> tempNode;
+        BPTNode<K> iterateNode;
+        do {
+            tempNode = orderList.get(sum);
+            for(int i = 0; i < tempNode.keyLength(); i++) {
+                tempNode.deleteKey(i);
+                // TODO 未考虑如果tempnode的子节点没有key的情况
+                iterateNode = tempNode.getChild(i+1);
+                // 这边要注意不是直接取子节点的第一个key，
+                // 而是子节点往下直到leafnode 然后再找最小的子节点的第一个key
+                while(!iterateNode.isLeaf()) {
+                    iterateNode = iterateNode.getChild(0);
+                }
+                tempNode.insertKey(i, new BPTKey<K>(iterateNode.getKey(0).key()));
+            }
+            sum = sum-1;
+        } while(tempNode.getFather() != null);
     }
 
 }

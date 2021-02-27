@@ -59,7 +59,7 @@ public class testTool {
         StringBuilder sb = new StringBuilder();
         sb.append("|");
         for(BPTKey<Integer> n: kList) {
-            sb.append(" ").append(n.getKey()).append(" |");
+            sb.append(" ").append(n.key()).append(" |");
         }
         return sb.toString();
     }

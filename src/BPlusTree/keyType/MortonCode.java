@@ -68,14 +68,14 @@ public class MortonCode implements Comparable{
      * @return
      */
     public static List<BPTKey<MortonCode>> regionCut(List<BPTKey<MortonCode>> mList) {
-        int xMin = mList.get(0).getKey().getX();
-        int yMin = mList.get(0).getKey().getY();
-        int xMax = mList.get(mList.size()-1).getKey().getX();
-        int yMax = mList.get(mList.size()-1).getKey().getY();
+        int xMin = mList.get(0).key().getX();
+        int yMin = mList.get(0).key().getY();
+        int xMax = mList.get(mList.size()-1).key().getX();
+        int yMax = mList.get(mList.size()-1).key().getY();
         List<BPTKey<MortonCode>> rList = new ArrayList<>();
         for(BPTKey<MortonCode> key: mList) {
-            int xx = key.getKey().getX();
-            int yy = key.getKey().getY();
+            int xx = key.key().getX();
+            int yy = key.key().getY();
             if (xx <= xMax && xx >= xMin && yy <= yMax && yy >= yMin) {
                 rList.add(key);
             }

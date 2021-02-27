@@ -135,8 +135,8 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K> {
             return 0;
         }
         for(int i = 0; i < this.keyLength; i++){
-            K listKey = this.keyList.get(i).getKey();
-            K inputKey = key.getKey();
+            K listKey = this.keyList.get(i).key();
+            K inputKey = key.key();
             if (inputKey.compareTo(listKey) == -1) {
                 return i;
             } else if (inputKey == listKey){
@@ -191,7 +191,7 @@ public class BPTNodeCommon<K extends Comparable> implements BPTNode<K> {
         StringBuilder sb = new StringBuilder();
         sb.append("Node Key: ");
         for (BPTKey<K> key: this.keyList) {
-            sb.append(key.getKey().toString()).append(" ");
+            sb.append(key.key().toString()).append(" ");
         }
         return sb.toString();
     }

@@ -50,8 +50,8 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
             sb.append("| ");
             System.out.print("| ");
             for (int i = 0; i < keyNum; i++) {
-                sb.append(node.getKey(i).getKey().toString()).append(" ");
-                System.out.print(node.getKey(i).getKey().toString() + " ");
+                sb.append(node.getKey(i).key().toString()).append(" ");
+                System.out.print(node.getKey(i).key().toString() + " ");
             }
             int childNum = node.childLength();
             levelCount += childNum;
@@ -84,7 +84,7 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
         }
         do {
             for(int i = 0; i < node.keyLength(); i++){
-                sb.append("| ").append(node.getKey(i).getKey().toString()).append(" ");
+                sb.append("| ").append(node.getKey(i).key().toString()).append(" ");
 //                System.out.print(node.getKey(i).key.toString());
             }
             node = node.getLeafNext();
