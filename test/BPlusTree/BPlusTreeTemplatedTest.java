@@ -168,19 +168,6 @@ class BPlusTreeTemplatedTest {
         ((BPlusTreeTemplated)copyTree).balance();
         assertEquals("| 5 11 15 |\n| 0 3 | 5 10 | 11 12 | 15 |", copyTree.printBasic());
 
-//        copyTree.addKey(new BPTValueKey<Integer, String>(13, Integer.toString(13)));
-//        assertEquals("| 2 4 6 12 |\n| 0 | 3 | 5 | 10 11 | 12 13 15 |", copyTree.printBasic());
-//        System.out.println();
-//        ((BPlusTreeTemplated)copyTree).balance();
-//        assertEquals("| 2 4 6 12 |\n| 0 | 3 | 5 | 10 11 | 12 13 15 |", copyTree.printBasic());
-//
-//        copyTree.addKey(ts.IntegerKey(14));
-//        copyTree.addKey(ts.IntegerKey(14));
-//        assertEquals("| 2 4 6 12 |\n| 0 | 3 | 5 | 10 11 | 12 13 14 14 15 |", copyTree.printBasic());
-//        System.out.println();
-//        ((BPlusTreeTemplated)copyTree).balance();
-//        assertEquals("| 2 4 6 12 |\n| 0 | 3 | 5 | 10 11 | 12 13 14 14 15 |", copyTree.printBasic());
-
 
         //************************* 3-layer test *****************************//
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
@@ -199,6 +186,27 @@ class BPlusTreeTemplatedTest {
         ((BPlusTreeTemplated)copyTree).balance();
         assertEquals("| 11 |\n| 7 10 | 13 14 18 27 |\n| 1 | 7 8 | 10 | 11 12 | 13 | 14 16 | 18 | 27 |"
                 , copyTree.printBasic());
+
+        ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 15, 1, 12, 4, 6, 9, 40, 22, 28, 36, 13, 50, 18, 19, 2, 5, 41, 42));
+        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree.addKey(ts.IntegerKey(1)); copyTree.addKey(ts.IntegerKey(2));
+        copyTree.addKey(ts.IntegerKey(13)); copyTree.addKey(ts.IntegerKey(19));
+        copyTree.addKey(ts.IntegerKey(24)); copyTree.addKey(ts.IntegerKey(26));
+        copyTree.addKey(ts.IntegerKey(30)); copyTree.addKey(ts.IntegerKey(37));
+        copyTree.addKey(ts.IntegerKey(45)); copyTree.addKey(ts.IntegerKey(46));
+        copyTree.addKey(ts.IntegerKey(51)); copyTree.addKey(ts.IntegerKey(56));
+        copyTree.addKey(ts.IntegerKey(69)); copyTree.addKey(ts.IntegerKey(90));
+        assertEquals("| 21 |\n| 4 7 12 15 | 30 36 41 51 |\n" +
+                "| 1 2 | | | 13 | 19 | 24 26 | 30 | 37 | 45 46 | 51 56 69 90 |", copyTree.printBasic());
+        System.out.println();
+        copyTree.addKey(ts.IntegerKey(91)); copyTree.addKey(ts.IntegerKey(99));
+        assertEquals("| 21 |\n| 4 7 12 15 | 30 36 41 51 |\n" +
+                "| 1 2 | | | 13 | 19 | 24 26 | 30 | 37 | 45 46 | 51 56 69 90 91 99 |", copyTree.printBasic());
+        System.out.println();
+        ((BPlusTreeTemplated)copyTree).balance();
+        assertEquals("| 51 |\n| 13 24 30 45 | 69 90 91 99 |\n" +
+                "| 1 2 | 13 19 | 24 26 | 30 37 | 45 46 | 51 56 | 69 | 90 | 91 | 99 |", copyTree.printBasic());
+        assertEquals("| 1 | 2 | 13 | 19 | 24 | 26 | 30 | 37 | 45 | 46 | 51 | 56 | 69 | 90 | 91 | 99 |", copyTree.printData());
     }
 
     @Test

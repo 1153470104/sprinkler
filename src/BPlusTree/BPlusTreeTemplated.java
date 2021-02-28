@@ -196,6 +196,8 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
 
         // average是平均数，complement是计算每隔几个要补一个，避免余数的部分在后面溢出
         int averageNum = this.entryNum / this.leafNum;
+        //加入一个leftNum用于避免complement是1的时候, 避免为了补complement导致后面不够
+        int leftNum = entryNum - averageNum * leafNum;
         int complement = leafNum / (entryNum - averageNum * leafNum);
         int plus = 0; //用于complement的辅助变量，为 1或0
 
@@ -206,8 +208,9 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         //下面一大个for循环是为了把底层的顺序做对，然后再接着去写
         for(int i = 0; i < this.leafNum; i++) {
             //判断要不要加 1
-            if(writeCount % complement == 0) {
+            if(writeCount % complement == 0 && leftNum>0) {
                 plus = 1;
+                leftNum -= 1;
             } else {
                 plus = 0;
             }
@@ -247,6 +250,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
                 //
                 newLeaf.insertKey(k, keyDeque.remove());
             }
+            prevLeaf = newLeaf;
 
             /*不能只insert不remove，原有的不会自己扔掉*/
             writeNode.deleteChild(writeNodePos);
@@ -283,6 +287,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             for(int i = 0; i < tempNode.keyLength(); i++) {
                 tempNode.deleteKey(i);
                 // TODO 未考虑如果tempnode的子节点没有key的情况
+                // 可以在balance的时候检测一下，entryNum 是否大于 nodeNum
                 iterateNode = tempNode.getChild(i+1);
                 // 这边要注意不是直接取子节点的第一个key，
                 // 而是子节点往下直到leafnode 然后再找最小的子节点的第一个key

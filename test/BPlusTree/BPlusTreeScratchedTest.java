@@ -62,6 +62,10 @@ class BPlusTreeScratchedTest {
         System.out.println();
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
         assertEquals("| 10 |\n| 4 7 | 15 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 13 | 15 21 22 | 30 31 | 35 36 45 |", ts.bpt().printBasic());
+
+        ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 15, 1, 12, 4, 6, 9, 40, 22, 28, 36, 13, 50, 18, 19, 2, 5, 41, 42));
+        assertEquals("| 21 |\n| 4 7 12 15 | 30 36 41 |\n" +
+                "| 1 2 | 4 5 6 | 7 9 | 12 13 | 15 18 19 | 21 22 28 | 30 35 | 36 40 | 41 42 50 |", ts.bpt().printBasic());
     }
 
     @org.junit.jupiter.api.Test
