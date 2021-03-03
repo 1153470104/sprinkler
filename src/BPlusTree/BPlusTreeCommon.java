@@ -16,8 +16,29 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     protected int minNumber;
     protected BPTNode<K> root;
     protected boolean templateBased = false;
-    private Instrumentation instrumentation;
     protected int entryNum = 0;
+
+    public String getTimeStart() {
+        return timeStart;
+    }
+
+    public String getTimeEnd() {
+        return timeEnd;
+    }
+
+    public K getKeyStart() {
+        return keyStart;
+    }
+
+    public K getKeyEnd() {
+        return keyEnd;
+    }
+
+    //由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
+    protected String timeStart;
+    protected String timeEnd;
+    protected K keyStart; //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
+    protected K keyEnd;
 
     public BPlusTreeCommon(int m){
         this.m = m;
@@ -180,6 +201,26 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     @Override
     public void flushOut() {
 
+    }
+
+    @Override
+    public void setStartTime(String start) {
+        this.timeStart = start;
+    }
+
+    @Override
+    public void setEndTime(String end) {
+        this.timeEnd = end;
+    }
+
+    @Override
+    public void setKeyStart(K start) {
+        this.keyStart = start;
+    }
+
+    @Override
+    public void setKeyEnd(K end) {
+        this.keyEnd = end;
     }
 
 //    @Override

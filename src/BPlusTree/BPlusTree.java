@@ -16,5 +16,9 @@ public interface BPlusTree<K extends Comparable> {
     public BPTNode<K> rootCopy();
     public int getM();
     public void flushOut();
+    public void setStartTime(String startTime);
+    public void setEndTime(String endTime);
+    public void setKeyStart(K start);
+    public void setKeyEnd(K end);
 //    public String writeInDisk();
 }

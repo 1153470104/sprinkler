@@ -26,6 +26,11 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         this.onlyRoot = false;
         this.templateBased = true;
         this.root = tree.rootCopy();
+
+        this.timeStart = ((BPlusTreeCommon<K>)tree).getTimeStart();
+        this.timeEnd = ((BPlusTreeCommon<K>)tree).getTimeEnd();
+        this.keyStart = ((BPlusTreeCommon<K>)tree).getKeyStart();
+        this.keyEnd = ((BPlusTreeCommon<K>)tree).getKeyEnd();
     }
 
     public void setSkewness(double skewnessValue) {

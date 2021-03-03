@@ -43,6 +43,5 @@ public class sinlgeTreeClient<K extends Comparable> {
                 currentBpt = new BPlusTreeTemplated<K>((BPlusTreeCommon<K>)currentBpt);
             }
         }
-
     }
 }
