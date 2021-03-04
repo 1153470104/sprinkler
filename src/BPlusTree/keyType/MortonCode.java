@@ -2,13 +2,18 @@ package BPlusTree.keyType;
 
 import BPlusTree.BPTKey.BPTKey;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class MortonCode implements Comparable{
 
-    private int code;
+    public long getCode() {
+        return code;
+    }
+
+    private long code;
     private int x;
     private int y;
 
@@ -40,9 +45,10 @@ public class MortonCode implements Comparable{
         return y;
     }
 
-    public static int zOrder(int x, int y) {
+    /* 居然没有考虑到溢出的问题，直接导致所有的zorder都变成了2^31-1 */
+    public static long zOrder(int x, int y) {
         int round = 0;
-        int zCode = 0;
+        long zCode = 0;
         while(x>0 || y>0) {
             int lastx = x % 2;
             x = x/2;
@@ -59,7 +65,7 @@ public class MortonCode implements Comparable{
     @Override
     public int compareTo(Object o) {
         //这里idea叫我替换，那就替换了，原来并不知道还能这样子
-        return Integer.compare(this.code, ((MortonCode) o).code);
+        return Long.compare(this.code, ((MortonCode) o).code);
     }
 
     /**
@@ -85,6 +91,6 @@ public class MortonCode implements Comparable{
 
     @Override
     public String toString() {
-        return Integer.toString(code);
+        return Long.toString(code);
     }
 }

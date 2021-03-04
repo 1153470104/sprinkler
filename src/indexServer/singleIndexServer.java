@@ -1,0 +1,69 @@
+package indexServer;
+
+import BPlusTree.*;
+import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTNode.BPTNode;
+import BPlusTree.keyType.MortonCode;
+import dispatcher.*;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class singleIndexServer {
+//    List<BPlusTree<K>> bptList;
+    private BPlusTree<MortonCode> currentBpt;
+    private List<externalBPlusTree<MortonCode>> externalBPlusTreeList;
+    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
+    private int time;
+
+    dataTool dt;
+
+    public singleIndexServer(String dataPath, int m) throws FileNotFoundException {
+        this.dt = new dataTool(dataPath);
+        this.externalBPlusTreeList = new ArrayList<>();
+        this.treeList = new ArrayList<>();
+        this.treeList.add(new BPlusTreeScratched<MortonCode>(m));
+        currentBpt = treeList.get(0);
+//        bptList = new ArrayList<>();
+//        bptList.add(currentBpt);
+    }
+
+    public void startIndexing() throws IOException {
+        //get data
+        System.out.println("****************** Index start ******************");
+        BPTKey<MortonCode> keyEntry = dt.getEntry();
+        //iterate & deal with data
+        while (keyEntry != null) {
+            currentBpt.addKey(keyEntry);
+            if(currentBpt.isTemplated()) {
+                ((BPlusTreeTemplated)currentBpt).balance();
+            }
+
+            // 1.0版本
+            if (currentBpt.isBlockFull()) {
+                System.out.print("finish data region ");
+                System.out.println(treeList.size());
+                currentBpt.printBasic();
+                currentBpt.setEndTime(this.time);
+                treeList.add(new BPlusTreeTemplated<MortonCode>((BPlusTreeCommon<MortonCode>)currentBpt));
+                currentBpt = treeList.get(treeList.size()-1);
+            }
+
+//            //if block full, store it in the disk
+//            if (currentBpt.isBlockFull()) {
+//                externalBPlusTreeList.add(new externalBPlusTree<MortonCode>(currentBpt));
+//                currentBpt = new BPlusTreeTemplated<MortonCode>((BPlusTreeCommon<MortonCode>)currentBpt);
+//            }
+
+            try{
+                Thread.sleep(50);
+                keyEntry = dt.getEntry();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+}

@@ -11,9 +11,12 @@ import java.util.StringTokenizer;
 
 public class dataTool {
     private String dataPath;
+    private BufferedReader buffer;
 
-    public dataTool(String dataPath) {
+    public dataTool(String dataPath) throws FileNotFoundException {
         this.dataPath = dataPath;
+        buffer = new BufferedReader(new FileReader(dataPath));
+
     }
 
     public static BPTKey<MortonCode> getMortonCode(String line) {
@@ -29,17 +32,27 @@ public class dataTool {
         return bptKey;
     }
 
-    public List<BPTKey> entryList() throws IOException {
-        List<BPTKey> list = new ArrayList<>();
-        BufferedReader in = new BufferedReader(new FileReader(dataPath));
-        String line;
-        while ((line = in.readLine()) != null) {
-            BPTKey<MortonCode> bptKey = getMortonCode(line);
-//            System.out.println(bptKey);
-            list.add(bptKey);
+    public BPTKey<MortonCode> getEntry() throws IOException {
+        String line = buffer.readLine();
+        if(line != null) {
+            return getMortonCode(line);
         }
-        return list;
+//         else {
+//            return null;
+//        }
+        return null;
     }
+//    public List<BPTKey> entryList() throws IOException {
+//        List<BPTKey> list = new ArrayList<>();
+//        BufferedReader in = new BufferedReader(new FileReader(dataPath));
+//        String line;
+//        while ((line = in.readLine()) != null) {
+//            BPTKey<MortonCode> bptKey = getMortonCode(line);
+////            System.out.println(bptKey);
+//            list.add(bptKey);
+//        }
+//        return list;
+//    }
 
     //temporary simple test of dataTool
 //    public static void main(String[] args) throws IOException {

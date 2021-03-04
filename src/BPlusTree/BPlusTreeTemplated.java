@@ -171,7 +171,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
     public void balance(){
         //居然是因为测试方便把 is balance放到balance功能中进行检测
         //这就要求使用template的人手动balance 而非 add的同时balance
-        if (this.isBalanced()) {
+        if (this.leafNum < this.entryNum || this.isBalanced()) {
             return;
         }
 

@@ -3,7 +3,6 @@ package BPlusTree;
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
 
-import java.lang.instrument.Instrumentation;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -18,11 +17,19 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     protected boolean templateBased = false;
     protected int entryNum = 0;
 
-    public String getTimeStart() {
+
+    //由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
+    protected int timeStart;
+    protected int timeEnd;
+    protected K keyStart; //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
+    protected K keyEnd;
+
+
+    public int getTimeStart() {
         return timeStart;
     }
 
-    public String getTimeEnd() {
+    public int getTimeEnd() {
         return timeEnd;
     }
 
@@ -33,12 +40,6 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     public K getKeyEnd() {
         return keyEnd;
     }
-
-    //由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
-    protected String timeStart;
-    protected String timeEnd;
-    protected K keyStart; //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
-    protected K keyEnd;
 
     public BPlusTreeCommon(int m){
         this.m = m;
@@ -123,7 +124,7 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
 
     @Override
     public boolean isBlockFull() {
-        if (this.entryNum < 10000) {
+        if (this.entryNum < 1000) {
             return false;
         }
         return true;
@@ -204,12 +205,12 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     }
 
     @Override
-    public void setStartTime(String start) {
+    public void setStartTime(int start) {
         this.timeStart = start;
     }
 
     @Override
-    public void setEndTime(String end) {
+    public void setEndTime(int end) {
         this.timeEnd = end;
     }
 
