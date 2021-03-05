@@ -20,7 +20,7 @@ public class singleIndexServer {
 
     dataTool dt;
 
-    public singleIndexServer(String dataPath, int m) throws FileNotFoundException {
+    public singleIndexServer(String dataPath, int m) throws IOException {
         this.dt = new dataTool(dataPath);
         this.externalBPlusTreeList = new ArrayList<>();
         this.treeList = new ArrayList<>();
@@ -34,7 +34,10 @@ public class singleIndexServer {
         //get data
         System.out.println("****************** Index start ******************");
         BPTKey<MortonCode> keyEntry = dt.getEntry();
+        this.time = dt.getTime(); // use dt to get dynamic time, update every time after getEntry operation
+        currentBpt.setStartTime(this.time);
         //iterate & deal with data
+        boolean flushed = false;
         while (keyEntry != null) {
             currentBpt.addKey(keyEntry);
             if(currentBpt.isTemplated()) {
@@ -45,10 +48,11 @@ public class singleIndexServer {
             if (currentBpt.isBlockFull()) {
                 System.out.print("finish data region ");
                 System.out.println(treeList.size());
-                currentBpt.printBasic();
+                currentBpt.printInfo();
                 currentBpt.setEndTime(this.time);
                 treeList.add(new BPlusTreeTemplated<MortonCode>((BPlusTreeCommon<MortonCode>)currentBpt));
                 currentBpt = treeList.get(treeList.size()-1);
+                flushed = true;
             }
 
 //            //if block full, store it in the disk
@@ -60,6 +64,11 @@ public class singleIndexServer {
             try{
                 Thread.sleep(50);
                 keyEntry = dt.getEntry();
+                this.time = dt.getTime();
+                if(flushed) {
+                    currentBpt.setStartTime(this.time);
+                    flushed= false;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

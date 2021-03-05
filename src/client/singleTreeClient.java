@@ -13,9 +13,9 @@ public class singleTreeClient {
 
     static {
         try {
-            indexServer = new singleIndexServer("resource/data/100000.txt", 10);
+            indexServer = new singleIndexServer("resource/data/100000s.txt", 10);
             queryServer = new singleQueryServer();
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

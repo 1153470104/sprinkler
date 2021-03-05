@@ -26,6 +26,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         this.onlyRoot = false;
         this.templateBased = true;
         this.root = tree.rootCopy();
+        this.entryNum = 0;
 
         this.timeStart = ((BPlusTreeCommon<K>)tree).getTimeStart();
         this.timeEnd = ((BPlusTreeCommon<K>)tree).getTimeEnd();
@@ -171,9 +172,18 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
     public void balance(){
         //居然是因为测试方便把 is balance放到balance功能中进行检测
         //这就要求使用template的人手动balance 而非 add的同时balance
-        if (this.leafNum < this.entryNum || this.isBalanced()) {
+        /* 叶节点和entrynum数目的比较顺序都能写反我也是菜 */
+        // 有点私心，写成一定比叶节点数要大两倍
+//        System.out.println((this.leafNum > this.entryNum) || this.isBalanced());
+        /* 本来出现一个离奇bug，后来才发现是因为leafNum的存在依赖于isBalance的计算 */
+        boolean balanceOrNot = this.isBalanced();
+        if (this.leafNum >= this.entryNum || balanceOrNot) {
+//            System.out.println("shit");
             return;
         }
+//        System.out.println("why");
+//        System.out.println("leafNum: " + leafNum + ", entryNum: " + entryNum);
+//        System.out.println();
 
         BPTNode<K> searchNode = this.root;
         List<BPTNode<K>> nodeDeque = new LinkedList<>();
@@ -203,7 +213,12 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         int averageNum = this.entryNum / this.leafNum;
         //加入一个leftNum用于避免complement是1的时候, 避免为了补complement导致后面不够
         int leftNum = entryNum - averageNum * leafNum;
-        int complement = leafNum / (entryNum - averageNum * leafNum);
+        int complement;
+        if(entryNum - averageNum * leafNum == 0) {
+            complement = 0;
+        } else {
+            complement = leafNum / (entryNum - averageNum * leafNum);
+        }
         int plus = 0; //用于complement的辅助变量，为 1或0
 
         Deque<BPTKey<K>> keyDeque = new LinkedList<>();
@@ -213,7 +228,9 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         //下面一大个for循环是为了把底层的顺序做对，然后再接着去写
         for(int i = 0; i < this.leafNum; i++) {
             //判断要不要加 1
-            if(writeCount % complement == 0 && leftNum>0) {
+            if(complement == 0) {
+                plus = 0;
+            } else if(writeCount % complement == 0 && leftNum>0) {
                 plus = 1;
                 leftNum -= 1;
             } else {
@@ -303,6 +320,8 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             }
             sum = sum-1;
         } while(tempNode.getFather() != null);
+        System.out.println("balanced!");
+        this.printInfo();
     }
 
 }

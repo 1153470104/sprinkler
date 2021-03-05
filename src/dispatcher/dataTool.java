@@ -12,16 +12,48 @@ import java.util.StringTokenizer;
 public class dataTool {
     private String dataPath;
     private BufferedReader buffer;
+    private MortonCode maxKey;
+    private MortonCode minKey;
 
-    public dataTool(String dataPath) throws FileNotFoundException {
-        this.dataPath = dataPath;
-        buffer = new BufferedReader(new FileReader(dataPath));
-
+    public int getTime() {
+        return time;
     }
 
-    public static BPTKey<MortonCode> getMortonCode(String line) {
+    private int time;
+
+    public dataTool(String dataPath) throws IOException {
+        this.dataPath = dataPath;
+        this.getDomain();
+        buffer = new BufferedReader(new FileReader(dataPath));
+    }
+
+    public void getDomain() throws IOException {
+        BufferedReader bf = new BufferedReader(new FileReader(dataPath));
+        maxKey = null;
+        minKey = null;
+
+        String line = bf.readLine();
+        while(line != null) {
+            StringTokenizer st = new StringTokenizer(line, "|");
+            st.nextToken(); /*有必要的，因为nextToken是一个个读的，coordTxt要基于前面的读取*/
+            String coordTxt = st.nextToken();
+            MortonCode mc = new MortonCode(coordTxt);
+            if(maxKey == null || mc.compareTo(maxKey) == 1) {
+                maxKey = mc;
+            }
+            if(minKey == null || mc.compareTo(minKey) == -1) {
+                minKey = mc;
+            }
+            line = bf.readLine();
+        }
+        System.out.println("domain from: " + minKey.toString() + " - " + maxKey.toString());
+        bf.close();
+    }
+
+    public BPTKey<MortonCode> getMortonCode(String line) {
         StringTokenizer st = new StringTokenizer(line, "|");
         String timestamp = st.nextToken();
+        this.time = Integer.valueOf(timestamp);
         String coordTxt = st.nextToken();
         String otherData = st.nextToken();
 
@@ -35,6 +67,7 @@ public class dataTool {
     public BPTKey<MortonCode> getEntry() throws IOException {
         String line = buffer.readLine();
         if(line != null) {
+
             return getMortonCode(line);
         }
 //         else {
@@ -55,9 +88,8 @@ public class dataTool {
 //    }
 
     //temporary simple test of dataTool
-//    public static void main(String[] args) throws IOException {
-//        dataTool dt = new dataTool("resource/data/200.txt");
-//        dt.entryList();
-//    }
+    public static void main(String[] args) throws IOException {
+        dataTool dt = new dataTool("resource/data/100000.txt");
+    }
 }
 

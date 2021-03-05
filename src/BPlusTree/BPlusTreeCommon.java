@@ -24,7 +24,6 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
     protected K keyStart; //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
     protected K keyEnd;
 
-
     public int getTimeStart() {
         return timeStart;
     }
@@ -57,6 +56,29 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
         return null;
     }
 
+    /**
+     * 本函数用于打印基本信息，以及树结构
+     */
+    @Override
+    public void printInfo() {
+        System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
+//        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
+        System.out.print("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
+        if(this.isTemplated())  {
+            System.out.println(" is templated");
+        } else {
+            System.out.println();
+        }
+        printBasic();
+    }
+
+    /**
+     * 本函数用于返回一个包含整个的树结构图示的字符串，节点之间以'|'隔开
+     * 每个 '|' 的间隔中是一个node所含的key内容，key之间只有空格来分割，如下所示
+     * | 10 |
+     * | 4 7 | 30 35 |
+     * | 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 45 ||
+     */
     @Override
     public String printBasic() {
         Queue<BPTNode<K>> nodeQueue = new LinkedList<>();
@@ -96,6 +118,12 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
         return sb.toString();
     }
 
+    /**
+     * 本函数用于返回一个包含所有 存储条目key 的一个String
+     * 每个 '|' 的间隔中是一个条目的key内容，如下所示
+     * | 1 | 2 | 4 | 6 | 7 | 9 | 10 | 21 | 22 | 30 | 31 | 35 | 36 | 45 |
+     */
+    @Override
     public String printData() {
         StringBuilder sb = new StringBuilder();
         BPTNode<K> node = root;
@@ -164,7 +192,7 @@ public class BPlusTreeCommon<K extends Comparable> implements BPlusTree<K>{
                 tempRoot = nodeQueue.remove();
             }
         } catch(NoSuchElementException e) {
-            System.out.println("copy finish!");
+            System.out.println("copy finished!");
         }
 
         // 维护底层的 prev next 结构
