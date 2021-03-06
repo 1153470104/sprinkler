@@ -2,14 +2,13 @@ package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.BPTNode;
-import BPlusTree.BPTNode.BPTNodeCommon;
 
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K> {
+public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
     /**
      * templated tree
      * @param tree
@@ -28,10 +27,10 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
         this.root = tree.rootCopy();
         this.entryNum = 0;
 
-        this.timeStart = ((BPlusTreeCommon<K>)tree).getTimeStart();
-        this.timeEnd = ((BPlusTreeCommon<K>)tree).getTimeEnd();
-        this.keyStart = ((BPlusTreeCommon<K>)tree).getKeyStart();
-        this.keyEnd = ((BPlusTreeCommon<K>)tree).getKeyEnd();
+        this.timeStart = ((BPlusTree<K>)tree).getTimeStart();
+        this.timeEnd = ((BPlusTree<K>)tree).getTimeEnd();
+        this.keyStart = ((BPlusTree<K>)tree).getKeyStart();
+        this.keyEnd = ((BPlusTree<K>)tree).getKeyEnd();
     }
 
     public void setSkewness(double skewnessValue) {
@@ -108,7 +107,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             return -1;
         } else {
             father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).key()));
-            BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
+            BPTNode<K> siblingNode = new BPTNode<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {
                 siblingIsLeaf = 1;
@@ -253,7 +252,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTreeCommon<K>
             writeCount += 1;
 
             // build new leaf node and replace old-one
-            BPTNode<K> newLeaf = new BPTNodeCommon<>(m, writeNode);
+            BPTNode<K> newLeaf = new BPTNode<>(m, writeNode);
             newLeaf.setLeafPrev(prevLeaf);
             if(prevLeaf != null) {
                 prevLeaf.setLeafNext(newLeaf);

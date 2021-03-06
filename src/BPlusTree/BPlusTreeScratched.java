@@ -6,7 +6,7 @@ import BPlusTree.BPTNode.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>{
+public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
 
     public BPlusTreeScratched(int m){
         super(m);
@@ -94,7 +94,7 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>
             /* 需要新建父节点的情况 */
             BPTNonLeaf<K> father = new BPTNonLeaf<K>(this.m, null);
             father.insertKey(0, node.getKey(minNumber));
-            BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
+            BPTNode<K> siblingNode = new BPTNode<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {
                 siblingIsLeaf = 1;
@@ -132,7 +132,7 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTreeCommon<K>
             BPTNode<K> father = node.getFather();
             int fatherIndex = father.searchKey(node.getKey(0));
             father.insertKey(fatherIndex, new BPTKey<K>(node.getKey(minNumber).key()));
-            BPTNode<K> siblingNode = new BPTNodeCommon<K>(this.m, father);
+            BPTNode<K> siblingNode = new BPTNode<K>(this.m, father);
             siblingNode.setIsLeaf(node.isLeaf());
             if (!siblingNode.isLeaf()) {
                 siblingIsLeaf = 1;

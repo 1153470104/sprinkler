@@ -2,27 +2,204 @@ package BPlusTree.BPTNode;
 
 import BPlusTree.BPTKey.BPTKey;
 
-public interface BPTNode<K extends Comparable> {
-    public int insertKey( int index, BPTKey<K> key);
-    public void addChild(BPTNode<K> child);
-    public void insertChild( int index, BPTNode<K> childNode);
-    public int checkout();
-    public int keyLength();
-    public int childLength();
-    public BPTNode<K> getFather();
-    public void setIsLeaf(boolean bool);
-    public int searchKey(BPTKey<K> key);
-    public boolean isLeaf();
-    public BPTKey<K> getKey(int index);
-    public void deleteKey(int index);
-    public BPTNode<K> getChild(int index);
-    public BPTNode<K> deleteChild(int index);
-    public void setFather(BPTNode<K> father);
-    public BPTNode<K> valueCopy(BPTNode<K> father);
+import java.util.ArrayList;
+import java.util.List;
 
-    public void checkLeafLink();
-    public void setLeafPrev(BPTNode<K> prev);
-    public void setLeafNext(BPTNode<K> next);
-    public BPTNode<K> getLeafPrev();
-    public BPTNode<K> getLeafNext();
+public class BPTNode<K extends Comparable> {
+    protected int m;
+    protected int maxNumber;
+    protected int minNumber;
+    protected int keyLength;
+    protected int childLength;
+    protected List<BPTKey<K>> keyList;
+
+    public List<BPTKey<K>> getKeyList() {
+        return keyList;
+    }
+
+    public List<BPTNode<K>> getChildernList() {
+        return childernList;
+    }
+
+    protected List<BPTNode<K>> childernList;
+    protected BPTNode<K> fatherNode;
+    protected boolean isLeaf;
+    private BPTNode<K> leafPrev = null;
+    private BPTNode<K> leafnext = null;
+
+    public BPTNode(int m, BPTNode<K> fatherNode){
+        this.m = m;
+        this.maxNumber = m-1;
+        this.minNumber = (int) (Math.ceil(m / 2.0) -1);
+        this.keyLength = 0;
+        this.childLength = 0;
+        this.keyList = new ArrayList<>();
+        this.childernList = new ArrayList<>();
+        this.fatherNode = fatherNode;
+        this.isLeaf = true;
+    }
+
+
+    public int insertKey(int index, BPTKey<K> key) {
+        this.keyList.add(index, key);
+        this.keyLength += 1;
+        return this.checkout();
+    }
+
+
+    public void addChild(BPTNode<K> child) {
+        this.childernList.add(child);
+        this.childLength += 1;
+    }
+
+    public void insertChild( int index, BPTNode<K> childNode){
+        this.childernList.add(index, childNode);
+        this.childLength += 1;
+    }
+
+
+    public int checkout() {
+        if (keyLength < this.minNumber){
+            return -1;
+        } else if(keyLength > maxNumber) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * similar to the clone function, but not a whole copy
+     *
+     * this function copy the keyList, assign a fatherNode
+     * childList is left empty
+     */
+
+    public BPTNode<K> valueCopy(BPTNode<K> father) {
+        BPTNode<K> node = new BPTNode<K>(this.m, father);
+        node.keyList = new ArrayList<>();
+        node.childernList = new ArrayList<>();
+        node.keyList.addAll(this.keyList);
+        node.keyLength = this.keyLength;
+        node.childLength = 0;
+        node.isLeaf = false;
+        return node;
+    }
+
+    public void checkLeafLink() {
+        if(!isLeaf){
+            BPTNode<K> LeafPrev = null;
+            BPTNode<K> Leafnext = null;
+        }
+    }
+
+
+    public int keyLength() {
+        return this.keyLength;
+    }
+
+
+    public int childLength() {
+        return this.childLength;
+    }
+
+
+    public BPTNode<K> getFather() {
+        return this.fatherNode;
+    }
+
+
+    public void setIsLeaf(boolean bool) {
+        this.isLeaf = bool;
+    }
+
+
+    public BPTNode<K> getLeafPrev() {
+        return leafPrev;
+    }
+
+
+    public BPTNode<K> getLeafNext() {
+        return leafnext;
+    }
+
+
+    public void setLeafNext(BPTNode<K> next) {
+        if(isLeaf) {
+            leafnext = next;
+        }
+    }
+
+
+    public void setLeafPrev(BPTNode<K> prev) {
+        if(isLeaf) {
+            leafPrev = prev;
+        }
+    }
+
+
+
+    public int searchKey(BPTKey<K> key) {
+        if (this.keyLength == 0) {
+            return 0;
+        }
+        for(int i = 0; i < this.keyLength; i++){
+            K listKey = this.keyList.get(i).key();
+            K inputKey = key.key();
+            if (inputKey.compareTo(listKey) == -1) {
+                return i;
+            } else if (inputKey == listKey){
+                return i+1;
+            }
+        }
+        return this.keyLength;
+    }
+
+
+    public boolean isLeaf() {
+        return this.isLeaf;
+    }
+
+
+    public BPTKey<K> getKey(int index) {
+        return this.keyList.get(index);
+    }
+
+
+    public void deleteKey(int index) {
+        this.keyList.remove(index);
+        this.keyLength -= 1;
+    }
+
+
+    public BPTNode<K> getChild(int index) {
+        if (index > this.childLength-1) {
+            return null;
+        }
+        return this.childernList.get(index);
+    }
+
+
+    public BPTNode<K> deleteChild(int index) {
+        BPTNode<K> node = null;
+        if (index < this.childLength) {
+            node = this.childernList.remove(index);
+            this.childLength -= 1;
+        }
+        return node;
+    }
+
+
+    public void setFather(BPTNode<K> father) {
+        this.fatherNode = father;
+    }
+
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Node Key: ");
+        for (BPTKey<K> key: this.keyList) {
+            sb.append(key.key().toString()).append(" ");
+        }
+        return sb.toString();
+    }
 }
