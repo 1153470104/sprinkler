@@ -274,12 +274,49 @@ public class BPlusTree<K extends Comparable>{
         rf.setLength(pageNum * conf.pageSize);
         writeFileHeader(rf, conf);
 
-        deque = new LinkedList<>();
+        //iterate to write every node into treefile rf
+        //这里deque temp 复用了上面的，可能会有问题可能没用问题，以后如果出问题了要往这儿想
+        deque = new LinkedList<>(); // use to store node wait to be transform into external node
+        Deque<Long> fatherDeque = new LinkedList<>(); // use to store the father node of every
+        long current = 1;
+        long pageCount = 1;
         temp = root;
         deque.add(temp);
+        boolean reachLeaf = false;
+//        fatherDeque.add((long)-1);
 
         while(deque.size()>0) {
+            temp = deque.getFirst();
+            if(!temp.isLeaf()) {
+                externalNode<K> node = new externalNonLeaf<K>(temp);
+                node.setPageIndex(current);
+                for(int i = 0; i < temp.childLength(); i++) {
+                    deque.add(temp.getChild(i));
+                    pageCount++; // plus plus before & add pointer after
+                    ((externalNonLeaf)node).addPointer(pageCount);
+                }
+                node.writeNode();
+                deque.pop();
+//                node.setFatherIndex(fatherDeque.pop());
+            } else {
+                externalNode<K> node = new externalLeaf<K>(temp);
+                node.setPageIndex(current);
+                if(reachLeaf) {
+                    ((externalLeaf)node).setPrevLeaf(current-1);
+                } else {
+                    ((externalLeaf)node).setPrevLeaf(-1);
+                    reachLeaf = true;
+                }
 
+                if(deque.size() == 1) {
+                    ((externalLeaf)node).setNextLeaf(-1);
+                } else {
+                    ((externalLeaf)node).setNextLeaf(current+1);
+                }
+                node.writeNode();
+                deque.pop();
+            }
+            current++;
         }
 
         return rf;

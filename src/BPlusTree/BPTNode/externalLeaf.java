@@ -20,6 +20,11 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         }
     }
 
+    @Override
+    public void writeNode() {
+        super.writeNode();
+    }
+
     // prev & next node's setting relys on the outer function
     public void setPrevLeaf(long prevLeaf) {
         this.prevLeaf = prevLeaf;

@@ -12,6 +12,11 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
         pointerList = new ArrayList<>();
     }
 
+    @Override
+    public void writeNode() {
+        super.writeNode();
+    }
+
     public void addPointer(long point) {
         pointerList.add(point);
     }

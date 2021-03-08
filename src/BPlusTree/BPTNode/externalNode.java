@@ -13,12 +13,13 @@ public class externalNode<K extends Comparable> {
     protected long pageIndex;
     protected List<BPTKey<K>> keyList;
 
-    // used to get father's index, in order to write the pointer properly
-    protected int fatherIndex;
-
-    public void setFatherIndex(int fatherIndex) {
-        this.fatherIndex = fatherIndex;
-    }
+    // 好像并不需要指向父节点的指针
+//    // used to get father's index, in order to write the pointer properly
+//    protected int fatherIndex;
+//
+//    public void setFatherIndex(int fatherIndex) {
+//        this.fatherIndex = fatherIndex;
+//    }
 
     public externalNode(BPTNode<K> node) {
         if(node.isLeaf()) {
@@ -30,8 +31,20 @@ public class externalNode<K extends Comparable> {
         length = keyList.size();
     }
 
+    public void setNodeType(short nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
     // pageIndex should be set by the tree store function, as storeFile in BPlusTree
     public void setPageIndex(long pageIndex) {
         this.pageIndex = pageIndex;
+    }
+
+    public void writeNode() {
+
     }
 }

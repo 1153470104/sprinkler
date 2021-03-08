@@ -89,7 +89,12 @@ public class dataTool {
 
     //temporary simple test of dataTool
     public static void main(String[] args) throws IOException {
-        dataTool dt = new dataTool("resource/data/100000.txt");
+        dataTool dt = new dataTool("resource/data/100000s.txt");
+        while(true){
+            BPTValueKey<MortonCode, String> k = (BPTValueKey<MortonCode, String>)dt.getEntry();
+            System.out.print(k.getValue() + ", ");
+            System.out.println(k.key());
+        }
     }
 }
 
