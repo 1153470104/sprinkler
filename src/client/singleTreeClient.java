@@ -13,7 +13,7 @@ public class singleTreeClient {
 
     static {
         try {
-            indexServer = new singleIndexServer("resource/data/100000s.txt", 10);
+            indexServer = new singleIndexServer("resource/data/100000s.txt", 20);
             queryServer = new singleQueryServer();
         } catch (IOException e) {
             e.printStackTrace();

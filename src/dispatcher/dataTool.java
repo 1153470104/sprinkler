@@ -67,7 +67,6 @@ public class dataTool {
     public BPTKey<MortonCode> getEntry() throws IOException {
         String line = buffer.readLine();
         if(line != null) {
-
             return getMortonCode(line);
         }
 //         else {
@@ -75,6 +74,7 @@ public class dataTool {
 //        }
         return null;
     }
+
 //    public List<BPTKey> entryList() throws IOException {
 //        List<BPTKey> list = new ArrayList<>();
 //        BufferedReader in = new BufferedReader(new FileReader(dataPath));

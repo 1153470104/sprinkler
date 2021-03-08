@@ -153,7 +153,7 @@ public class BPlusTree<K extends Comparable>{
 
 
     public boolean isBlockFull() {
-        if (this.entryNum < 1000) {
+        if (this.entryNum < 5000) {
             return false;
         }
         return true;

@@ -8,7 +8,7 @@ import java.util.List;
 public class externalNode<K extends Comparable> {
     // same data is set in the father class
     protected short nodeType;
-    protected int elementCount;
+    protected int length;
 
     protected long pageIndex;
     protected List<BPTKey<K>> keyList;
@@ -27,7 +27,7 @@ public class externalNode<K extends Comparable> {
             this.nodeType = 1;
         }
         keyList = node.getKeyList();
-        elementCount = keyList.size();
+        length = keyList.size();
     }
 
     // pageIndex should be set by the tree store function, as storeFile in BPlusTree

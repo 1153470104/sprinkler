@@ -209,13 +209,13 @@ class BPlusTreeTemplatedTest {
         assertEquals("| 1 | 2 | 13 | 19 | 24 | 26 | 30 | 37 | 45 | 46 | 51 | 56 | 69 | 90 | 91 | 99 |", copyTree.printData());
     }
 
-    @Test
-    void search() {
-        ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
+//    @Test
+//    void search() {
+//        ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
 //        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
 //        assertEquals("| 10 | 13 | 15 |", ts.keyListString(ts.bpt().search(10, 17)));
 //        assertEquals("| 9 | 10 | 13 | 15 |", ts.keyListString(ts.bpt().search(8, 15)));
-    }
+//    }
 
 }
 
