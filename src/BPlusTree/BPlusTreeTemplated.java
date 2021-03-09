@@ -8,14 +8,13 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * templated tree
+ *
+ * 基于模板的B+树有一个比较重要的特点就是它的非叶节点不再出现在子节点中
+ * 所以估计以后要用的时候得注意这一点, 目前还不知道会有什么后果
+ */
 public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
-    /**
-     * templated tree
-     * @param tree
-     *
-     * 基于模板的B+树有一个比较重要的特点就是它的非叶节点不再出现在子节点中
-     * 所以估计以后要用的时候得注意这一点, 目前还不知道会有什么后果
-     */
     private double skewness = 0.2;
     private int leafNum = 0;
 
