@@ -9,15 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * class that pre-process the simulation data
+ */
 public class dataTool {
     private String dataPath;
     private BufferedReader buffer;
     private MortonCode maxKey;
     private MortonCode minKey;
-
-    public int getTime() {
-        return time;
-    }
 
     private int time;
 
@@ -27,6 +26,10 @@ public class dataTool {
         buffer = new BufferedReader(new FileReader(dataPath));
     }
 
+    /**
+     * function to get the domain boundary of simulation data
+     * @throws IOException is thrown when an I/O operation fails
+     */
     public void getDomain() throws IOException {
         BufferedReader bf = new BufferedReader(new FileReader(dataPath));
         maxKey = null;
@@ -50,6 +53,12 @@ public class dataTool {
         bf.close();
     }
 
+    /**
+     * function to transform a line of text into a Morton Code
+     * @param line a plain line of data
+     *             e.g. '1372636935|-8.62065,41.148513|20000233,C'
+     * @return the morton code built with the line's data
+     */
     public BPTKey<MortonCode> getMortonCode(String line) {
         StringTokenizer st = new StringTokenizer(line, "|");
         String timestamp = st.nextToken();
@@ -64,6 +73,11 @@ public class dataTool {
         return bptKey;
     }
 
+    /**
+     * a function to get next entry through BufferReader buffer
+     * @return
+     * @throws IOException is thrown when an I/O operation fails
+     */
     public BPTKey<MortonCode> getEntry() throws IOException {
         String line = buffer.readLine();
         if(line != null) {
@@ -86,6 +100,14 @@ public class dataTool {
 //        }
 //        return list;
 //    }
+
+    /**
+     * getter of current time
+     * @return current time
+     */
+    public int getTime() {
+        return time;
+    }
 
     //temporary simple test of dataTool
     public static void main(String[] args) throws IOException {

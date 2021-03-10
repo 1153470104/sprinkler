@@ -7,6 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
+/**
+ * the client of the whole system
+ * use two threads to realize synchronous indexing & query
+ */
 public class singleTreeClient {
     private static singleIndexServer indexServer;
     private static singleQueryServer queryServer;

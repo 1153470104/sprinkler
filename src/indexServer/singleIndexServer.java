@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * index server for single in memory node version
+ */
 public class singleIndexServer {
 //    List<BPlusTree<K>> bptList;
     private BPlusTree<MortonCode> currentBpt;
@@ -28,6 +31,10 @@ public class singleIndexServer {
 //        bptList.add(currentBpt);
     }
 
+    /**
+     * the indexing starting function
+     * @throws IOException is thrown when a data I/O fails
+     */
     public void startIndexing() throws IOException {
         //get data
         System.out.println("****************** Index start ******************");

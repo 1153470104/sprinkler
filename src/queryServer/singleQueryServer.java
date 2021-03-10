@@ -2,6 +2,9 @@ package queryServer;
 
 import java.util.Scanner;
 
+/**
+ * query server
+ */
 public class singleQueryServer {
     Scanner scan;
     public singleQueryServer() {

@@ -208,32 +208,56 @@ public class BPTNode<K extends Comparable> {
         return childrenList;
     }
 
+    /**
+     * setter of next node of this leaf
+     * @param next the next node of this node
+     */
     public void setLeafNext(BPTNode<K> next) {
         if(isLeaf) {
             leafNext = next;
         }
     }
 
+    /**
+     * setter of prev node of this leaf
+     * @param prev the prev node of this node
+     */
     public void setLeafPrev(BPTNode<K> prev) {
         if(isLeaf) {
             leafPrev = prev;
         }
     }
 
+    /**
+     * father node setter of this node
+     * @param father the father node
+     */
     public void setFather(BPTNode<K> father) {
         this.fatherNode = father;
     }
 
+    /**
+     * get the father of this node
+     * @return current father node
+     */
+    public BPTNode<K> getFather() {
+        return this.fatherNode;
+    }
+
+    /**
+     * get the amount of keys
+     * @return the amount of keys
+     */
     public int keyLength() {
         return this.keyLength;
     }
 
+    /**
+     *  get the amount of children
+     * @return the amount of children
+     */
     public int childLength() {
         return this.childLength;
-    }
-
-    public BPTNode<K> getFather() {
-        return this.fatherNode;
     }
 
     /**

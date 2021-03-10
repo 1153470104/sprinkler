@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * class with some pre-processing method for simulation data
+ */
 public class dataProcess {
     private BufferedReader buffer;
     private String dataPath;
@@ -17,6 +20,11 @@ public class dataProcess {
         this.dataPath = dataPath;
     }
 
+    /**
+     * transform the coordinates in simulation data to z-order
+     * @param fileName the file name of simulation data
+     * @throws IOException thrown when an input operation fails
+     */
     public void transZOrder(String fileName) throws IOException {
         buffer = new BufferedReader(new FileReader(dataPath));
         String line = buffer.readLine();
@@ -36,6 +44,12 @@ public class dataProcess {
         out.close();
     }
 
+    /**
+     * a heap sort realization reorder the entries in simulation data
+     * by the order of every entry's timestamp decreasingly
+     * @param fileName the file of simulation data
+     * @throws IOException thrown when an I/O operation fails
+     */
     public void sortByTime(String fileName) throws IOException {
         buffer = new BufferedReader(new FileReader(dataPath));
         List<String> sortList = new ArrayList<>();
@@ -146,6 +160,13 @@ public class dataProcess {
 
     }
 
+    /**
+     * compare two lines time order
+     * @param line1 raw text of entry 1
+     * @param line2 raw text of entry 2
+     * @return if entry1's timestamp less than entry2's return false
+     *         else return true
+     */
     public boolean lineCompare(String line1, String line2) {
         StringTokenizer st1 = new StringTokenizer(line1, "|");
         StringTokenizer st2 = new StringTokenizer(line2, "|");
