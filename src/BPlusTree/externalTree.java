@@ -1,11 +1,13 @@
 package BPlusTree;
 
+import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.externalNode;
 import BPlusTree.configuration.externalConfiguration;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
 
 public class externalTree<K extends Comparable> {
     private int timeStart;
@@ -26,5 +28,10 @@ public class externalTree<K extends Comparable> {
         this.conf = conf;
         this.treeFile = tree.storeFile(filePath, conf);
         this.totalPages = treeFile.length() / conf.pageSize;
+    }
+
+    public List<BPTKey<K>> searchNode(String time1, String time2, K key1, K key2) {
+
+        return null;
     }
 }

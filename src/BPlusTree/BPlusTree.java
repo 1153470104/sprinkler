@@ -272,14 +272,14 @@ public class BPlusTree<K extends Comparable>{
             temp = deque.getFirst();
         }
         rf.setLength(pageNum * conf.pageSize);
-        writeFileHeader(rf, conf);
+        writeFileHeader(rf, conf); // write the header of external tree
 
         //iterate to write every node into treefile rf
         //这里deque temp 复用了上面的，可能会有问题可能没用问题，以后如果出问题了要往这儿想
         deque = new LinkedList<>(); // use to store node wait to be transform into external node
         Deque<Long> fatherDeque = new LinkedList<>(); // use to store the father node of every
-        long current = 1;
-        long pageCount = 1;
+        long current = 1; //calculate the temp node's index
+        long pageCount = 1; // calculate the child node's page index
         temp = root;
         deque.add(temp);
         boolean reachLeaf = false;
@@ -287,33 +287,37 @@ public class BPlusTree<K extends Comparable>{
 
         while(deque.size()>0) {
             temp = deque.getFirst();
+            //if temp is non leaf node, add it's children to deque & write temp on disk
             if(!temp.isLeaf()) {
                 externalNode<K> node = new externalNonLeaf<K>(temp);
-                node.setPageIndex(current);
+                node.setPageIndex(current * conf.pageSize);
                 for(int i = 0; i < temp.childLength(); i++) {
                     deque.add(temp.getChild(i));
                     pageCount++; // plus plus before & add pointer after
-                    ((externalNonLeaf)node).addPointer(pageCount);
+                    ((externalNonLeaf)node).addPointer(pageCount * conf.pageSize);
                 }
-                node.writeNode();
+                node.writeNode(rf, conf);
                 deque.pop();
+                // seems that external tree don't need father node
 //                node.setFatherIndex(fatherDeque.pop());
+                // if temp is leaf, just write temp on disk
             } else {
                 externalNode<K> node = new externalLeaf<K>(temp);
-                node.setPageIndex(current);
+                node.setPageIndex(current * conf.pageSize);
+                //set the prev leaf & avoid prevLeaf's overflow
                 if(reachLeaf) {
-                    ((externalLeaf)node).setPrevLeaf(current-1);
+                    ((externalLeaf)node).setPrevLeaf((current-1) * conf.pageSize);
                 } else {
                     ((externalLeaf)node).setPrevLeaf(-1);
                     reachLeaf = true;
                 }
-
+                // set next leaf & avoid nextLeaf's overflow
                 if(deque.size() == 1) {
                     ((externalLeaf)node).setNextLeaf(-1);
                 } else {
-                    ((externalLeaf)node).setNextLeaf(current+1);
+                    ((externalLeaf)node).setNextLeaf((current+1) * conf.pageSize);
                 }
-                node.writeNode();
+                node.writeNode(rf, conf);
                 deque.pop();
             }
             current++;
@@ -328,10 +332,6 @@ public class BPlusTree<K extends Comparable>{
         treeFile.writeInt(conf.pageSize);
         treeFile.writeInt(conf.keySize);
         treeFile.writeInt(conf.valueSize);
-        treeFile.writeLong(conf.pageSize);
+        treeFile.writeLong(conf.pageSize); // this is the pointer to the root page
     }
-//
-//    public String writeInDisk() {
-//
-//    }
 }

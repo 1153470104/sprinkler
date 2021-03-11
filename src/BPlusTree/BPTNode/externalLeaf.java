@@ -1,7 +1,12 @@
 package BPlusTree.BPTNode;
 
 import BPlusTree.BPTKey.BPTValueKey;
+import BPlusTree.configuration.externalConfiguration;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,8 +33,22 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
      * write node of leaf node into the tree file
      */
     @Override
-    public void writeNode() {
-        super.writeNode();
+    public void writeNode(RandomAccessFile r, externalConfiguration conf) throws IOException {
+        super.writeNode(r, conf);
+        r.seek(this.pageIndex);
+        byte[] buffer = new byte[conf.pageSize];
+        ByteBuffer bbuffer = ByteBuffer.wrap(buffer); bbuffer.order(ByteOrder.BIG_ENDIAN);
+        // write header info
+        bbuffer.putShort(this.nodeType);
+        bbuffer.putInt(this.length);
+        bbuffer.putLong(this.prevLeaf);
+        bbuffer.putLong(this.nextLeaf);
+        for(int i = 0; i < this.length; i++) {
+            //不知道对不对
+            bbuffer.put(this.keyList.get(i));
+            bbuffer.put(this.valueList.get(i));
+        }
+        r.write(buffer);
     }
 
 
