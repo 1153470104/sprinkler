@@ -45,7 +45,7 @@ public class singleIndexServer {
         boolean flushed = false;
         while (keyEntry != null) {
             currentBpt.addKey(keyEntry);
-            if(currentBpt.isTemplated()) {
+            if(currentBpt.isTemplate()) {
                 ((BPlusTreeTemplated)currentBpt).balance();
             }
 

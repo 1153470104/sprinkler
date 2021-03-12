@@ -35,20 +35,20 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     @Override
     public void writeNode(RandomAccessFile r, externalConfiguration conf) throws IOException {
         super.writeNode(r, conf);
-        r.seek(this.pageIndex);
-        byte[] buffer = new byte[conf.pageSize];
-        ByteBuffer bbuffer = ByteBuffer.wrap(buffer); bbuffer.order(ByteOrder.BIG_ENDIAN);
-        // write header info
-        bbuffer.putShort(this.nodeType);
-        bbuffer.putInt(this.length);
-        bbuffer.putLong(this.prevLeaf);
-        bbuffer.putLong(this.nextLeaf);
-        for(int i = 0; i < this.length; i++) {
-            //不知道对不对
-            bbuffer.put(this.keyList.get(i));
-            bbuffer.put(this.valueList.get(i));
-        }
-        r.write(buffer);
+//        r.seek(this.pageIndex);
+//        byte[] buffer = new byte[conf.pageSize];
+//        ByteBuffer bbuffer = ByteBuffer.wrap(buffer); bbuffer.order(ByteOrder.BIG_ENDIAN);
+//        // write header info
+//        bbuffer.putShort(this.nodeType);
+//        bbuffer.putInt(this.length);
+//        bbuffer.putLong(this.prevLeaf);
+//        bbuffer.putLong(this.nextLeaf);
+//        for(int i = 0; i < this.length; i++) {
+//            //不知道对不对
+//            bbuffer.put(this.keyList.get(i));
+//            bbuffer.put(this.valueList.get(i));
+//        }
+//        r.write(buffer);
     }
 
 

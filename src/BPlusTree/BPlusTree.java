@@ -4,68 +4,127 @@ import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
 import BPlusTree.configuration.externalConfiguration;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 
-public class BPlusTree<K extends Comparable>{
-    protected boolean onlyRoot;
-    protected int m;
+/**
+ * implementation of common functions in memory B+ tree
+ * key is unique, value is unique, one key has a corresponding value
+ * the tree is used to store the data of input stream with index of keys
+ *
+ * internal node:
+ *  k_{-1}=-inf     k0          k1         k2        k_{n}=+inf
+ *            [p0)      [p1)         [p2)       [p3)
+ *              k_{i-1} <= pi < k_{i}, 0 <= i <= n
+ *
+ *  leaf node:
+ *  k_{-1}=-inf     k0          k1         k2        k_{n}=+inf
+ *                  v0          v1         v2
+ *                  vi, 0 <= i < n
+ *
+ *  node split:
+ *          [ k1 k2 k3 k4 ]
+ *
+ *  This split would result in the following:
+ *
+ *              [ k3 ]
+ *              /   \
+ *            /      \
+ *          /         \
+ *     [ k1 k2 ]   [ k3 k4 ]
+ *
+ * @param <K> key's type
+ *       TODO the problem is we can't know the type of value on tree's level...
+ *
+ */
+public abstract class BPlusTree<K extends Comparable>{
+    protected boolean onlyRoot; // judge if there's only one root node
+    protected int m; // capacity of node
     protected int maxNumber;
     protected int minNumber;
-    protected BPTNode<K> root;
-    protected boolean templateBased = false;
-    protected int entryNum = 0;
+    protected BPTNode<K> root; //root pointer
+    protected boolean templateBased = false; // to show if it's template tree
+    protected int entryNum = 0; // the total entry number
 
 
     //由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
-    protected int timeStart;
-    protected int timeEnd;
-    protected K keyStart; //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
-    protected K keyEnd;
+    protected int timeStart; //the start time inserting time of the tree
+    protected int timeEnd; // the time of stopping using the tree
 
-    public int getTimeStart() {
-        return timeStart;
-    }
+    //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
+    protected K keyStart; // the smallest key that could be in the tree
+    protected K keyEnd; // the biggest key that could be in the tree
 
-    public int getTimeEnd() {
-        return timeEnd;
-    }
-
-    public K getKeyStart() {
-        return keyStart;
-    }
-
-    public K getKeyEnd() {
-        return keyEnd;
-    }
-
+    /**
+     * basic init of BPlusTree
+     * @param m the capacity of every node
+     */
     public BPlusTree(int m){
         this.m = m;
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
     }
 
-
+    /**
+     * the basic implementation of addKey
+     * increase the total number of key by one
+     * @param key the key to be inserted
+     */
     public void addKey(BPTKey<K> key) {
         entryNum = entryNum+1;
     }
 
+    /**
+     * Abstract method that all classes must implement that
+     * search keys in a domain which two boundaries is key1 & key2
+     * return a list of all keys in that domain
+     * @param key1 the start key of the searching domain
+     * @param key2 the end key of the searching domain
+     * @return a list of all keys between key1 & key2
+     */
+    public abstract List<BPTKey<K>> search(K key1, K key2);
 
-    public List<BPTKey<K>> search(K key1, K key2) {
-        return null;
+    /**
+     * getter of start time
+     * @return the start time of the tree
+     */
+    public int getTimeStart() {
+        return timeStart;
+    }
+
+    /**
+     * getter of end time
+     * @return the end time of the tree
+     */
+    public int getTimeEnd() {
+        return timeEnd;
+    }
+
+    /**
+     * getter of start time
+     * @return the start time of the tree
+     */
+    public K getKeyStart() {
+        return keyStart;
+    }
+
+    /**
+     * getter of end time
+     * @return the end time of the tree
+     */
+    public K getKeyEnd() {
+        return keyEnd;
     }
 
     /**
      * 本函数用于打印基本信息，以及树结构
      */
-
     public void printInfo() {
         System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
 //        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
         System.out.print("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
-        if(this.isTemplated())  {
+        if(this.isTemplate())  {
             System.out.println(" is templated");
         } else {
             System.out.println();
@@ -80,7 +139,6 @@ public class BPlusTree<K extends Comparable>{
      * | 4 7 | 30 35 |
      * | 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 45 ||
      */
-
     public String printBasic() {
         Queue<BPTNode<K>> nodeQueue = new LinkedList<>();
         nodeQueue.add(root);
@@ -124,7 +182,6 @@ public class BPlusTree<K extends Comparable>{
      * 每个 '|' 的间隔中是一个条目的key内容，如下所示
      * | 1 | 2 | 4 | 6 | 7 | 9 | 10 | 21 | 22 | 30 | 31 | 35 | 36 | 45 |
      */
-
     public String printData() {
         StringBuilder sb = new StringBuilder();
         BPTNode<K> node = root;
@@ -151,7 +208,12 @@ public class BPlusTree<K extends Comparable>{
         return sb.toString();
     }
 
-
+    /**
+     * test if the block is full
+     * by detect if the entry num reaches some number, which is 5000 now
+     * TODO current implementation is very rude, don't take storage space into account
+     * @return a boolean value of if the block is full
+     */
     public boolean isBlockFull() {
         if (this.entryNum < 5000) {
             return false;
@@ -159,12 +221,19 @@ public class BPlusTree<K extends Comparable>{
         return true;
     }
 
-
-    public boolean isTemplated() {
+    /**
+     * to show if the tree is template based tree
+     * @return current templateBased value
+     */
+    public boolean isTemplate() {
         return this.templateBased;
     }
 
-
+    /**
+     * a frame copy of this tree
+     * remove all leaf node's key-value pair, only return a frame of the tree
+     * @return a tree without value in leaf node
+     */
     public BPTNode<K> rootCopy() {
         BPTNode<K> newRoot;
         BPTNode<K> tempNewRoot;
@@ -223,36 +292,53 @@ public class BPlusTree<K extends Comparable>{
         return newRoot;
     }
 
-
+    /**
+     * getter of capacity m
+     * @return current m
+     */
     public int getM() {
         return m;
     }
 
-
-    public void flushOut() {
-
-    }
-
-
+    /**
+     * set the start time of the tree
+     * @param start the start time to be set
+     */
     public void setStartTime(int start) {
         this.timeStart = start;
     }
 
-
+    /**
+     * set the end time of the tree
+     * @param end the end time to be set
+     */
     public void setEndTime(int end) {
         this.timeEnd = end;
     }
 
-
+    /**
+     * set the start key of the tree
+     * @param start start key of the tree
+     */
     public void setKeyStart(K start) {
         this.keyStart = start;
     }
 
-
+    /**
+     * set the end of the tree
+     * @param end end key of the tree
+     */
     public void setKeyEnd(K end) {
         this.keyEnd = end;
     }
 
+    /**
+     * store the tree into an external file
+     * @param filePath the file path of the external file
+     * @param conf the configuration defines pageSize
+     * @return a RandomAccessFile that store the tree's data
+     * @throws IOException be thrown when an I/O operation fails
+     */
     public RandomAccessFile storeFile(String filePath, externalConfiguration conf)
             throws IOException {
 
@@ -326,6 +412,12 @@ public class BPlusTree<K extends Comparable>{
         return rf;
     }
 
+    /**
+     * write header data into a tree-file
+     * @param treeFile the file that a header need to be write in
+     * @param conf external tree configuration
+     * @throws IOException
+     */
     private void writeFileHeader(RandomAccessFile treeFile, externalConfiguration conf)
             throws IOException {
         treeFile.seek(0L);

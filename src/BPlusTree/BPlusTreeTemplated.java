@@ -9,16 +9,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * templated tree
+ * implement of template B+ tree
+ * the leaf node maybe is empty, and don't have key-value pair
  *
  * 基于模板的B+树有一个比较重要的特点就是它的非叶节点不再出现在子节点中
  * 所以估计以后要用的时候得注意这一点, 目前还不知道会有什么后果
  */
 public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
-    private double skewness = 0.2;
-    private int leafNum = 0;
+    private double skewness = 0.2; // the limit of skewness
+    private int leafNum = 0; //the total number of leafNode
 
-
+    /**
+     * init of template tree
+     * @param tree the scratched B+ tree
+     */
     public BPlusTreeTemplated(BPlusTree<K> tree) {
         super(tree.getM());
         this.onlyRoot = false;
@@ -32,10 +36,21 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
         this.keyEnd = ((BPlusTree<K>)tree).getKeyEnd();
     }
 
+    /**
+     * change the skewness of this template tree
+     *
+     * @param skewnessValue
+     */
     public void setSkewness(double skewnessValue) {
         this.skewness = skewnessValue;
     }
 
+    /**
+     * addKey function of template tree
+     * without global split only on leaf and leaf-1 level
+     *
+     * @param key the key to be inserted
+     */
     @Override
     public void addKey(BPTKey<K> key) {
         super.addKey(key);
@@ -58,6 +73,12 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
         }
     }
 
+    /**
+     *
+     * @param key1 the start key of the searching domain
+     * @param key2 the end key of the searching domain
+     * @return a list of key in this domain
+     */
     @Override
     public List<BPTKey<K>> search(K key1, K key2) {
         //TODO to modify
@@ -94,6 +115,14 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
         return nodeList;
     }
 
+    /**
+     * simple mode of split function
+     * if the father node is full, quit split
+     *
+     * @param node the node to be split
+     * @return int shows if split success
+     *         which -1 means fail, 1 means success
+     */
     public int split(BPTNode<K> node) {
         int siblingIsLeaf = 0;
 
@@ -135,6 +164,21 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
         }
     }
 
+    /**
+     * judgement function of if the tree is balanced
+     * list the formula as below:
+     * params:
+     *   average_num: the average key number of leaf node
+     *   max_leaf_num: the max leaf key number
+     *   skewness: this.skewness
+     *
+     * if (max_leaf_num - average_num) / average_num > skewness
+     *   return false
+     * else
+     *   return true
+     *
+     * @return the boolean value of if balanced
+     */
     public boolean isBalanced() {
         double averageNum;
 //        int minNodeNum = m;
@@ -167,8 +211,16 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
         return true;
     }
 
-    // !TODO 突然想到，对于每个不同的 m 可能都有无法balance的情况，balance操作完了，还不balance
+    /**
+     * balance function of template tree
+     * averagely assign keys onto every leaf node
+     * then rewrite the non-leaf nodes' keys to make sure the correctness of the frame
+     *
+     * if tree is balance or not, the function would be execute
+     * the isBalance function is set in balance function
+     */
     public void balance(){
+        // !TODO 突然想到，对于每个不同的 m 可能都有无法balance的情况，balance操作完了，还不balance
         //居然是因为测试方便把 is balance放到balance功能中进行检测
         //这就要求使用template的人手动balance 而非 add的同时balance
         /* 叶节点和entrynum数目的比较顺序都能写反我也是菜 */

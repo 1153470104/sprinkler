@@ -6,6 +6,12 @@ import BPlusTree.BPTNode.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * the implement of B+ tree which is built from scratched
+ * so that the split function is more intact
+ *
+ * @param <K> the key's type
+ */
 public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
 
     public BPlusTreeScratched(int m){
@@ -15,6 +21,9 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
         this.templateBased = false;
     }
 
+    /**
+     * @param key the key to be inserted
+     */
     @Override
     public void addKey(BPTKey<K> key) {
         //super在这里加了一个entryNum
@@ -49,6 +58,11 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
         }
     }
 
+    /**
+     * @param key1 the start key of the searching domain
+     * @param key2 the end key of the searching domain
+     * @return  a list of all keys between key1 & key2
+     */
     @Override
     public List<BPTKey<K>> search(K key1, K key2) {
         if(key1.compareTo(key2) == 1) {
@@ -85,6 +99,12 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
     }
 
 
+    /**
+     * full implementation of split
+     * @param node the node to be split
+     * @return a int shows if it reaches top and set up a new root
+     *         -1 means a new root, 0 means not reach root yet
+     */
 //    @Override
     public int split(BPTNode<K> node) {
         int returnNum;
