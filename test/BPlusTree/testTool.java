@@ -38,9 +38,13 @@ public class testTool {
         }
     }
 
-    public void addList(List<Integer> list) {
+    public void addList(List<Integer> list, String valueType) {
         for(Integer i: list) {
-            bpt.addKey(new BPTValueKey<Integer, String>(i, Integer.toString(i)));
+            if(valueType.equals("String")) {
+                bpt.addKey(new BPTValueKey<Integer, String>(i, Integer.toString(i)));
+            } else if(valueType.equals("Integer"))  {
+                bpt.addKey(new BPTValueKey<Integer, Integer>(i, i));
+            }
         }
     }
 
@@ -52,7 +56,12 @@ public class testTool {
 
     public void makeBPT(int m, List<Integer> list) {
         initBPT(m);
-        addList(list);
+        addList(list, "String");
+    }
+
+    public void makeIntBPT(int m, List<Integer> list) {
+        initBPT(m);
+        addList(list, "Integer");
     }
 
     public String keyListString(List<BPTKey<Integer>> kList) {

@@ -5,6 +5,7 @@ import BPlusTree.configuration.externalConfiguration;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class externalNode<K extends Comparable> {
         keyList = node.getKeyList();
         length = keyList.size();
     }
+
 
     /**
      * set the node type
