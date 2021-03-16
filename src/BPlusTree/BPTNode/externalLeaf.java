@@ -30,6 +30,20 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     }
 
     /**
+     * init of a external leaf node
+     * @param nodeType the type short num of the external node
+     * @param length the capacity of the external node
+     * @param pageIndex the page index of the node
+     * @param prevLeaf the prev leaf of the node
+     * @param nextLeaf the next leaf of the node
+     */
+    public externalLeaf(short nodeType, int length, long pageIndex, long prevLeaf, long nextLeaf) {
+        super(nodeType, length, pageIndex);
+        this.prevLeaf = prevLeaf;
+        this.nextLeaf = nextLeaf;
+    }
+
+    /**
      * write node of leaf node into the tree file
      */
     @Override

@@ -1,12 +1,16 @@
 package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTNode.externalLeaf;
 import BPlusTree.BPTNode.externalNode;
+import BPlusTree.BPTNode.externalNonLeaf;
 import BPlusTree.configuration.externalConfiguration;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 /**
@@ -44,8 +48,33 @@ public class externalTree<K extends Comparable> {
         this.m = tree.m;
     }
 
-    public BPlusTree<K> extractTree() {
-        return null;
+    /**
+     * read a node on disk according its page index
+     * @param index the page index of the node
+     * @return a external node
+     * @throws IOException fails when an I/O operation fails
+     */
+    public externalNode<K> readNode(long index) throws IOException {
+        treeFile.seek(index);
+        byte[] buffer = new byte[conf.pageSize];
+        treeFile.read(buffer);
+        ByteBuffer bbuffer = ByteBuffer.wrap(buffer);bbuffer.order(ByteOrder.BIG_ENDIAN);
+        short nodeType = bbuffer.getShort();
+        int length = bbuffer.getInt();
+        externalNode<K> node = null;
+        if( nodeType == 0) { // non leaf node
+            //get the header
+            long prev = bbuffer.getLong();
+            long next = bbuffer.getLong();
+            node = new externalLeaf<K>(nodeType, length, index, prev, next);
+            // TODO get the key-value pair
+        } else if( nodeType == 1) { // leaf node
+            // get the header
+            node = new externalNonLeaf<K>(nodeType, length, index);
+            // TODO get the key-pointer pair
+        }
+
+        return node;
     }
 
     public List<BPTKey<K>> searchNode(String time1, String time2, K key1, K key2) {

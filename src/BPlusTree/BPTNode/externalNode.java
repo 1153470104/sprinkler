@@ -29,6 +29,22 @@ public class externalNode<K extends Comparable> {
 //        this.fatherIndex = fatherIndex;
 //    }
 
+    /**
+     * init a node from scratch
+     * @param nodeType the type short num of the external node
+     * @param length the capacity of the external node
+     * @param pageIndex the page index of the node
+     */
+    public externalNode(short nodeType, int length, long pageIndex) {
+        this.nodeType = nodeType;
+        this.length = length;
+        this.pageIndex = pageIndex;
+    }
+
+    /**
+     * init a node from another in memory node
+     * @param node in memory node
+     */
     public externalNode(BPTNode<K> node) {
         if(node.isLeaf()) {
             this.nodeType = 0;

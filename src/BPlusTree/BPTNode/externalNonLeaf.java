@@ -16,6 +16,16 @@ import java.util.List;
 public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
     private List<Long> pointerList;
 
+    /**
+     * init a external non leaf node
+     * @param nodeType the type short num of the external node
+     * @param length the capacity of the external node
+     * @param pageIndex the page index of the node
+     */
+    public externalNonLeaf(short nodeType, int length, long pageIndex) {
+        super(nodeType, length, pageIndex);
+    }
+
     public externalNonLeaf(BPTNode<K> node) {
         super(node);
         pointerList = new ArrayList<>();
