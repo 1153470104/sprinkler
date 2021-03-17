@@ -27,6 +27,8 @@ public class externalConfiguration {
         this.nonLeafHeaderSize = (Short.SIZE + Integer.SIZE) / 8; // 22 bytes
         this.leafHeaderSize = (Short.SIZE + 2 * Long.SIZE + Integer.SIZE) / 8; // 22 bytes
 
+        this.pageSize = 1024; // default pageSize, 1024
+
         //assign key-value pair's size
         this.keySize = keySize;
         this.valueSize = valueSize;

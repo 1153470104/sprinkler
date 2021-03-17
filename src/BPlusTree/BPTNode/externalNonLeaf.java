@@ -45,7 +45,7 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
         bbuffer.putInt(this.length);
         for(int i = 0; i < this.length; i++) {
             bbuffer.putLong(this.pointerList.get(i));   // Pointer
-            conf.writeKey(bbuffer, this.keyList.get(i)); // use conf to write in data
+            conf.writeKey(bbuffer, this.keyList.get(i).key()); // use conf to write in data
         }
         bbuffer.putLong(this.pointerList.get(this.length));   // Pointer
         r.write(buffer);
@@ -57,5 +57,20 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
      */
     public void addPointer(long point) {
         pointerList.add(point);
+    }
+
+    /**
+     * non leaf version of toString
+     * @return string of none leaf node
+     */
+    @Override
+    public String toString() {
+        String common = super.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i < length-1; i++) {
+            stringBuilder.append(this.keyList.get(i)).append("|");
+        }
+        stringBuilder.append(this.keyList.get(length-1));
+        return common + stringBuilder.toString();
     }
 }

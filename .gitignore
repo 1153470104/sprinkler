@@ -37,7 +37,7 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-
+resource/database/
 .idea/
 
 ## File-based project format:

@@ -92,4 +92,15 @@ public class externalNode<K extends Comparable> {
     public void addKey(K key) {
         this.keyList.add(new BPTKey<K>(key));
     }
+
+    /**
+     * get the content of node
+     * this is a common realization of node
+     * @return a string of basic content in node
+     */
+    public String toString() {
+        return nodeType + "," +
+                length + "," +
+                pageIndex + ",";
+    }
 }

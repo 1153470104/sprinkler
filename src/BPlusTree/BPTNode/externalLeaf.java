@@ -15,7 +15,7 @@ import java.util.List;
  * class of external leaf
  * used to store temporary external leaf node for writing & reading
  */
-public class externalLeaf<K extends Comparable, V> extends externalNode<K>{
+public class externalLeaf<K extends Comparable> extends externalNode<K>{
     private List<Object> valueList;
 
     private long prevLeaf;
@@ -25,7 +25,7 @@ public class externalLeaf<K extends Comparable, V> extends externalNode<K>{
         super(node);
         valueList = new ArrayList<>();
         for(int i = 0; i < keyList.size(); i++) {
-            ((BPTValueKey<K, Object>)keyList.get(i).key()).getValue();
+            valueList.add(((BPTValueKey<K, Object>)keyList.get(i)).getValue());
         }
     }
 
@@ -59,7 +59,7 @@ public class externalLeaf<K extends Comparable, V> extends externalNode<K>{
         bbuffer.putLong(this.nextLeaf);
         for(int i = 0; i < this.length; i++) {
             // use conf to write in data
-            conf.writeKey(bbuffer, this.keyList.get(i));
+            conf.writeKey(bbuffer, this.keyList.get(i).key());
             conf.writeValue(bbuffer, this.valueList.get(i));
         }
         r.write(buffer);
@@ -88,7 +88,24 @@ public class externalLeaf<K extends Comparable, V> extends externalNode<K>{
      * @param key the key of BPTKey
      * @param value the value of BPTKey
      */
-    public void addKey(K key, V value) {
+    public void addKey(K key, Integer value) {
+        // TODO a big mistake !!! generic fails here
+        //  if i want to simplify, i have to add all V once I left
         this.keyList.add(new BPTValueKey<>(key, value));
+    }
+
+    /**
+     * leaf node version of toString
+     * @return string of leaf node
+     */
+    @Override
+    public String toString() {
+        String common = super.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i < length-1; i++) {
+            stringBuilder.append(keyList.get(i)).append(":").append(valueList.get(i)).append("|");
+        }
+        stringBuilder.append(keyList.get(length-1)).append(":").append(valueList.get(length-1));
+        return common+stringBuilder.toString();
     }
 }
