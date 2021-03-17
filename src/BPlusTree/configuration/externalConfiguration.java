@@ -48,6 +48,20 @@ public class externalConfiguration {
     }
 
     /**
+     * read key according to its type
+     * @param bbuffer the buffer to read data
+     * @return the key read from byte buffer
+     */
+    public Object readKey(ByteBuffer bbuffer) {
+        if(keyType == Integer.class) {
+            return bbuffer.getInt();
+        } else if (keyType == Long.class) {
+            return bbuffer.getLong();
+        }
+        return null;
+    }
+
+    /**
      * write key in byte buffer according to the type of the key
      * @param bbuffer byte buffer to write in
      * @param value the value to be written in buffer
@@ -58,5 +72,22 @@ public class externalConfiguration {
         }else if(keyType == Integer.class) {
             bbuffer.putInt((int)value);
         }
+    }
+
+    /**
+     * read value according to its type
+     * @param bbuffer the buffer to read data
+     * @return the value read from byte buffer
+     */
+    public Object readValue(ByteBuffer bbuffer) {
+        if(keyType == String.class) {
+            // use get() to get string bytes
+            byte[] buffer = new byte[valueSize];
+            bbuffer.get(buffer, 0, valueSize);
+            return new String(buffer, StandardCharsets.UTF_8);
+        }else if(keyType == Integer.class) {
+            return bbuffer.getInt();
+        }
+        return null;
     }
 }

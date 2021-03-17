@@ -15,7 +15,7 @@ import java.util.List;
  * class of external leaf
  * used to store temporary external leaf node for writing & reading
  */
-public class externalLeaf<K extends Comparable> extends externalNode<K>{
+public class externalLeaf<K extends Comparable, V> extends externalNode<K>{
     private List<Object> valueList;
 
     private long prevLeaf;
@@ -83,4 +83,12 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         this.nextLeaf = nextLeaf;
     }
 
+    /**
+     * leaf node add key-value pair
+     * @param key the key of BPTKey
+     * @param value the value of BPTKey
+     */
+    public void addKey(K key, V value) {
+        this.keyList.add(new BPTValueKey<>(key, value));
+    }
 }

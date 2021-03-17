@@ -84,4 +84,12 @@ public class externalNode<K extends Comparable> {
      */
     public void writeNode(RandomAccessFile r, externalConfiguration conf) throws IOException {
     }
+
+    /**
+     * add no-value key
+     * @param key the key in BPTKey
+     */
+    public void addKey(K key) {
+        this.keyList.add(new BPTKey<K>(key));
+    }
 }

@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @param <K> the key's type
  */
-public class externalTree<K extends Comparable> {
+public class externalTree<K extends Comparable, V> {
     private int timeStart;
     private int timeEnd;
     private K keyStart;
@@ -66,12 +66,20 @@ public class externalTree<K extends Comparable> {
             //get the header
             long prev = bbuffer.getLong();
             long next = bbuffer.getLong();
-            node = new externalLeaf<K>(nodeType, length, index, prev, next);
+            node = new externalLeaf<K, V>(nodeType, length, index, prev, next);
             // TODO get the key-value pair
+            ((externalNonLeaf)node).addPointer(bbuffer.getLong());
+            for(int i = 0; i < length; i++) {
+                node.addKey((K)conf.readKey(bbuffer));
+                ((externalNonLeaf)node).addPointer(bbuffer.getLong());
+            }
         } else if( nodeType == 1) { // leaf node
             // get the header
             node = new externalNonLeaf<K>(nodeType, length, index);
             // TODO get the key-pointer pair
+            for(int i = 0; i < length; i++) {
+                ((externalLeaf<K, V>)node).addKey((K)conf.readKey(bbuffer), (V)conf.readValue(bbuffer));
+            }
         }
 
         return node;
