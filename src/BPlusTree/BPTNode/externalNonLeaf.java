@@ -7,6 +7,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -24,11 +25,22 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
      */
     public externalNonLeaf(short nodeType, int length, long pageIndex) {
         super(nodeType, length, pageIndex);
+        pointerList = new LinkedList<>();
     }
 
     public externalNonLeaf(BPTNode<K> node) {
         super(node);
-        pointerList = new ArrayList<>();
+        pointerList = new LinkedList<>();
+    }
+
+
+    /**
+     * get pointer index
+     * @param index the index of pointer in pointerList
+     * @return the pointer page index
+     */
+    public Long getPointer(int index) {
+        return pointerList.get(index);
     }
 
      /**
@@ -53,9 +65,10 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
 
     /**
      * append a pointer to point list of this external node
-     * @param point
+     * @param point a long value as the pointer
      */
     public void addPointer(long point) {
+//        System.out.println(point);
         pointerList.add(point);
     }
 
@@ -68,9 +81,10 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
         String common = super.toString();
         StringBuilder stringBuilder = new StringBuilder();
         for(int i = 0; i < length-1; i++) {
-            stringBuilder.append(this.keyList.get(i)).append("|");
+            stringBuilder.append(this.keyList.get(i).key()).append("|");
         }
-        stringBuilder.append(this.keyList.get(length-1));
+        stringBuilder.append(this.keyList.get(length-1).key());
+        System.out.println(common + stringBuilder.toString());
         return common + stringBuilder.toString();
     }
 }

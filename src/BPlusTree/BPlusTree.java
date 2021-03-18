@@ -372,7 +372,7 @@ public abstract class BPlusTree<K extends Comparable>{
 //        fatherDeque.add((long)-1);
 
         while(deque.size()>0) {
-            System.out.println("num: "+deque.size());
+//            System.out.println("num: "+deque.size());
             temp = deque.getFirst();
             //if temp is non leaf node, add it's children to deque & write temp on disk
             if(!temp.isLeaf()) {

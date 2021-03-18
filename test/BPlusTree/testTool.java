@@ -41,7 +41,14 @@ public class testTool {
     public void addList(List<Integer> list, String valueType) {
         for(Integer i: list) {
             if(valueType.equals("String")) {
-                bpt.addKey(new BPTValueKey<Integer, String>(i, Integer.toString(i)));
+                StringBuilder s = new StringBuilder(Integer.toString(i));
+                int len = s.length();
+                if(s.length() < 3) {
+                    for(int j = 0; j < 3-len; j++){
+                        s.insert(0, " ");
+                    }
+                }
+                bpt.addKey(new BPTValueKey<Integer, String>(i, s.toString()));
             } else if(valueType.equals("Integer"))  {
                 bpt.addKey(new BPTValueKey<Integer, Integer>(i, i));
             }

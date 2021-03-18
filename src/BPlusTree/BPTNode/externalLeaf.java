@@ -1,5 +1,6 @@
 package BPlusTree.BPTNode;
 
+import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.configuration.externalConfiguration;
 
@@ -9,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -23,7 +25,7 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
 
     public externalLeaf(BPTNode<K> node) {
         super(node);
-        valueList = new ArrayList<>();
+        valueList = new LinkedList<>();
         for(int i = 0; i < keyList.size(); i++) {
             valueList.add(((BPTValueKey<K, Object>)keyList.get(i)).getValue());
         }
@@ -41,6 +43,7 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         super(nodeType, length, pageIndex);
         this.prevLeaf = prevLeaf;
         this.nextLeaf = nextLeaf;
+        valueList = new LinkedList<>();
     }
 
     /**
@@ -65,7 +68,9 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         r.write(buffer);
     }
 
-
+    public BPTValueKey<K, Object> getKey(int index) {
+        return new BPTValueKey<K, Object>(this.keyList.get(index).key(), this.valueList.get(index));
+    }
     /**
      * setter of prev leaf node index
      * prev & next node's setting rely on the outer function
@@ -88,10 +93,50 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
      * @param key the key of BPTKey
      * @param value the value of BPTKey
      */
-    public void addKey(K key, Integer value) {
+    public void addKey(K key, Object value) {
+        System.out.println("value: " + value);
         // TODO a big mistake !!! generic fails here
         //  if i want to simplify, i have to add all V once I left
-        this.keyList.add(new BPTValueKey<>(key, value));
+        this.keyList.add(new BPTKey<>(key));
+        this.valueList.add(value);
+    }
+
+    /**
+     * the leaf node search key
+     * @param key the key to search
+     * @return -1 if key less than any key in leaf
+     *         else return the index of key
+     *         or the index of leaf-key which just bigger than key
+     *         else the length of keyList when key bigger than any key in leaf
+     */
+    @Override
+    public int searchKey(K key) {
+        int len = keyList.size();
+        if(key.compareTo(keyList.get(0)) == -1) {
+            return -1;
+        }
+        for(int i = 0; i < len; i++) {
+            if(key.compareTo(keyList.get(i)) == -1 || key.compareTo(keyList.get(i)) == 0) {
+                return i;
+            }
+        }
+        return len;
+    }
+
+    /**
+     * getter of prev page index
+     * @return the prevLeaf's pageIndex
+     */
+    public long getPrevLeaf() {
+        return prevLeaf;
+    }
+
+    /**
+     * getter of next page index
+     * @return the nextLeaf's pageIndex
+     */
+    public long getNextLeaf() {
+        return nextLeaf;
     }
 
     /**
@@ -102,10 +147,13 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     public String toString() {
         String common = super.toString();
         StringBuilder stringBuilder = new StringBuilder();
+        System.out.println("keyList length: " + keyList.size());
         for(int i = 0; i < length-1; i++) {
-            stringBuilder.append(keyList.get(i)).append(":").append(valueList.get(i)).append("|");
+            System.out.println("i:" + i);
+            stringBuilder.append(keyList.get(i).key()).append(":").append(valueList.get(i)).append("|");
         }
-        stringBuilder.append(keyList.get(length-1)).append(":").append(valueList.get(length-1));
+        stringBuilder.append(keyList.get(length-1).key()).append(":").append(valueList.get(length-1));
+        System.out.println(common+stringBuilder.toString());
         return common+stringBuilder.toString();
     }
 }

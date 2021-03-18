@@ -69,9 +69,9 @@ public class externalConfiguration {
      * @param value the value to be written in buffer
      */
     public void writeValue(ByteBuffer bbuffer, Object value){
-        if(keyType == String.class) {
+        if(valueType == String.class) {
             bbuffer.put(((String) value).getBytes(StandardCharsets.UTF_8));
-        }else if(keyType == Integer.class) {
+        }else if(valueType == Integer.class) {
             bbuffer.putInt((int)value);
         }
     }
@@ -82,12 +82,12 @@ public class externalConfiguration {
      * @return the value read from byte buffer
      */
     public Object readValue(ByteBuffer bbuffer) {
-        if(keyType == String.class) {
+        if(valueType == String.class) {
             // use get() to get string bytes
             byte[] buffer = new byte[valueSize];
             bbuffer.get(buffer, 0, valueSize);
             return new String(buffer, StandardCharsets.UTF_8);
-        }else if(keyType == Integer.class) {
+        }else if(valueType == Integer.class) {
             return bbuffer.getInt();
         }
         return null;

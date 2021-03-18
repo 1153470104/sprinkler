@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,6 +40,7 @@ public class externalNode<K extends Comparable> {
         this.nodeType = nodeType;
         this.length = length;
         this.pageIndex = pageIndex;
+        keyList = new LinkedList<>();
     }
 
     /**
@@ -47,14 +49,34 @@ public class externalNode<K extends Comparable> {
      */
     public externalNode(BPTNode<K> node) {
         if(node.isLeaf()) {
-            this.nodeType = 0;
-        } else {
             this.nodeType = 1;
+        } else {
+            this.nodeType = 0;
         }
         keyList = node.getKeyList();
         length = keyList.size();
     }
 
+    /**
+     * search the might be key position
+     * index:     0   1   2   3
+     * keys:      1   3   6   9
+     *          /  |   |   |   \
+     * index:  0   1   2   3    4
+     * if search key is 10, return 4
+     *    search key is 1, return 1
+     * @param key the key to search
+     * @return index of the pointer which contains the key
+     */
+    public int searchKey(K key){
+        int len = keyList.size();
+        for(int i = 0; i < len; i++) {
+            if(key.compareTo(keyList.get(i)) == -1) {
+                return i;
+            }
+        }
+        return len;
+    }
 
     /**
      * set the node type
@@ -91,6 +113,22 @@ public class externalNode<K extends Comparable> {
      */
     public void addKey(K key) {
         this.keyList.add(new BPTKey<K>(key));
+    }
+
+    /**
+     * get the nodeType
+     * @return the node-type short value
+     */
+    public short getNodeType() {
+        return nodeType;
+    }
+
+    /**
+     * get the key number of this node
+     * @return the key-list length, the capacity
+     */
+    public int getLength() {
+        return length;
     }
 
     /**

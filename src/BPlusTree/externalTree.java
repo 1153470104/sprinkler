@@ -1,6 +1,7 @@
 package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.BPTNode.externalLeaf;
 import BPlusTree.BPTNode.externalNode;
 import BPlusTree.BPTNode.externalNonLeaf;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,7 +20,7 @@ import java.util.List;
  *
  * @param <K> the key's type
  */
-public class externalTree<K extends Comparable, V> {
+public class externalTree<K extends Comparable> {
     private int timeStart;
     private int timeEnd;
     private K keyStart;
@@ -64,9 +66,7 @@ public class externalTree<K extends Comparable, V> {
         externalNode<K> node = null;
         if( nodeType == 0) { // non leaf node
             //get the header
-            long prev = bbuffer.getLong();
-            long next = bbuffer.getLong();
-            node = new externalLeaf<K>(nodeType, length, index, prev, next);
+            node = new externalNonLeaf<K>(nodeType, length, index);
             // TODO get the key-value pair
             ((externalNonLeaf)node).addPointer(bbuffer.getLong());
             for(int i = 0; i < length; i++) {
@@ -75,17 +75,55 @@ public class externalTree<K extends Comparable, V> {
             }
         } else if( nodeType == 1) { // leaf node
             // get the header
-            node = new externalNonLeaf<K>(nodeType, length, index);
+            long prev = bbuffer.getLong();
+            long next = bbuffer.getLong();
+            node = new externalLeaf<K>(nodeType, length, index, prev, next);
             // TODO get the key-pointer pair
             for(int i = 0; i < length; i++) {
-                ((externalLeaf<K>)node).addKey((K)conf.readKey(bbuffer), (Integer) conf.readValue(bbuffer));
+                ((externalLeaf<K>)node).addKey((K)conf.readKey(bbuffer), conf.readValue(bbuffer));
             }
         }
 
         return node;
     }
 
-    public List<BPTKey<K>> searchNode(String time1, String time2, K key1, K key2) {
-        return null;
+    /**
+     * search the nodes between key1 & key2
+     * @param key1 the start search key
+     * @param key2 the end search key
+     * @return the list of keys in that domain
+     * @throws IOException throws when any I/O operation fails
+     */
+    public List<BPTKey<K>> searchNode(K key1, K key2) throws IOException {
+        // TODO the abuse & misuse of generic would finally kill this system
+        // TODO which I should optimize the core structure of key & value
+        List<BPTKey<K>> domainKeys = new LinkedList<>();
+        if(key1.compareTo(key2) != -1) {
+            System.out.println("oops, the domain do not exists");
+            return domainKeys;
+        }
+        externalNode<K> cur = this.readNode(1*conf.pageSize);
+        while(cur.getNodeType()!=1){
+            int pointerIndex = cur.searchKey(key1);
+            cur = this.readNode(((externalNonLeaf)cur).getPointer(pointerIndex));
+        }
+        while(cur.searchKey(key2)!=-1) {
+            int start = cur.searchKey(key1);
+            if (start == -1) start = 0;
+            int end = cur.searchKey(key2);
+            for(int i = start; i < end; i++) {
+                domainKeys.add(((externalLeaf)cur).getKey(i));
+            }
+            if(end < cur.getLength()) {
+                // if the key2 doesn't extend out the boundary,
+                // test if the last key is equals to key2
+                // if so, add the end key-value pair into domain-keys
+                BPTKey temp = ((externalLeaf)cur).getKey(end);
+                if(temp.key().compareTo(key2) == 0) {
+                    domainKeys.add(temp);
+                }
+            }
+        }
+        return domainKeys;
     }
 }
