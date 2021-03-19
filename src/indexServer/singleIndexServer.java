@@ -17,12 +17,12 @@ import java.util.List;
 public class singleIndexServer {
 //    List<BPlusTree<K>> bptList;
     private BPlusTree<MortonCode> currentBpt;
-//    private List<externalTree<MortonCode>> externalTreeList;
-//    private String externalBase;
-//    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
     private int time;
     private externalConfiguration conf;
     private singleMetaServer metaServer;
+//    private List<externalTree<MortonCode>> externalTreeList;
+//    private String externalBase;
+//    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
 
     dataTool dt;
 

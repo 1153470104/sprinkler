@@ -1,6 +1,7 @@
 package BPlusTree.keyType;
 
 import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTKey.BPTValueKey;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ public class MortonCode implements Comparable{
      * @param y the y coordinate
      */
     public MortonCode(double x, double y){
-        int ix = (int)x*1000000;
-        int iy = (int)y*1000000;
+        int ix = Math.abs((int)x*1000000);
+        int iy = Math.abs((int)y*1000000);
         this.x = ix;
         this.y = iy;
         this.code = zOrder(ix, iy);
@@ -56,11 +57,40 @@ public class MortonCode implements Comparable{
      */
     public MortonCode(String coordText){
         StringTokenizer st = new StringTokenizer(coordText, ",");
-        int ix = (int)(Double.parseDouble(st.nextToken())*1000000);
-        int iy = (int)(Double.parseDouble(st.nextToken())*1000000);
+        int ix = Math.abs((int)(Double.parseDouble(st.nextToken())*1000000));
+        int iy = Math.abs((int)(Double.parseDouble(st.nextToken())*1000000));
         this.x = ix;
         this.y = iy;
         this.code = zOrder(ix, iy);
+    }
+
+
+    /**
+     * init with a long of code
+     * @param code the zOrder code
+     */
+    public MortonCode(long code) {
+        // assign code value
+        this.code = code;
+        // reversely calculate the value of x & y
+        XYCalculate();
+    }
+
+    /**
+     * calculate x & y according to the code
+     */
+    public void XYCalculate() {
+        x = 0;
+        y = 0;
+        long cur = code;
+        int round = 0;
+        while(cur > 0) { // this should be '>0' because x & y is not symmetry
+            x = (int) (x + (cur%2) * Math.pow(2, round));
+            cur = cur / 2;
+            y = (int) (y + (cur%2) * Math.pow(2, round));
+            cur = cur / 2;
+            round++;
+        }
     }
 
     /**
@@ -84,7 +114,7 @@ public class MortonCode implements Comparable{
      * transform two dimension coordinate into one dimension z-code
      * @param x the x coord
      * @param y the y coord
-     * @return
+     * @return a long of zOrder code
      */
     public static long zOrder(int x, int y) {
         /* 居然没有考虑到溢出的问题，直接导致所有的zorder都变成了2^31-1 */
@@ -97,7 +127,6 @@ public class MortonCode implements Comparable{
             y = y/2;
             zCode += lastx*(Math.pow(2, round));
             zCode += lasty*(Math.pow(2, round+1));
-
             round = round + 2;
         }
         return zCode;

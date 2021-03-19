@@ -6,6 +6,8 @@ import BPlusTree.BPTNode.externalLeaf;
 import BPlusTree.BPTNode.externalNode;
 import BPlusTree.BPTNode.externalNonLeaf;
 import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.keyType.MortonCode;
+import dispatcher.dataTool;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -134,6 +136,30 @@ public class externalTree<K extends Comparable> {
             }
             cur = this.readNode(next);
 
+        }
+        return domainKeys;
+    }
+
+    /**
+     * a sinple realization of time-key search function on one tree,
+     * version1 without any optimization, just use the prev function to get all
+     *          then do a traversal again
+     * @param tStart the start search time
+     * @param tEnd the end search time
+     * @param key1 the start search key
+     * @param key2 the end search key
+     * @return the list of BPTValueKeys which in the time domain & region domain
+     * @throws IOException thrown when any I/O function fails
+     */
+    public List<BPTKey<K>> searchNode(int tStart, int tEnd, K key1, K key2) throws IOException {
+        List<BPTKey<K>> domainKeys = new LinkedList<>();
+        List<BPTKey<K>> rawKeys = this.searchNode(key1, key2);
+        for(BPTKey k: rawKeys) {
+            //TODO this place is not generic any more,
+            //TODO the timestamp should have a better way to be brought in
+            if(dataTool.inTimeDomain((BPTValueKey<MortonCode, String>) k, tStart, tEnd)) {
+                domainKeys.add(k);
+            }
         }
         return domainKeys;
     }

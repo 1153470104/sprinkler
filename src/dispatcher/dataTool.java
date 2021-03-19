@@ -74,6 +74,23 @@ public class dataTool {
     }
 
     /**
+     * a function to judge if key is in the time domain
+     * @param key the key to be judged
+     * @param timeStart the start time
+     * @param timeEnd the end time
+     * @return a boolean of if it's in the time domain
+     */
+    public static boolean inTimeDomain(BPTValueKey<MortonCode, String> key, int timeStart, int timeEnd) {
+        StringTokenizer st = new StringTokenizer(key.getValue(), ",");
+        int timestamp = Integer.parseInt(st.nextToken());
+        if(timestamp >= timeStart && timestamp <= timeEnd) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * a function to get next entry through BufferReader buffer
      * @return
      * @throws IOException is thrown when an I/O operation fails

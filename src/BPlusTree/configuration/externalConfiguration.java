@@ -1,5 +1,7 @@
 package BPlusTree.configuration;
 
+import BPlusTree.keyType.MortonCode;
+
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +47,10 @@ public class externalConfiguration {
         if(keyType == Integer.class) {
             bbuffer.putInt((int)key);
         } else if (keyType == Long.class) {
-            bbuffer.putLong((long)key);
+            // TODO a stupid realization, use some specific manipulation
+            // TODO to make up the previews design fault, just like no design
+            long realKey =((MortonCode)key).getCode();
+            bbuffer.putLong(realKey);
         }
     }
 
@@ -58,7 +63,9 @@ public class externalConfiguration {
         if(keyType == Integer.class) {
             return bbuffer.getInt();
         } else if (keyType == Long.class) {
-            return bbuffer.getLong();
+            // TODO same stupid adaption as writeKey before
+            long temp = bbuffer.getLong();
+            return new MortonCode(temp);
         }
         return null;
     }

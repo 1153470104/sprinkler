@@ -181,7 +181,7 @@ public class dataProcess {
 
     public static void main(String[] args) throws IOException {
         dataProcess ds = new dataProcess("resource/data/100000.txt");
-//        ds.transZOrder("resource/data/100000z.txt");
-        ds.sortByTime("resource/data/100000s.txt");
+        ds.transZOrder("resource/data/100000z.txt");
+//        ds.sortByTime("resource/data/100000s.txt");
     }
 }
