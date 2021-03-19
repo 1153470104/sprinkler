@@ -94,7 +94,7 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
      * @param value the value of BPTKey
      */
     public void addKey(K key, Object value) {
-        System.out.println("value: " + value);
+//        System.out.println("value: " + value);
         // TODO a big mistake !!! generic fails here
         //  if i want to simplify, i have to add all V once I left
         this.keyList.add(new BPTKey<>(key));
@@ -112,11 +112,11 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     @Override
     public int searchKey(K key) {
         int len = keyList.size();
-        if(key.compareTo(keyList.get(0)) == -1) {
+        if(key.compareTo(keyList.get(0).key()) == -1) {
             return -1;
         }
         for(int i = 0; i < len; i++) {
-            if(key.compareTo(keyList.get(i)) == -1 || key.compareTo(keyList.get(i)) == 0) {
+            if(key.compareTo(keyList.get(i).key()) == -1 || key.compareTo(keyList.get(i).key()) == 0) {
                 return i;
             }
         }
@@ -147,9 +147,9 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     public String toString() {
         String common = super.toString();
         StringBuilder stringBuilder = new StringBuilder();
-        System.out.println("keyList length: " + keyList.size());
+//        System.out.println("keyList length: " + keyList.size());
         for(int i = 0; i < length-1; i++) {
-            System.out.println("i:" + i);
+//            System.out.println("i:" + i);
             stringBuilder.append(keyList.get(i).key()).append(":").append(valueList.get(i)).append("|");
         }
         stringBuilder.append(keyList.get(length-1).key()).append(":").append(valueList.get(length-1));

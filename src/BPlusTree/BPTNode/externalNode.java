@@ -71,7 +71,7 @@ public class externalNode<K extends Comparable> {
     public int searchKey(K key){
         int len = keyList.size();
         for(int i = 0; i < len; i++) {
-            if(key.compareTo(keyList.get(i)) == -1) {
+            if(key.compareTo(keyList.get(i).key()) == -1) {
                 return i;
             }
         }

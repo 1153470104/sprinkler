@@ -104,6 +104,7 @@ public class externalTree<K extends Comparable> {
         }
         externalNode<K> cur = this.readNode(1*conf.pageSize);
         while(cur.getNodeType()!=1){
+//            System.out.println(cur.getNodeType());
             int pointerIndex = cur.searchKey(key1);
             cur = this.readNode(((externalNonLeaf)cur).getPointer(pointerIndex));
         }
@@ -112,6 +113,7 @@ public class externalTree<K extends Comparable> {
             if (start == -1) start = 0;
             int end = cur.searchKey(key2);
             for(int i = start; i < end; i++) {
+                //getKey already get the key-value pair
                 domainKeys.add(((externalLeaf)cur).getKey(i));
             }
             if(end < cur.getLength()) {
@@ -123,7 +125,24 @@ public class externalTree<K extends Comparable> {
                     domainKeys.add(temp);
                 }
             }
+            long next = ((externalLeaf)cur).getNextLeaf();
+            if(next == -1) {
+                return domainKeys;
+            }
+            cur = this.readNode(next);
+
         }
         return domainKeys;
+    }
+
+    public String valueListPrint(List<BPTKey<K>> valueList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i < valueList.size(); i++) {
+            stringBuilder.append(valueList.get(i).key()).append(":");
+            stringBuilder.append(((BPTValueKey)valueList.get(i)).getValue()).append("|");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        System.out.println(stringBuilder.toString());
+        return stringBuilder.toString();
     }
 }
