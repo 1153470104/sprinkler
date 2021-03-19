@@ -1,5 +1,7 @@
 package queryServer;
 
+import metadataServer.singleMetaServer;
+
 import java.util.Scanner;
 
 /**
@@ -7,8 +9,10 @@ import java.util.Scanner;
  */
 public class singleQueryServer {
     Scanner scan;
-    public singleQueryServer() {
+    public singleMetaServer metaServer;
+    public singleQueryServer(singleMetaServer metaServer) {
         scan = new Scanner(System.in);
+        this.metaServer = metaServer;
     }
 
     public void querying() {

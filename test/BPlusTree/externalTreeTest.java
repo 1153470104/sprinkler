@@ -49,7 +49,5 @@ class externalTreeTest {
         assertEquals("4:  4|6:  6|7:  7", extree.valueListPrint(extree.searchNode(4, 8)));
         assertEquals("1:  1|2:  2|4:  4|6:  6|7:  7", extree.valueListPrint(extree.searchNode(-1, 8)));
         assertEquals("21: 21|22: 22|30: 30|31: 31", extree.valueListPrint(extree.searchNode(21, 31)));
-
     }
-
 }

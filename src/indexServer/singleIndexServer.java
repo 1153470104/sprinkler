@@ -2,8 +2,10 @@ package indexServer;
 
 import BPlusTree.*;
 import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.configuration.externalConfiguration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.*;
+import metadataServer.singleMetaServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,18 +17,22 @@ import java.util.List;
 public class singleIndexServer {
 //    List<BPlusTree<K>> bptList;
     private BPlusTree<MortonCode> currentBpt;
-    private List<externalTree<MortonCode>> externalTreeList;
-    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
+//    private List<externalTree<MortonCode>> externalTreeList;
+//    private String externalBase;
+//    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
     private int time;
+    private externalConfiguration conf;
+    private singleMetaServer metaServer;
 
     dataTool dt;
 
-    public singleIndexServer(String dataPath, int m) throws IOException {
+    public singleIndexServer(String dataPath, int m, singleMetaServer metaServer) throws IOException {
         this.dt = new dataTool(dataPath);
-        this.externalTreeList = new ArrayList<>();
-        this.treeList = new ArrayList<>();
-        this.treeList.add(new BPlusTreeScratched<MortonCode>(m));
-        currentBpt = treeList.get(0);
+//        this.externalTreeList = new ArrayList<>();
+        this.conf = new externalConfiguration(8, 21, long.class, String.class);
+        currentBpt = new BPlusTreeScratched<MortonCode>(m);
+//        this.externalBase = externalBase;
+        this.metaServer = metaServer;
 //        bptList = new ArrayList<>();
 //        bptList.add(currentBpt);
     }
@@ -50,21 +56,28 @@ public class singleIndexServer {
             }
 
             // 1.0版本
+//            if (currentBpt.isBlockFull()) {
+//                System.out.print("finish data region ");
+////                System.out.println(treeList.size());
+//                currentBpt.printInfo();
+//                currentBpt.setEndTime(this.time);
+//                currentBpt = new BPlusTreeTemplated<MortonCode>((BPlusTree<MortonCode>)currentBpt);
+//                flushed = true;
+//            }
+
+            // 2.0版本
+            // if block full, store it in the disk
             if (currentBpt.isBlockFull()) {
                 System.out.print("finish data region ");
-                System.out.println(treeList.size());
-                currentBpt.printInfo();
                 currentBpt.setEndTime(this.time);
-                treeList.add(new BPlusTreeTemplated<MortonCode>((BPlusTree<MortonCode>)currentBpt));
-                currentBpt = treeList.get(treeList.size()-1);
+                currentBpt.printInfo();
+                //flush old tree into disk
+                metaServer.addTree(new externalTree<MortonCode>(
+                        currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
+                //create a new template tree
+                currentBpt = new BPlusTreeTemplated<MortonCode>(currentBpt);
                 flushed = true;
             }
-
-//            //if block full, store it in the disk
-//            if (currentBpt.isBlockFull()) {
-//                externalBPlusTreeList.add(new externalBPlusTree<MortonCode>(currentBpt));
-//                currentBpt = new BPlusTreeTemplated<MortonCode>((BPlusTreeCommon<MortonCode>)currentBpt);
-//            }
 
             try{
                 Thread.sleep(50);

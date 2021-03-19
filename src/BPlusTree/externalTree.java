@@ -31,12 +31,13 @@ public class externalTree<K extends Comparable> {
     private long totalPages;
     private externalNode root;
     private int m;
+    private String filePath;
 
     /**
      * init of an external tree
      * @param tree the tree in memory
      * @param filePath the file to store external tree
-     * @param conf the configuration of external tree
+     * @param conf the configuration of external tre
      * @throws IOException be thrown when an I/O operation fails
      */
     public externalTree(BPlusTree<K> tree, String filePath, externalConfiguration conf) throws IOException {
@@ -48,6 +49,8 @@ public class externalTree<K extends Comparable> {
         this.treeFile = tree.storeFile(filePath, conf);
         this.totalPages = treeFile.length() / conf.pageSize;
         this.m = tree.m;
+        this.filePath = filePath;
+
     }
 
     /**
@@ -144,5 +147,33 @@ public class externalTree<K extends Comparable> {
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
         System.out.println(stringBuilder.toString());
         return stringBuilder.toString();
+    }
+
+    public int getTimeStart() {
+        return timeStart;
+    }
+
+    public int getTimeEnd() {
+        return timeEnd;
+    }
+
+    public K getKeyStart() {
+        return keyStart;
+    }
+
+    public K getKeyEnd() {
+        return keyEnd;
+    }
+
+    public long getTotalPages() {
+        return totalPages;
+    }
+
+    public int getM() {
+        return m;
+    }
+
+    public String getFilePath() {
+        return filePath;
     }
 }

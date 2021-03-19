@@ -1,6 +1,7 @@
 package client;
 
 import indexServer.*;
+import metadataServer.singleMetaServer;
 import queryServer.*;
 
 import java.io.FileNotFoundException;
@@ -14,11 +15,13 @@ import java.io.IOException;
 public class singleTreeClient {
     private static singleIndexServer indexServer;
     private static singleQueryServer queryServer;
+    private static singleMetaServer metaServer = new singleMetaServer("resource/database/0319-");
 
     static {
         try {
-            indexServer = new singleIndexServer("resource/data/100000s.txt", 20);
-            queryServer = new singleQueryServer();
+            indexServer = new singleIndexServer(
+                    "resource/data/100000s.txt", 20, metaServer);
+            queryServer = new singleQueryServer(metaServer);
         } catch (IOException e) {
             e.printStackTrace();
         }

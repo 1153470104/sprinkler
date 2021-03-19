@@ -215,7 +215,7 @@ public abstract class BPlusTree<K extends Comparable>{
      * @return a boolean value of if the block is full
      */
     public boolean isBlockFull() {
-        if (this.entryNum < 5000) {
+        if (this.entryNum < 500) {
             return false;
         }
         return true;
