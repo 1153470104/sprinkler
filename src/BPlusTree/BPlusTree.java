@@ -85,6 +85,8 @@ public abstract class BPlusTree<K extends Comparable>{
      */
     public abstract List<BPTKey<K>> search(K key1, K key2);
 
+    public abstract List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2);
+
     /**
      * getter of start time
      * @return the start time of the tree

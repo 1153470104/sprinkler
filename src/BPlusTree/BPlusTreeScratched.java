@@ -1,9 +1,13 @@
 package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
+import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.BPTNode.*;
+import BPlusTree.keyType.MortonCode;
+import dispatcher.dataTool;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -96,6 +100,22 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
             return null;
         }
         return nodeList;
+    }
+
+    @Override
+    public List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2) {
+        List<BPTKey<K>> domainKeys = new LinkedList<>();
+        List<BPTKey<K>> rawKeys = this.search(key1, key2);
+        for(BPTKey k: rawKeys) {
+            //TODO  this place is not generic any more,
+            //TODO  the timestamp should have a better way to be brought in
+            //TODO  maybe the better way is to let every type realize it in dataTool,
+            //TODO  but I think there must be a better way
+            if(dataTool.inTimeDomain((BPTValueKey<MortonCode, String>) k, timeStart, timeEnd)) {
+                domainKeys.add(k);
+            }
+        }
+        return domainKeys;
     }
 
 

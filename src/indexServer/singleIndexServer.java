@@ -76,6 +76,7 @@ public class singleIndexServer {
                         currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
                 //create a new template tree
                 currentBpt = new BPlusTreeTemplated<MortonCode>(currentBpt);
+                metaServer.update(time, currentBpt); //update the time in metaServer
                 flushed = true;
             }
 

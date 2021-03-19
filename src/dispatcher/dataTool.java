@@ -106,6 +106,15 @@ public class dataTool {
         return null;
     }
 
+    public static String listToString(List<BPTKey<MortonCode>> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(BPTKey<MortonCode> k: list) {
+            stringBuilder.append(k.key()).append(":");
+            stringBuilder.append(((BPTValueKey<MortonCode, String>)k).getValue()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
 //    public List<BPTKey> entryList() throws IOException {
 //        List<BPTKey> list = new ArrayList<>();
 //        BufferedReader in = new BufferedReader(new FileReader(dataPath));
