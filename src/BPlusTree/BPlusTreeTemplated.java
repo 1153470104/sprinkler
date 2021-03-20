@@ -249,6 +249,7 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
 //            System.out.println("shit");
             return;
         }
+
 //        System.out.println("why");
 //        System.out.println("leafNum: " + leafNum + ", entryNum: " + entryNum);
 //        System.out.println();
@@ -388,8 +389,8 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
             }
             sum = sum-1;
         } while(tempNode.getFather() != null);
-        System.out.println("balanced!");
-        this.printInfo();
+//        System.out.println("balanced!");
+//        this.printInfo();
     }
 
 }

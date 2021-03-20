@@ -27,6 +27,9 @@ public class singleTreeClient {
         }
     }
 
+    /**
+     * indexing thread
+     */
     static class indexThread extends Thread{
         public void run(){
             try {
@@ -37,9 +40,16 @@ public class singleTreeClient {
         }
     }
 
+    /**
+     * querying thread
+     */
     static class queryThread extends Thread{
         public void run(){
-            queryServer.querying();
+            try {
+                queryServer.querying();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

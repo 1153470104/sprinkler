@@ -52,7 +52,6 @@ public class externalTree<K extends Comparable> {
         this.totalPages = treeFile.length() / conf.pageSize;
         this.m = tree.m;
         this.filePath = filePath;
-
     }
 
     /**

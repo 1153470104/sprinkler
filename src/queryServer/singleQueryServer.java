@@ -41,6 +41,7 @@ public class singleQueryServer {
             queryTimeEnd = Integer.parseInt(queryValue.get(1));
             startKey = new MortonCode(queryValue.get(2));
             endKey = new MortonCode(queryValue.get(3));
+            System.out.println();
             List<BPTKey<MortonCode>> result = metaServer.searchKey(queryTimeStart, queryTimeEnd, startKey, endKey);
             System.out.println(dataTool.listToString(result)); // TODO maybe could make some output
 

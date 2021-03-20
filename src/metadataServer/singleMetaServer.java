@@ -17,7 +17,6 @@ public class singleMetaServer {
     private int boundTime;
     private BPlusTree<MortonCode> inMemoryTree;
 
-
     public singleMetaServer(String dataPath) {
         externalTreeList = new ArrayList<>();
         this.dataPath = dataPath;
@@ -51,18 +50,22 @@ public class singleMetaServer {
             int startTime, int endTime, MortonCode startkey, MortonCode endkey) throws IOException {
 
         List<BPTKey<MortonCode>> keyList = new LinkedList<>();
-        for(externalTree<MortonCode> tree: externalTreeList) {
-            List<BPTKey<MortonCode>> treeKeyList = new LinkedList<>();
-            if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {
-                treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
-            } else if(tree.getTimeStart() >= startTime && tree.getTimeEnd() <= endTime) {
-                treeKeyList = tree.searchNode(startkey, endkey);
-            } else if(tree.getTimeStart() <= endTime && tree.getTimeEnd() >= endTime) {
-                treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
+        // if the time region covers the external part of data
+        if(this.boundTime > startTime) {
+            for(externalTree<MortonCode> tree: externalTreeList) {
+                List<BPTKey<MortonCode>> treeKeyList = new LinkedList<>();
+                if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {
+                    treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
+                } else if(tree.getTimeStart() >= startTime && tree.getTimeEnd() <= endTime) {
+                    treeKeyList = tree.searchNode(startkey, endkey);
+                } else if(tree.getTimeStart() <= endTime && tree.getTimeEnd() >= endTime) {
+                    treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
+                }
+                keyList.addAll(treeKeyList);
             }
-            keyList.addAll(treeKeyList);
         }
 
+        // search the in memory data
         if(this.boundTime < endTime) {
             keyList.addAll(inMemoryTree.search(startTime, endTime, startkey, endkey));
         }
