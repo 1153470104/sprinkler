@@ -47,12 +47,13 @@ public class singleMetaServer {
     // TODO synchronization should be considered
     // TODO this part just have to make sure no more new external tree being flushed into metadata
     public List<BPTKey<MortonCode>> searchKey(
-            int startTime, int endTime, MortonCode startkey, MortonCode endkey) throws IOException {
+            int startTime, int endTime, MortonCode startkey, MortonCode endkey) throws IOException, NullPointerException {
 
         List<BPTKey<MortonCode>> keyList = new LinkedList<>();
         // if the time region covers the external part of data
         if(this.boundTime > startTime) {
             for(externalTree<MortonCode> tree: externalTreeList) {
+                System.out.println("metaServer");
                 List<BPTKey<MortonCode>> treeKeyList = new LinkedList<>();
                 if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {
                     treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
@@ -67,7 +68,10 @@ public class singleMetaServer {
 
         // search the in memory data
         if(this.boundTime < endTime) {
-            keyList.addAll(inMemoryTree.search(startTime, endTime, startkey, endkey));
+//            System.out.println("test query out");
+            List<BPTKey<MortonCode>> treeKeyList = inMemoryTree.search(startTime, endTime, startkey, endkey);
+//            System.out.println("test query out2");
+            keyList.addAll(treeKeyList);
         }
 
         return keyList;

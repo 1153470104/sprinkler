@@ -153,7 +153,7 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
             stringBuilder.append(keyList.get(i).key()).append(":").append(valueList.get(i)).append("|");
         }
         stringBuilder.append(keyList.get(length-1).key()).append(":").append(valueList.get(length-1));
-        System.out.println(common+stringBuilder.toString());
+//        System.out.println(common+stringBuilder.toString());
         return common+stringBuilder.toString();
     }
 }

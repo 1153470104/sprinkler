@@ -104,9 +104,11 @@ public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
 
     @Override
     public List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2) {
+//        System.out.println("test query");
         List<BPTKey<K>> domainKeys = new LinkedList<>();
         List<BPTKey<K>> rawKeys = this.search(key1, key2);
         for(BPTKey k: rawKeys) {
+//            System.out.println("test query2");
             //TODO  this place is not generic any more,
             //TODO  the timestamp should have a better way to be brought in
             //TODO  maybe the better way is to let every type realize it in dataTool,

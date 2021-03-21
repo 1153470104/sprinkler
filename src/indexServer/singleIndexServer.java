@@ -39,7 +39,7 @@ public class singleIndexServer {
 
     /**
      * the indexing starting function
-     * @throws IOException is thrown when a data I/O fails
+     * @throws IOException is thrown when a data I/O operation fails
      */
     public void startIndexing() throws IOException {
         //get data
@@ -47,6 +47,9 @@ public class singleIndexServer {
         BPTKey<MortonCode> keyEntry = dt.getEntry();
         this.time = dt.getTime(); // use dt to get dynamic time, update every time after getEntry operation
         currentBpt.setStartTime(this.time);
+        /* forget to update at very first,
+        so null pointer exception occurs in metaServer's search*/
+        metaServer.update(-1, currentBpt);
         //iterate & deal with data
         boolean flushed = false;
         while (keyEntry != null) {

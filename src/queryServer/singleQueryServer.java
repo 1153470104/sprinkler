@@ -28,7 +28,7 @@ public class singleQueryServer {
      * the query line should be like that:
      * {srart time};{end time};{start coordinate};{end coordinate}
      */
-    public void querying() throws IOException {
+    public void querying() throws IOException, NullPointerException{
         System.out.println("Query start: ");
         int queryTimeStart;
         int queryTimeEnd;

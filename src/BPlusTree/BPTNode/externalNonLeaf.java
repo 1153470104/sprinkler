@@ -84,7 +84,7 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
             stringBuilder.append(this.keyList.get(i).key()).append("|");
         }
         stringBuilder.append(this.keyList.get(length-1).key());
-        System.out.println(common + stringBuilder.toString());
+//        System.out.println(common + stringBuilder.toString());
         return common + stringBuilder.toString();
     }
 }
