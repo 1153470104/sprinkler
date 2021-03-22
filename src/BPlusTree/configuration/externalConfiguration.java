@@ -60,13 +60,16 @@ public class externalConfiguration {
      * @return the key read from byte buffer
      */
     public Object readKey(ByteBuffer bbuffer) {
+//        System.out.println("start conf readkey");
         if(keyType == Integer.class) {
             return bbuffer.getInt();
         } else if (keyType == Long.class) {
             // TODO same stupid adaption as writeKey before
             long temp = bbuffer.getLong();
+//            System.out.println("the read key part"+temp);
             return new MortonCode(temp);
         }
+//        System.out.println("end conf readkey");
         return null;
     }
 

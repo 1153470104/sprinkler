@@ -74,6 +74,7 @@ public class externalTree<K extends Comparable> {
             // TODO get the key-value pair
             ((externalNonLeaf)node).addPointer(bbuffer.getLong());
             for(int i = 0; i < length; i++) {
+//                System.out.println("conf readkey level");
                 node.addKey((K)conf.readKey(bbuffer));
                 ((externalNonLeaf)node).addPointer(bbuffer.getLong());
             }
@@ -106,15 +107,16 @@ public class externalTree<K extends Comparable> {
             System.out.println("oops, the domain do not exists");
             return domainKeys;
         }
+//        System.out.println("read node!");
         externalNode<K> cur = this.readNode(1*conf.pageSize);
         while(cur.getNodeType()!=1){
-            System.out.print("node level ");
-            System.out.println(cur.toString());
+//            System.out.println("node level ");
+//            System.out.println(cur.toString());
             int pointerIndex = cur.searchKey(key1);
             cur = this.readNode(((externalNonLeaf)cur).getPointer(pointerIndex));
         }
         while(cur.searchKey(key2)!=-1) {
-            System.out.println("leaf level");
+//            System.out.println("leaf level");
             int start = cur.searchKey(key1);
             if (start == -1) start = 0;
             int end = cur.searchKey(key2);
@@ -153,7 +155,7 @@ public class externalTree<K extends Comparable> {
      * @throws IOException thrown when any I/O function fails
      */
     public List<BPTKey<K>> searchNode(int tStart, int tEnd, K key1, K key2) throws IOException {
-        System.out.println("externalTree");
+//        System.out.println("externalTree");
         List<BPTKey<K>> domainKeys = new LinkedList<>();
         List<BPTKey<K>> rawKeys = this.searchNode(key1, key2);
         for(BPTKey k: rawKeys) {

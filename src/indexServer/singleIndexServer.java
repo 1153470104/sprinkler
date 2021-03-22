@@ -29,7 +29,9 @@ public class singleIndexServer {
     public singleIndexServer(String dataPath, int m, singleMetaServer metaServer) throws IOException {
         this.dt = new dataTool(dataPath);
 //        this.externalTreeList = new ArrayList<>();
-        this.conf = new externalConfiguration(8, 21, long.class, String.class);
+        /*jesus!!! one bug occur: Long.class was mis-write into long.class
+        * so that, the conf.readKey function fails !!! */
+        this.conf = new externalConfiguration(8, 21, Long.class, String.class);
         currentBpt = new BPlusTreeScratched<MortonCode>(m);
 //        this.externalBase = externalBase;
         this.metaServer = metaServer;
