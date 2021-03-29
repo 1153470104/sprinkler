@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class multiIndexServer {
     //    List<BPlusTree<K>> bptList;
-//    private BPlusTree<MortonCode> currentBpt;
+    private BPlusTree<MortonCode> currentBpt;
     private int time;
     private externalConfiguration conf;
     private multiMetaServer metaServer;
@@ -44,55 +44,55 @@ public class multiIndexServer {
         System.out.println("****************** Index start ******************");
         BPTKey<MortonCode> keyEntry = dt.getEntry();
         this.time = dt.getTime(); // use dt to get dynamic time, update every time after getEntry operation
-//        currentBpt.setStartTime(this.time);
-//        /* forget to update at very first,
-//        so null pointer exception occurs in metaServer's search*/
-//        metaServer.update(-1, currentBpt);
-//        //iterate & deal with data
-//        boolean flushed = false;
-//        while (keyEntry != null) {
-//            currentBpt.addKey(keyEntry);
-//            if(currentBpt.isTemplate()) {
-//                ((BPlusTreeTemplated)currentBpt).balance();
-//            }
-//
-//            // 1.0版本
-////            if (currentBpt.isBlockFull()) {
-////                System.out.print("finish data region ");
-//////                System.out.println(treeList.size());
-////                currentBpt.printInfo();
-////                currentBpt.setEndTime(this.time);
-////                currentBpt = new BPlusTreeTemplated<MortonCode>((BPlusTree<MortonCode>)currentBpt);
-////                flushed = true;
-////            }
-//
-//            // 2.0版本
-//            // if block full, store it in the disk
+        currentBpt.setStartTime(this.time);
+        /* forget to update at very first,
+        so null pointer exception occurs in metaServer's search*/
+        metaServer.update(-1, currentBpt);
+        //iterate & deal with data
+        boolean flushed = false;
+        while (keyEntry != null) {
+            currentBpt.addKey(keyEntry);
+            if(currentBpt.isTemplate()) {
+                ((BPlusTreeTemplated)currentBpt).balance();
+            }
+
+            // 1.0版本
 //            if (currentBpt.isBlockFull()) {
 //                System.out.print("finish data region ");
-//                currentBpt.setEndTime(this.time);
+////                System.out.println(treeList.size());
 //                currentBpt.printInfo();
-//                //flush old tree into disk
-//                metaServer.addTree(new externalTree<MortonCode>(
-//                        currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
-//                //create a new template tree
-//                currentBpt = new BPlusTreeTemplated<MortonCode>(currentBpt);
-//                metaServer.update(time, currentBpt); //update the time in metaServer
+//                currentBpt.setEndTime(this.time);
+//                currentBpt = new BPlusTreeTemplated<MortonCode>((BPlusTree<MortonCode>)currentBpt);
 //                flushed = true;
 //            }
-//
-//            try{
-//                Thread.sleep(50);
-//                keyEntry = dt.getEntry();
-//                this.time = dt.getTime();
-//                if(flushed) {
-//                    currentBpt.setStartTime(this.time);
-//                    flushed= false;
-//                }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
+
+            // 2.0版本
+            // if block full, store it in the disk
+            if (currentBpt.isBlockFull()) {
+                System.out.print("finish data region ");
+                currentBpt.setEndTime(this.time);
+                currentBpt.printInfo();
+                //flush old tree into disk
+                metaServer.addTree(new externalTree<MortonCode>(
+                        currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
+                //create a new template tree
+                currentBpt = new BPlusTreeTemplated<MortonCode>(currentBpt);
+                metaServer.update(time, currentBpt); //update the time in metaServer
+                flushed = true;
+            }
+
+            try{
+                Thread.sleep(50);
+                keyEntry = dt.getEntry();
+                this.time = dt.getTime();
+                if(flushed) {
+                    currentBpt.setStartTime(this.time);
+                    flushed= false;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 }
