@@ -112,6 +112,7 @@ public class dataTool {
             stringBuilder.append(k.key()).append(":");
             stringBuilder.append(((BPTValueKey<MortonCode, String>)k).getValue()).append("\n");
         }
+        stringBuilder.append("Total Entry Num: ").append(list.size());
         return stringBuilder.toString();
     }
 

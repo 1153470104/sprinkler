@@ -6,10 +6,7 @@ import dispatcher.dataTool;
 import metadataServer.singleMetaServer;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * query server
@@ -36,7 +33,14 @@ public class singleQueryServer {
         MortonCode endKey;
         while(scan.hasNext()){
             String s = scan.nextLine();
-            List<String> queryValue = queryLineParse(s);
+             List<String> queryValue;
+             /* use no such element exception of get rid of the wrong input problem*/
+            try {
+                queryValue = queryLineParse(s);
+             } catch (NoSuchElementException e) {
+                System.out.println("Illegal input, please query again.");
+                continue;
+            }
             queryTimeStart = Integer.parseInt(queryValue.get(0));
             queryTimeEnd = Integer.parseInt(queryValue.get(1));
             startKey = new MortonCode(queryValue.get(2));
@@ -60,7 +64,7 @@ public class singleQueryServer {
      *     which is start-time end-time start-coordinate
      *     and end-coordinate respectively
      */
-    private List<String> queryLineParse(String line) {
+    private List<String> queryLineParse(String line) throws NoSuchElementException{
         List<String> queryContent = new LinkedList<>();
         StringTokenizer st = new StringTokenizer(line, ";");
         queryContent.add(st.nextToken());
