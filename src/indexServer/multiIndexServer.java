@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class multiIndexServer {
     //    List<BPlusTree<K>> bptList;
-    private BPlusTree<MortonCode> currentBpt;
+    private BPlusTree<MortonCode, String> currentBpt;
     private int time;
     private externalConfiguration conf;
     private multiMetaServer metaServer;
@@ -73,10 +73,10 @@ public class multiIndexServer {
                 currentBpt.setEndTime(this.time);
                 currentBpt.printInfo();
                 //flush old tree into disk
-                metaServer.addTree(new externalTree<MortonCode>(
+                metaServer.addTree(new externalTree<MortonCode, String>(
                         currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
                 //create a new template tree
-                currentBpt = new BPlusTreeTemplated<MortonCode>(currentBpt);
+                currentBpt = new BPlusTreeTemplated<MortonCode, String>(currentBpt);
                 metaServer.update(time, currentBpt); //update the time in metaServer
                 flushed = true;
             }

@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @param <K> the key's type
  */
-public class externalTree<K extends Comparable> {
+public class externalTree<K extends Comparable, V> {
     private int timeStart;
     private int timeEnd;
     private K keyStart;
@@ -42,11 +42,11 @@ public class externalTree<K extends Comparable> {
      * @param conf the configuration of external tre
      * @throws IOException be thrown when an I/O operation fails
      */
-    public externalTree(BPlusTree<K> tree, String filePath, externalConfiguration conf) throws IOException {
-        this.timeStart = ((BPlusTree<K>)tree).getTimeStart();
-        this.timeEnd = ((BPlusTree<K>)tree).getTimeEnd();
-        this.keyStart = ((BPlusTree<K>)tree).getKeyStart();
-        this.keyEnd = ((BPlusTree<K>)tree).getKeyEnd();
+    public externalTree(BPlusTree<K, V> tree, String filePath, externalConfiguration conf) throws IOException {
+        this.timeStart = ((BPlusTree<K, V>)tree).getTimeStart();
+        this.timeEnd = ((BPlusTree<K, V>)tree).getTimeEnd();
+        this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();
+        this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
         this.conf = conf;
         this.treeFile = tree.storeFile(filePath, conf);
         this.totalPages = treeFile.length() / conf.pageSize;

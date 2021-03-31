@@ -18,7 +18,7 @@ import java.util.List;
  * 基于模板的B+树有一个比较重要的特点就是它的非叶节点不再出现在子节点中
  * 所以估计以后要用的时候得注意这一点, 目前还不知道会有什么后果
  */
-public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
+public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V> {
     private double skewness = 0.2; // the limit of skewness
     private int leafNum = 0; //the total number of leafNode
 
@@ -26,17 +26,17 @@ public class BPlusTreeTemplated<K extends Comparable> extends BPlusTree<K> {
      * init of template tree
      * @param tree the scratched B+ tree
      */
-    public BPlusTreeTemplated(BPlusTree<K> tree) {
+    public BPlusTreeTemplated(BPlusTree<K, V> tree) {
         super(tree.getM());
         this.onlyRoot = false;
         this.templateBased = true;
         this.root = tree.rootCopy();
         this.entryNum = 0;
 
-        this.timeStart = ((BPlusTree<K>)tree).getTimeStart();
-        this.timeEnd = ((BPlusTree<K>)tree).getTimeEnd();
-        this.keyStart = ((BPlusTree<K>)tree).getKeyStart();
-        this.keyEnd = ((BPlusTree<K>)tree).getKeyEnd();
+        this.timeStart = ((BPlusTree<K, V>)tree).getTimeStart();
+        this.timeEnd = ((BPlusTree<K, V>)tree).getTimeEnd();
+        this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();
+        this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
     }
 
     /**

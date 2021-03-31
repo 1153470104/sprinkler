@@ -12,10 +12,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class singleMetaServer {
-    private List<externalTree<MortonCode>> externalTreeList;
+    private List<externalTree<MortonCode, String>> externalTreeList;
     private String dataPath;
     private int boundTime;
-    private BPlusTree<MortonCode> inMemoryTree;
+    private BPlusTree<MortonCode, String> inMemoryTree;
 
     public singleMetaServer(String dataPath) {
         externalTreeList = new ArrayList<>();
@@ -27,12 +27,12 @@ public class singleMetaServer {
      * @param time the current boundary time
      * @param tree the current in memory tree
      */
-    public void update(int time, BPlusTree<MortonCode> tree) {
+    public void update(int time, BPlusTree<MortonCode, String> tree) {
         boundTime = time;
         inMemoryTree = tree;
     }
 
-    public void addTree(externalTree<MortonCode> tree) {
+    public void addTree(externalTree<MortonCode, String> tree) {
         this.externalTreeList.add(tree);
     }
 
@@ -52,7 +52,7 @@ public class singleMetaServer {
         List<BPTKey<MortonCode>> keyList = new LinkedList<>();
         // if the time region covers the external part of data
         if(this.boundTime > startTime) {
-            for(externalTree<MortonCode> tree: externalTreeList) {
+            for(externalTree<MortonCode, String> tree: externalTreeList) {
 //                System.out.println("metaServer");
                 List<BPTKey<MortonCode>> treeKeyList = new LinkedList<>();
                 if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {

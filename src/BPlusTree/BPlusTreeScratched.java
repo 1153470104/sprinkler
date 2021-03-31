@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @param <K> the key's type
  */
-public class BPlusTreeScratched<K extends Comparable> extends BPlusTree<K> {
+public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V> {
 
     public BPlusTreeScratched(int m){
         super(m);

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BPlusTreeTemplatedTest {
     testTool ts = new testTool();
-    BPlusTree<Integer> copyTree;
+    BPlusTree<Integer, String> copyTree;
 
     /**
      * test content
@@ -19,7 +19,7 @@ class BPlusTreeTemplatedTest {
     @org.junit.jupiter.api.Test
     void template1() {
         ts.makeBPT(5, 5);
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
 //        assertEquals("| 2 |\n| 0 1 | 2 3 4 |", ts.bpt().printBasic());
         assertEquals("| 2 |\n| | |", copyTree.printBasic());
     }
@@ -32,12 +32,12 @@ class BPlusTreeTemplatedTest {
     @org.junit.jupiter.api.Test
     void template2() {
         ts.makeBPT(5, 10);
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
 //        assertEquals("| 2 4 6 |\n| 0 1 | 2 3 | 4 5 | 6 7 8 9 |", ts.bpt().printBasic());
         assertEquals("| 2 4 6 |\n| | | | |", copyTree.printBasic());
         System.out.println();
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
 //        assertEquals("| 4 7 10 30 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 35 45 |", ts.bpt().printBasic());
         assertEquals("| 4 7 10 30 |\n| | | | | |", copyTree.printBasic());
     }
@@ -50,12 +50,12 @@ class BPlusTreeTemplatedTest {
     @org.junit.jupiter.api.Test
     void template3() {
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36/*, 39, 49*/));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
 //        assertEquals("| 10 |\n| 4 7 | 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 21 22 | 30 31 | 35 36 45 |", ts.bpt().printBasic());
         assertEquals("| 10 |\n| 4 7 | 30 35 |\n| | | | | | |", copyTree.printBasic());
         System.out.println();
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
 //        assertEquals("| 10 |\n| 4 7 | 15 30 35 |\n| 1 2 | 4 6 | 7 9 | 10 13 | 15 21 22 | 30 31 | 35 36 45 |", ts.bpt().printBasic());
         assertEquals("| 10 |\n| 4 7 | 15 30 35 |\n| | | | | | | |", copyTree.printBasic());
     }
@@ -67,7 +67,7 @@ class BPlusTreeTemplatedTest {
     @org.junit.jupiter.api.Test
     void addkey1() {
         ts.makeBPT(5, 10);
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         //use printData to test the
         assertEquals("| |", copyTree.printData());
         copyTree.addKey(new BPTValueKey<Integer, String>(5, Integer.toString(5)));
@@ -83,7 +83,7 @@ class BPlusTreeTemplatedTest {
 
         // assigned number
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         copyTree.addKey(new BPTValueKey<Integer, String>(10, Integer.toString(10)));
         copyTree.addKey(new BPTValueKey<Integer, String>(1, Integer.toString(1)));
         copyTree.addKey(new BPTValueKey<Integer, String>(27, Integer.toString(27)));
@@ -105,7 +105,7 @@ class BPlusTreeTemplatedTest {
     @org.junit.jupiter.api.Test
     void addkey2() {
         ts.makeBPT(5, 10);
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         //use printData to test the
         assertEquals("| |", copyTree.printData());
         copyTree.addKey(new BPTValueKey<Integer, String>(5, Integer.toString(5)));
@@ -127,7 +127,7 @@ class BPlusTreeTemplatedTest {
 
 
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         copyTree.addKey(new BPTValueKey<Integer, String>(10, Integer.toString(10)));
         copyTree.addKey(new BPTValueKey<Integer, String>(1, Integer.toString(1)));
         copyTree.addKey(new BPTValueKey<Integer, String>(27, Integer.toString(27)));
@@ -149,7 +149,7 @@ class BPlusTreeTemplatedTest {
     void balance() {
         //************************* 2-layer test *****************************//
         ts.makeBPT(5, 10);
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         copyTree.addKey(new BPTValueKey<Integer, String>(5, Integer.toString(5)));
         copyTree.addKey(new BPTValueKey<Integer, String>(3, Integer.toString(5)));
         copyTree.addKey(new BPTValueKey<Integer, String>(0, Integer.toString(0)));
@@ -171,7 +171,7 @@ class BPlusTreeTemplatedTest {
 
         //************************* 3-layer test *****************************//
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31, 36, 13, 15));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         copyTree.addKey(new BPTValueKey<Integer, String>(10, Integer.toString(10)));
         copyTree.addKey(new BPTValueKey<Integer, String>(1, Integer.toString(1)));
         copyTree.addKey(new BPTValueKey<Integer, String>(27, Integer.toString(27)));
@@ -188,7 +188,7 @@ class BPlusTreeTemplatedTest {
                 , copyTree.printBasic());
 
         ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 15, 1, 12, 4, 6, 9, 40, 22, 28, 36, 13, 50, 18, 19, 2, 5, 41, 42));
-        copyTree = new BPlusTreeTemplated<Integer>(ts.bpt());
+        copyTree = new BPlusTreeTemplated<Integer, String>(ts.bpt());
         copyTree.addKey(ts.IntegerKey(1)); copyTree.addKey(ts.IntegerKey(2));
         copyTree.addKey(ts.IntegerKey(13)); copyTree.addKey(ts.IntegerKey(19));
         copyTree.addKey(ts.IntegerKey(24)); copyTree.addKey(ts.IntegerKey(26));

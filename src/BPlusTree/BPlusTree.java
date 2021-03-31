@@ -38,7 +38,7 @@ import java.util.*;
  *       TODO the problem is we can't know the type of value on tree's level...
  *
  */
-public abstract class BPlusTree<K extends Comparable>{
+public abstract class BPlusTree<K extends Comparable, V>{
     protected boolean onlyRoot; // judge if there's only one root node
     protected int m; // capacity of node
     protected int maxNumber;

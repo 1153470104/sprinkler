@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class singleIndexServer {
 //    List<BPlusTree<K>> bptList;
-    private BPlusTree<MortonCode> currentBpt;
+    private BPlusTree<MortonCode, String> currentBpt;
     private int time;
     private externalConfiguration conf;
     private singleMetaServer metaServer;
@@ -32,7 +32,7 @@ public class singleIndexServer {
         /*jesus!!! one bug occur: Long.class was mis-write into long.class
         * so that, the conf.readKey function fails !!! */
         this.conf = new externalConfiguration(8, 21, Long.class, String.class);
-        currentBpt = new BPlusTreeScratched<MortonCode>(m);
+        currentBpt = new BPlusTreeScratched<MortonCode, String>(m);
 //        this.externalBase = externalBase;
         this.metaServer = metaServer;
 //        bptList = new ArrayList<>();
@@ -77,10 +77,10 @@ public class singleIndexServer {
                 currentBpt.setEndTime(this.time);
                 currentBpt.printInfo();
                 //flush old tree into disk
-                metaServer.addTree(new externalTree<MortonCode>(
+                metaServer.addTree(new externalTree<MortonCode, String>(
                         currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
                 //create a new template tree
-                currentBpt = new BPlusTreeTemplated<MortonCode>(currentBpt);
+                currentBpt = new BPlusTreeTemplated<MortonCode, String>(currentBpt);
                 metaServer.update(time, currentBpt); //update the time in metaServer
                 flushed = true;
             }

@@ -8,7 +8,8 @@ import java.util.List;
 
 public class testTool {
     private List<BPTKey<Integer>> keyList;
-    private BPlusTree<Integer> bpt;
+    private BPlusTree<Integer, String> bpt;
+    private BPlusTree<Integer, Integer> intBpt;
 
     public testTool(){
     }
@@ -17,12 +18,17 @@ public class testTool {
         return new BPTValueKey<Integer, String>(i, Integer.toString(i));
     }
 
-    public BPlusTree<Integer> bpt() {
+    public BPlusTree<Integer, String> bpt() {
         return bpt;
     }
 
+    public BPlusTree<Integer, Integer> intBpt() {
+        return intBpt;
+    }
+
     public void initBPT(int m) {
-        bpt = new BPlusTreeScratched<Integer>(m);
+        bpt = new BPlusTreeScratched<Integer, String>(m);
+        intBpt = new BPlusTreeScratched<Integer, Integer>(m);
     }
 
     public void initKeyList(int number) {
@@ -50,7 +56,7 @@ public class testTool {
                 }
                 bpt.addKey(new BPTValueKey<Integer, String>(i, s.toString()));
             } else if(valueType.equals("Integer"))  {
-                bpt.addKey(new BPTValueKey<Integer, Integer>(i, i));
+                intBpt.addKey(new BPTValueKey<Integer, Integer>(i, i));
             }
         }
     }
