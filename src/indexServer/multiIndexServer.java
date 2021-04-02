@@ -6,33 +6,35 @@ import BPlusTree.BPlusTree;
 import BPlusTree.configuration.externalConfiguration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.dataTool;
+import dispatcher.dispatcher;
 import metadataServer.multiMetaServer;
 
 import java.io.IOException;
 
+/**
+ * this Server is use to index data with multi other index server
+ */
 public class multiIndexServer {
-    //    List<BPlusTree<K>> bptList;
     private BPlusTree<MortonCode, String> currentBpt;
     private int time;
     private externalConfiguration conf;
     private multiMetaServer metaServer;
+    private int id;
 //    private List<externalTree<MortonCode>> externalTreeList;
 //    private String externalBase;
 //    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
 
-    dataTool dt;
+    private dispatcher dp;
 
-    public multiIndexServer(String dataPath, int m, multiMetaServer metaServer) throws IOException {
-        this.dt = new dataTool(dataPath);
-//        this.externalTreeList = new ArrayList<>();
+    public multiIndexServer(int m, multiMetaServer metaServer, dispatcher dp, int id) throws IOException {
+        this.id = id;
+        this.dp = dp;
         /*jesus!!! one bug occur: Long.class was mis-write into long.class
          * so that, the conf.readKey function fails !!! */
         this.conf = new externalConfiguration(8, 21, Long.class, String.class);
-//        currentBpt = new BPlusTreeScratched<MortonCode>(m);
+        currentBpt = new BPlusTreeScratched<MortonCode, String>(m);
 //        this.externalBase = externalBase;
         this.metaServer = metaServer;
-//        bptList = new ArrayList<>();
-//        bptList.add(currentBpt);
     }
 
     /**
@@ -42,8 +44,9 @@ public class multiIndexServer {
     public void startIndexing() throws IOException {
         //get data
         System.out.println("****************** Index start ******************");
-        BPTKey<MortonCode> keyEntry = dt.getEntry();
-        this.time = dt.getTime(); // use dt to get dynamic time, update every time after getEntry operation
+        //TODO 还得考虑getEntry null的问题
+        BPTKey<MortonCode> keyEntry = dp.getEntry(id); // TODO 这一块需要考虑synchronize
+        this.time = dp.getTime(); // use dp to get dynamic time, update every time after getEntry operation
         currentBpt.setStartTime(this.time);
         /* forget to update at very first,
         so null pointer exception occurs in metaServer's search*/
@@ -83,8 +86,8 @@ public class multiIndexServer {
 
             try{
                 Thread.sleep(50);
-                keyEntry = dt.getEntry();
-                this.time = dt.getTime();
+                keyEntry = dp.getEntry(id);  // TODO 这一块需要考虑synchronize
+                this.time = dp.getTime();
                 if(flushed) {
                     currentBpt.setStartTime(this.time);
                     flushed= false;
