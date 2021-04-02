@@ -8,14 +8,13 @@ import java.util.List;
 /**
  * the non-leaf node of R tree
  * @param <K> the type of up-down coordinate data type
- * @param <V> the type of horizontal coordinate data type
  */
-public abstract class RTreeNode<K, V> {
+public abstract class RTreeNode<K> {
     protected K top;
     protected K bottom;
-    protected V left;
-    protected V right;
-    protected List<RTreeNode<K, V>> childList;
+    protected int timeStart;
+    protected int timeEnd;
+    protected List<RTreeNode<K>> childList;
 
     public RTreeNode() {
         this.childList = new ArrayList<>();
@@ -26,18 +25,32 @@ public abstract class RTreeNode<K, V> {
      * with the corner position as input
      * @param top the top boundary of search area
      * @param bottom the bottom boundary of search area
-     * @param left the left boundary of search area
-     * @param right the right boundary of search area
+     * @param start the left boundary of search area aka. start time of this area
+     * @param end the right boundary of search area. end time of this area
      * @return the spatial corresponding child node
      */
-    public RTreeNode<K, V> searchNode(K top, K bottom, V left, V right) {
+    public RTreeNode<K> searchNode(K top, K bottom, int start, int end) {
         // TODO
         return null;
     }
 
-    public void add(RTreeNode<K, V> node) {
+    public List<RTreeLeaf<K>> searchChunk(K top, K bottom, int start, int end) {
+        // TODO
+        return null;
+    }
+
+    public int getLength() {
+        return childList.size();
+    }
+
+    public void add(RTreeNode<K> node) {
         this.childList.add(node);
     }
 
-    public abstract externalTree getExternalTree();
+    public RTreeNode<K> split() {
+        // TODO
+        return null;
+    }
+
+    public abstract externalTree getTree(int index);
 }

@@ -4,15 +4,15 @@ import BPlusTree.externalTree;
 
 import java.util.List;
 
-public class RTree<K, V> {
+public class RTree<K> {
     private int m;
-    private RTreeNode<K, V> root;
+    private RTreeNode<K> root;
 
     public RTree(int m) {
         this.m = m;
     }
 
-    public void add(RTreeLeaf<K, V> leaf) {
+    public void add(RTreeLeaf<K> leaf) {
         // todo
     }
 
@@ -20,7 +20,7 @@ public class RTree<K, V> {
         // todo
     }
 
-    public List<externalTree> searchTree(K top, K bottom, V left, V right) {
+    public List<externalTree> searchTree(K top, K bottom, int left, int right) {
         // todo
         return null;
     }

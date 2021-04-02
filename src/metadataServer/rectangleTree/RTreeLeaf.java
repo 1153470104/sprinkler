@@ -2,25 +2,36 @@ package metadataServer.rectangleTree;
 
 import BPlusTree.externalTree;
 
+import java.util.List;
+
 /**
  * the leaf node of R tree
  * @param <K> the type of up-down coordinate data type
- * @param <V> the type of horizontal coordinate data type
  */
-public class RTreeLeaf<K, V> extends RTreeNode<K, V>{
-    private externalTree tree;
+public class RTreeLeaf<K> extends RTreeNode<K>{
+    private List<externalTree> treeList;
 
-    public RTreeLeaf(K top, K bottom, V left, V right, externalTree tree) {
+    public RTreeLeaf(K top, K bottom, int left, int right) {
         this.top = top;
         this.bottom = bottom;
-        this.left = left;
-        this.right = right;
+        this.timeStart = left;
+        this.timeEnd = right;
         this.childList = null;
-        this.tree = tree;
     }
 
     @Override
-    public externalTree getExternalTree() {
-        return this.tree;
+    public List<RTreeLeaf<K>> searchChunk(K top, K bottom, int left, int right) {
+        return super.searchChunk(top, bottom, left, right);
+    }
+
+    @Override
+    public RTreeNode<K> split() {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public externalTree getTree(int index) {
+        return this.treeList.get(index);
     }
 }
