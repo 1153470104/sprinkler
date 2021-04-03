@@ -4,7 +4,7 @@ import BPlusTree.externalTree;
 
 import java.util.List;
 
-public class RTree<K> {
+public class RTree<K extends Comparable> {
     private int m;
     private RTreeNode<K> root;
     private int num;
@@ -12,11 +12,11 @@ public class RTree<K> {
     public RTree(int m) {
         this.num = 0;
         this.m = m;
-        this.root = new RTreeLeaf<K>(m, null, null, -1, -1, null);
+        this.root = new RTreeLeaf<K>(m, null, null, 0, -1, null);
     }
 
     public void add(K top, K bottom, int timeStart, int timeEnd, externalTree tree) {
-        // todo
+        // TODO
         RTreeNode<K> temp = root;
         while(!temp.isLeaf()) {
             temp = temp.searchNode(top, bottom, timeStart, timeEnd);
@@ -37,12 +37,8 @@ public class RTree<K> {
     public int size() {
         return this.num;
     }
-//    public void split() {
-//        // todo
-//    }
 
     public List<externalTree> searchTree(K top, K bottom, int left, int right) {
-        // todo
-        return null;
+        return root.searchChunk(new rectangle<>(top, bottom, left, right));
     }
 }

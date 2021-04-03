@@ -1,10 +1,10 @@
 package metadataServer.rectangleTree;
 
-public class rectangle<K> {
-    private K top;
-    private K bottom;
-    private int timeStart;
-    private int timeEnd;
+public class rectangle<K extends Comparable> {
+     protected K top;
+     protected K bottom;
+     protected int timeStart;
+     protected int timeEnd;
 
     public rectangle(K top, K bottom, int timeStart, int timeEnd) {
         this.top = top;
@@ -13,35 +13,8 @@ public class rectangle<K> {
         this.timeEnd = timeEnd;
     }
 
-    public void setTop(K top) {
-        this.top = top;
-    }
-
-    public void setBottom(K bottom) {
-        this.bottom = bottom;
-    }
-
-    public void setTimeStart(int timeStart) {
-        this.timeStart = timeStart;
-    }
-
-    public void setTimeEnd(int timeEnd) {
-        this.timeEnd = timeEnd;
-    }
-
-    public K getTop() {
-        return top;
-    }
-
-    public K getBottom() {
-        return bottom;
-    }
-
-    public int getTimeStart() {
-        return timeStart;
-    }
-
-    public int getTimeEnd() {
-        return timeEnd;
+    public boolean accross(rectangle<K> other) {
+        return (bottom.compareTo(other.top) == 1 && other.bottom.compareTo(top) == 1)
+                 && (timeEnd > other.timeStart && other.timeEnd > timeStart);
     }
 }
