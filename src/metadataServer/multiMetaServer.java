@@ -4,6 +4,8 @@ import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPlusTree;
 import BPlusTree.externalTree;
 import BPlusTree.keyType.MortonCode;
+import metadataServer.rectangleTree.RTree;
+import metadataServer.rectangleTree.RTreeLeaf;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,14 +13,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class multiMetaServer {
-    private List<externalTree<MortonCode, String>> externalTreeList;
+    private RTree<MortonCode> externalTreeChunk;
     private String dataPath;
-    private int boundTime;
-    private List<BPlusTree<MortonCode, String>> inMemoryTreeList;
+    private int[] boundTime;
+    private BPlusTree<MortonCode, String>[] inMemoryTreeArray;
 
-    public multiMetaServer(String dataPath) {
-        externalTreeList = new ArrayList<>();
+    /**
+     * the init function of meta server
+     * @param dataPath the path to store the external tree
+     * @param num the number of index server
+     * @param RTreeM the m of RTree
+     */
+    public multiMetaServer(String dataPath, int num, int RTreeM) {
+        this.externalTreeChunk = new RTree<>(RTreeM);
         this.dataPath = dataPath;
+        this.inMemoryTreeArray = new BPlusTree[num];
+        this.boundTime = new int[num];
+        for(int i = 0; i < num; i++) {
+            inMemoryTreeArray[i] = null;
+            boundTime[i] = -1;
+        }
     }
 
     /**
@@ -26,17 +40,17 @@ public class multiMetaServer {
      * @param time the current boundary time
      * @param tree the current in memory tree
      */
-    public void update(int time, BPlusTree<MortonCode, String> tree) {
-//        boundTime = time;
-//        inMemoryTree = tree;
+    public void update(int time, BPlusTree<MortonCode, String> tree, int id) {
+        boundTime[id] = time;
+        inMemoryTreeArray[id] = tree;
     }
 
     public void addTree(externalTree<MortonCode, String> tree) {
-        this.externalTreeList.add(tree);
+        this.externalTreeChunk.add(tree.getKeyStart(), tree.getKeyEnd(), tree.getTimeStart(), tree.getTimeEnd(), tree);
     }
 
     public int length(){
-        return externalTreeList.size();
+        return externalTreeChunk.size();
     }
 
     public String getDataPath() {
@@ -47,32 +61,27 @@ public class multiMetaServer {
     // TODO this part just have to make sure no more new external tree being flushed into metadata
     public List<BPTKey<MortonCode>> searchKey(
             int startTime, int endTime, MortonCode startkey, MortonCode endkey) throws IOException, NullPointerException {
-
         List<BPTKey<MortonCode>> keyList = new LinkedList<>();
-        // if the time region covers the external part of data
-        if(this.boundTime > startTime) {
-            for(externalTree<MortonCode, String> tree: externalTreeList) {
-//                System.out.println("metaServer");
-                List<BPTKey<MortonCode>> treeKeyList = new LinkedList<>();
-                if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {
-                    treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
-                } else if(tree.getTimeStart() >= startTime && tree.getTimeEnd() <= endTime) {
-                    treeKeyList = tree.searchNode(startkey, endkey);
-                } else if(tree.getTimeStart() <= endTime && tree.getTimeEnd() >= endTime) {
-                    treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
-                }
-                keyList.addAll(treeKeyList);
+
+        // search the in memory data
+        boolean allInMemory = true;
+        for(int i = 0; i < this.boundTime.length; i++) {
+            if(boundTime[i] < startTime) {
+                keyList.addAll(inMemoryTreeArray[i].search(startTime, endTime, startkey, endkey));
+            }
+            if(boundTime[i]<endTime) {
+                allInMemory = false;
             }
         }
 
-        // search the in memory data
-        if(this.boundTime < endTime) {
-////            System.out.println("test query out");
-//            List<BPTKey<MortonCode>> treeKeyList = inMemoryTree.search(startTime, endTime, startkey, endkey);
-////            System.out.println("test query out2");
-//            keyList.addAll(treeKeyList);
+        // if the time region covers the external part of data
+        if(!allInMemory) {
+            List<externalTree> externalTreeList = externalTreeChunk.searchTree(startkey, endkey, startTime, endTime);
+            for(externalTree tree: externalTreeList) {
+                keyList.addAll(tree.searchNode( startTime, endTime, startkey, endkey));
+            }
         }
-
+//
         return keyList;
     }
 }

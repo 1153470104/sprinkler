@@ -20,9 +20,6 @@ public class multiIndexServer {
     private externalConfiguration conf;
     private multiMetaServer metaServer;
     private int id;
-//    private List<externalTree<MortonCode>> externalTreeList;
-//    private String externalBase;
-//    private List<BPlusTree<MortonCode>> treeList; // 1.0版：用于测试无外存b树时的系统
 
     private dispatcher dp;
 
@@ -33,7 +30,6 @@ public class multiIndexServer {
          * so that, the conf.readKey function fails !!! */
         this.conf = new externalConfiguration(8, 21, Long.class, String.class);
         currentBpt = new BPlusTreeScratched<MortonCode, String>(m);
-//        this.externalBase = externalBase;
         this.metaServer = metaServer;
     }
 
@@ -45,29 +41,24 @@ public class multiIndexServer {
         //get data
         System.out.println("****************** Index start ******************");
         //TODO 还得考虑getEntry null的问题
-        BPTKey<MortonCode> keyEntry = dp.getEntry(id); // TODO 这一块需要考虑synchronize
+        BPTKey<MortonCode> keyEntry = null;  // TODO maybe这一块需要考虑synchronize
+        // 但这一块就不考虑数据输入会终止这件事情了。。。假设是数据流
+        // TODO 未来肯定要加数据中断之类的处理，这里先没有。。。
+        while (keyEntry == null) {
+            keyEntry = dp.getEntry(id);
+        }
         this.time = dp.getTime(); // use dp to get dynamic time, update every time after getEntry operation
         currentBpt.setStartTime(this.time);
         /* forget to update at very first,
         so null pointer exception occurs in metaServer's search*/
-        metaServer.update(-1, currentBpt);
+        metaServer.update(-1, currentBpt, this.id);
         //iterate & deal with data
         boolean flushed = false;
-        while (keyEntry != null) {
+        while (true) {
             currentBpt.addKey(keyEntry);
             if(currentBpt.isTemplate()) {
                 ((BPlusTreeTemplated)currentBpt).balance();
             }
-
-            // 1.0版本
-//            if (currentBpt.isBlockFull()) {
-//                System.out.print("finish data region ");
-////                System.out.println(treeList.size());
-//                currentBpt.printInfo();
-//                currentBpt.setEndTime(this.time);
-//                currentBpt = new BPlusTreeTemplated<MortonCode>((BPlusTree<MortonCode>)currentBpt);
-//                flushed = true;
-//            }
 
             // 2.0版本
             // if block full, store it in the disk
@@ -80,13 +71,16 @@ public class multiIndexServer {
                         currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
                 //create a new template tree
                 currentBpt = new BPlusTreeTemplated<MortonCode, String>(currentBpt);
-                metaServer.update(time, currentBpt); //update the time in metaServer
+                metaServer.update(time, currentBpt, id); //update the time in metaServer
                 flushed = true;
             }
 
             try{
-                Thread.sleep(50);
-                keyEntry = dp.getEntry(id);  // TODO 这一块需要考虑synchronize
+                Thread.sleep(12);  //终止12ms，使得
+                keyEntry = null;  // TODO maybe这一块需要考虑synchronize
+                while (keyEntry == null) {
+                    keyEntry = dp.getEntry(id);
+                }
                 this.time = dp.getTime();
                 if(flushed) {
                     currentBpt.setStartTime(this.time);
@@ -95,7 +89,6 @@ public class multiIndexServer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }

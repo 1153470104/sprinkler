@@ -2,6 +2,8 @@ package metadataServer.rectangleTree;
 
 import BPlusTree.externalTree;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,12 +13,19 @@ import java.util.List;
 public class RTreeLeaf<K> extends RTreeNode<K>{
     private List<externalTree> treeList;
 
-    public RTreeLeaf(K top, K bottom, int left, int right) {
-        this.top = top;
-        this.bottom = bottom;
-        this.timeStart = left;
-        this.timeEnd = right;
-        this.childList = null;
+    public RTreeLeaf(int m, K top, K bottom, int left, int right, RTreeNode<K> father) {
+        super(m, top, bottom, left, right, father);
+        treeList = new LinkedList<>();
+    }
+
+    public void add(rectangle<K> rectangle, externalTree tree) {
+        rectangleList.add(rectangle);
+        treeList.add(tree);
+    }
+
+    @Override
+    public boolean isLeaf() {
+        return true;
     }
 
     @Override
@@ -25,9 +34,8 @@ public class RTreeLeaf<K> extends RTreeNode<K>{
     }
 
     @Override
-    public RTreeNode<K> split() {
+    public void split() {
         // TODO
-        return null;
     }
 
     @Override

@@ -1,13 +1,9 @@
 package client;
 
-import dispatcher.dataTool;
 import dispatcher.dispatcher;
 import indexServer.multiIndexServer;
-import indexServer.singleIndexServer;
 import metadataServer.multiMetaServer;
-import metadataServer.singleMetaServer;
 import queryServer.multiQueryServer;
-import queryServer.singleQueryServer;
 
 import java.io.IOException;
 
@@ -18,7 +14,7 @@ public class multiTreeClient {
     private static multiIndexServer indexServer4;
     private static multiQueryServer queryServer;
 
-    private static multiMetaServer metaServer = new multiMetaServer("resource/database/0319-");
+    private static multiMetaServer metaServer = new multiMetaServer("resource/database/0319-", 4, 16);
 
     static {
         try {
@@ -36,7 +32,7 @@ public class multiTreeClient {
     }
 
     /**
-     * indexing thread
+     * indexing thread1, with 2 3 4 below
      */
     static class indexThread1 extends Thread{
         public void run(){
@@ -96,15 +92,12 @@ public class multiTreeClient {
         multiTreeClient.indexThread2 index2 = new multiTreeClient.indexThread2();
         multiTreeClient.indexThread3 index3 = new multiTreeClient.indexThread3();
         multiTreeClient.indexThread4 index4 = new multiTreeClient.indexThread4();
-
         multiTreeClient.queryThread query = new multiTreeClient.queryThread();
-
 
         index1.start();
         index2.start();
         index3.start();
         index4.start();
-
         query.start();
     }
 }
