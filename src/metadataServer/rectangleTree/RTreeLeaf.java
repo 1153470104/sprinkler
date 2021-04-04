@@ -2,8 +2,7 @@ package metadataServer.rectangleTree;
 
 import BPlusTree.externalTree;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * the leaf node of R tree
@@ -18,20 +17,24 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
     }
 
     public void add(rectangle<K> rectangle, externalTree tree) {
+        // 添加之后边界会改变，而父节点的边界如何改变将在外面的add function中去实现
+        // 这里仅仅调用父节点的upgrade
         rectangleList.add(rectangle);
         if(this.selfRectangle.top == null) {  //即如果本来没有被发掘过
             this.selfRectangle.top = rectangle.top;
             this.selfRectangle.bottom = rectangle.bottom;
             this.selfRectangle.timeStart = rectangle.timeStart;
         }
-        // define the boundary's update rule
-        if(this.selfRectangle.top.compareTo(rectangle.top) == 1)  this.selfRectangle.top = rectangle.top;
-        if(this.selfRectangle.bottom.compareTo(rectangle.bottom) == -1)  this.selfRectangle.bottom = rectangle.bottom;
-        if(this.selfRectangle.timeStart > rectangle.timeStart)  this.selfRectangle.timeStart = rectangle.timeStart;
-        if(this.selfRectangle.timeEnd == -1 || this.selfRectangle.timeEnd < rectangle.timeEnd)
-            this.selfRectangle.timeEnd = rectangle.timeEnd;
-
         treeList.add(tree);
+        // define the boundary's update rule
+        updateBounds(rectangle);  //use the update function in node implementation
+
+//        if(this.selfRectangle.top.compareTo(rectangle.top) == 1)  this.selfRectangle.top = rectangle.top;
+//        if(this.selfRectangle.bottom.compareTo(rectangle.bottom) == -1)  this.selfRectangle.bottom = rectangle.bottom;
+//        if(this.selfRectangle.timeStart > rectangle.timeStart)  this.selfRectangle.timeStart = rectangle.timeStart;
+//        if(this.selfRectangle.timeEnd == -1 || this.selfRectangle.timeEnd < rectangle.timeEnd)
+//            this.selfRectangle.timeEnd = rectangle.timeEnd;
+
     }
 
     @Override
@@ -43,7 +46,7 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
     public List<externalTree> searchChunk(rectangle<K> rec) {
         List<externalTree> list = new LinkedList<>();
         for(int i = 0; i < rectangleList.size(); i++) {
-            if(rectangleList.get(i).accross(rec)) {
+            if(rectangleList.get(i).crossStatus(rec) == rectangle.ACROSS) {
                 list.add(treeList.get(i));
             }
         }
@@ -55,12 +58,53 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
         if(!overflow())  return;  //再检查一下
         RTreeNode<K> father = null;
         if(this.fatherNode == null) {
-            father = new RTreeNode<K>( this.m, selfRectangle.top, selfRectangle.bottom, selfRectangle.timeStart, selfRectangle.timeEnd, null);
+            father = new RTreeNode<K>(
+                    this.m, selfRectangle.top, selfRectangle.bottom, selfRectangle.timeStart
+                    , selfRectangle.timeEnd, null);
         } else {
             father = this.fatherNode;
         }
-        //TODO ...
+        //the next split function is based on the specific condition
+        //which in this program is: the K's boundary will not change too much
+        // but the time will continuously grow
+        // so, we will split out the time later half value-pair
+        // then form a new leaf nodes
 
+        // TODO 未来，或许可以用堆排序来判断前多少个什么的，这里就直接遍历吧。。。
+        // TODO 因为现在预计也就是16个max？比较8个而已。。。
+        int len = rectangleList.size();
+        List<Integer> splitNum = new LinkedList<>();
+        for(int i = 0; i < len; i++) {  //通过这个for循环，得到一个reserveNum，就是哪些数值是
+            for(int j = 0; j < splitNum.size(); j++) {
+                if(rectangleList.get(i).timeStart > rectangleList.get(splitNum.get(j)).timeStart) {
+                    splitNum.add(j, i);
+                } else if(splitNum.size() <= (len+1)/2) {
+                    splitNum.add(i);
+                }
+                if(splitNum.size() > (len+1)/2) {
+                    splitNum.remove(splitNum.size()-1);
+                }
+            }
+        }
+        // build the new node
+        Set<Integer> reserveSet = new HashSet<>(splitNum);
+        RTreeLeaf<K> newLeaf = new RTreeLeaf<>(m, null, null, -1, -1, father);
+        for(int i = 0; i < rectangleList.size(); i++) {
+            if(reserveSet.contains(i)) {
+                newLeaf.add(rectangleList.get(i), treeList.get(i));
+            }
+        }
+        // add to father
+        father.add(newLeaf);
+        // another origin node should be cut
+        Collections.sort(splitNum);
+        for(int i = splitNum.size()-1; i >= 0; i++) {
+            int removeIndex = splitNum.get(i);
+            rectangleList.remove(removeIndex);
+            treeList.remove(removeIndex);
+        }
+        // update the bounds of this shrink node
+        updateAllBounds();
     }
 
     @Override

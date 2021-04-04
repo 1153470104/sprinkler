@@ -26,7 +26,11 @@ public class RTree<K extends Comparable> {
             temp.split();
             temp = temp.fatherNode;
         }
-
+        //next is to make sure the root is the newest father node
+        while(temp.fatherNode != null) {
+            temp = temp.fatherNode;
+        }
+        root = temp;
         num++;
     }
 
