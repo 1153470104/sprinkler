@@ -2,6 +2,7 @@ package metadataServer.rectangleTree;
 
 import BPlusTree.externalTree;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class RTree<K extends Comparable> {
@@ -44,5 +45,9 @@ public class RTree<K extends Comparable> {
 
     public List<externalTree> searchTree(K top, K bottom, int left, int right) {
         return root.searchChunk(new rectangle<>(top, bottom, left, right));
+    }
+
+    public String toString() {
+        return root.toString();
     }
 }

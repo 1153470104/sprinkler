@@ -168,6 +168,10 @@ public class RTreeNode<K extends Comparable> {
         updateAllBounds();
     }
 
+    public RTreeNode<K> getChild(int index) {
+        return childList.get(index);
+    }
+
     public externalTree getTree(int index) {
         return null;
     }
@@ -176,7 +180,40 @@ public class RTreeNode<K extends Comparable> {
         return;
     }
 
-    public static void main(String[] args) {
+    public String toString() {
+        Deque<RTreeNode<K>> deque = new LinkedList<>();
+        Deque<RTreeNode<K>> leafDeque = new LinkedList<>();
+        StringBuilder sb = new StringBuilder();
+        deque.add(this);
+        RTreeNode<K> temp;
+        while(deque.size()>0) {
+            int len = deque.size();
+            for(int i = 0; i < len; i++) {
+                temp = deque.poll();
+                for(int j = 0; j < temp.getLength(); j++) {
+                    if(!temp.isLeaf()) {
+                        deque.add(temp.getChild(j));
+                    } else {
+                        leafDeque.add(temp);
+                    }
+                }
+                sb.append(temp.selfRectangle.toString()).append("|");
+            }
+            sb.deleteCharAt(sb.length());
+            sb.append("\n");
+        }
+        while(deque.size()>0) {
+            temp = leafDeque.poll();
+            for(int i = 0; i < temp.rectangleList.size(); i++) {
+                sb.append(temp.rectangleList.get(i).toString()).append(";");
+            }
+            sb.deleteCharAt(sb.length());
+            sb.append("|");
+        }
+        sb.deleteCharAt(sb.length());
+        sb.append("\n");
 
+        System.out.println(sb.toString());
+        return sb.toString();
     }
 }

@@ -40,4 +40,8 @@ public class rectangle<K extends Comparable> {
     public rectangle<K> copy() {
         return new rectangle<>(top, bottom, timeStart, timeEnd);
     }
+
+    public String toString() {
+        return top.toString() + "," + bottom.toString() + "," + timeStart + "," + timeEnd;
+    }
 }
