@@ -39,6 +39,7 @@ public class RTreeNode<K extends Comparable> {
     }
 
     public void updateBounds(rectangle<K> newRectangle) {
+        if(this.selfRectangle.top == null) this.selfRectangle = newRectangle; //确保在空状态下，update正常
         if(this.selfRectangle.top.compareTo(newRectangle.top) == 1)  this.selfRectangle.top = newRectangle.top;
         if(this.selfRectangle.bottom.compareTo(newRectangle.bottom) == -1)  this.selfRectangle.bottom = newRectangle.bottom;
         if(this.selfRectangle.timeStart > newRectangle.timeStart)  this.selfRectangle.timeStart = newRectangle.timeStart;
@@ -86,12 +87,21 @@ public class RTreeNode<K extends Comparable> {
         if(laterNodeIndex != -1)  return childList.get(laterNodeIndex);
         // if no child node has any intersection with the input rectangle
         // return the most left one
+        laterNodeIndex = -1;
+        left = 0;
         for(int i = 0; i < rectangleList.size(); i++) {
-            if(rectangleList.get(i).timeEnd == -1) {
-                return childList.get(i);
+            if(rectangleList.get(i).timeStart > left) {
+                laterNodeIndex = i;
+                left = rectangleList.get(i).timeStart;
             }
         }
-        return null; // it is supposed never to be activated
+        return childList.get(laterNodeIndex);
+        // below code is wrong emmm, the -1 sign of unlimited bound is useless...
+//        for(int i = 0; i < rectangleList.size(); i++) {
+//            if(rectangleList.get(i).timeEnd == -1) {
+//                return childList.get(i);
+//            }
+//        }
     }
 
     public List<externalTree> searchChunk(rectangle<K> rec) {
@@ -103,7 +113,7 @@ public class RTreeNode<K extends Comparable> {
     }
 
     public int getLength() {
-        return childList.size();
+        return rectangleList.size();
     }
 
     public void add(RTreeNode<K> node) {
@@ -114,11 +124,14 @@ public class RTreeNode<K extends Comparable> {
 
     public void split() {
         if(!overflow())  return;  //再检查一下
-        RTreeNode<K> father = null;
+        RTreeNode<K> father;
+        boolean newFather = false;
         if(this.fatherNode == null) {
             father = new RTreeNode<K>(
                     this.m, selfRectangle.top, selfRectangle.bottom, selfRectangle.timeStart
                     , selfRectangle.timeEnd, null);
+            father.initChild();
+            newFather = true;
         } else {
             father = this.fatherNode;
         }
@@ -138,13 +151,17 @@ public class RTreeNode<K extends Comparable> {
             for(int j = 0; j < splitNum.size(); j++) {
                 if(rectangleList.get(i).timeStart > rectangleList.get(splitNum.get(j)).timeStart) {
                     splitNum.add(j, i);
-                } else if(splitNum.size() <= (len+1)/2) {
-                    splitNum.add(i);
-                }
-                if(splitNum.size() > (len+1)/2) {
-                    splitNum.remove(splitNum.size()-1);
+                    break; /* 又忘记break，导致它永不停止*/
                 }
             }
+            /* 这玩意居然本来被我放进for循环里面了 */
+            if(splitNum.size() < (len+1)/2) {
+                splitNum.add(i);
+            }
+            if(splitNum.size() > (len+1)/2) {
+                splitNum.remove(splitNum.size()-1);
+            }
+//            System.out.println(i);
         }
         // build the new node
         Set<Integer> reserveSet = new HashSet<>(splitNum);
@@ -157,6 +174,7 @@ public class RTreeNode<K extends Comparable> {
         }
         // add to father
         father.add(newNode);
+        if(newFather)  father.add(this);
         // another origin node should be cut
         Collections.sort(splitNum);
         for(int i = splitNum.size()-1; i >= 0; i++) {
@@ -164,6 +182,7 @@ public class RTreeNode<K extends Comparable> {
             rectangleList.remove(removeIndex);
             childList.remove(removeIndex);
         }
+        this.fatherNode = father;
         // update the bounds of this shrink node
         updateAllBounds();
     }
@@ -195,22 +214,25 @@ public class RTreeNode<K extends Comparable> {
                         deque.add(temp.getChild(j));
                     } else {
                         leafDeque.add(temp);
+                        /*只要加一个就行，别加了好几轮*/
+                        break;
                     }
                 }
                 sb.append(temp.selfRectangle.toString()).append("|");
             }
-            sb.deleteCharAt(sb.length());
+            sb.deleteCharAt(sb.length()-1);
             sb.append("\n");
         }
-        while(deque.size()>0) {
+        while(leafDeque.size()>0) {
             temp = leafDeque.poll();
             for(int i = 0; i < temp.rectangleList.size(); i++) {
+//                sb.append("??? "+i);
                 sb.append(temp.rectangleList.get(i).toString()).append(";");
             }
-            sb.deleteCharAt(sb.length());
+            sb.deleteCharAt(sb.length()-1);
             sb.append("|");
         }
-        sb.deleteCharAt(sb.length());
+        sb.deleteCharAt(sb.length()-1);
         sb.append("\n");
 
         System.out.println(sb.toString());

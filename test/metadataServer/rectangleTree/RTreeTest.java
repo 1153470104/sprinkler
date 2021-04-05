@@ -19,9 +19,18 @@ class RTreeTest {
         rTree.toString();
     }
 
-    @Test
-    void size() {
 
+    /**
+     * test with split
+     */
+    @Test
+    void add1() {
+        rTree.add(1, 2, 1, 3, null);
+        rTree.add(2, 5, 1, 3, null);
+        rTree.add(4, 7, 1, 3, null);
+        rTree.add(6, 9, 1, 3, null);
+        rTree.add(5, 8, 2, 4, null);
+        rTree.toString();
     }
 
     @Test

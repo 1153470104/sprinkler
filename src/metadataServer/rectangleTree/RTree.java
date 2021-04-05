@@ -13,7 +13,7 @@ public class RTree<K extends Comparable> {
     public RTree(int m) {
         this.num = 0;
         this.m = m;
-        this.root = new RTreeLeaf<K>(m, null, null, 0, -1, null);
+        this.root = new RTreeLeaf<K>(m, null, null, -1, -1, null);
     }
 
     public void add(K top, K bottom, int timeStart, int timeEnd, externalTree tree) {
@@ -26,6 +26,7 @@ public class RTree<K extends Comparable> {
         while(temp.overflow()) {
             temp.split();
             temp = temp.fatherNode;
+//            System.out.println("temp: " + temp);
         }
         //next is to make sure the root is the newest father node
         while(temp.fatherNode != null) {

@@ -56,12 +56,17 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
     @Override
     public void split() {
         if(!overflow())  return;  //再检查一下
-        RTreeNode<K> father = null;
+        RTreeNode<K> father;
+        boolean newFather = false;
         if(this.fatherNode == null) {
+//            System.out.println("null");
             father = new RTreeNode<K>(
                     this.m, selfRectangle.top, selfRectangle.bottom, selfRectangle.timeStart
                     , selfRectangle.timeEnd, null);
+            father.initChild();
+            newFather = true;
         } else {
+//            System.out.println("not null");
             father = this.fatherNode;
         }
         //the next split function is based on the specific condition
@@ -75,19 +80,26 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
         int len = rectangleList.size();
         List<Integer> splitNum = new LinkedList<>();
         for(int i = 0; i < len; i++) {  //通过这个for循环，得到一个reserveNum，就是哪些数值是
+            boolean added = false;
             for(int j = 0; j < splitNum.size(); j++) {
                 if(rectangleList.get(i).timeStart > rectangleList.get(splitNum.get(j)).timeStart) {
                     splitNum.add(j, i);
-                } else if(splitNum.size() <= (len+1)/2) {
-                    splitNum.add(i);
-                }
-                if(splitNum.size() > (len+1)/2) {
-                    splitNum.remove(splitNum.size()-1);
+                    added = true;
+                    break; /* 又忘记break，导致它永不停止*/
                 }
             }
+            /* 这玩意居然本来被我放进for循环里面了 */
+            if(splitNum.size() < (len+1)/2 && !added) {
+                splitNum.add(i);
+            }
+            if(splitNum.size() > (len+1)/2) {
+                splitNum.remove(splitNum.size()-1);
+            }
+//            System.out.println(i);
         }
         // build the new node
         Set<Integer> reserveSet = new HashSet<>(splitNum);
+        System.out.println(reserveSet);
         RTreeLeaf<K> newLeaf = new RTreeLeaf<>(m, null, null, -1, -1, father);
         for(int i = 0; i < rectangleList.size(); i++) {
             if(reserveSet.contains(i)) {
@@ -96,13 +108,15 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
         }
         // add to father
         father.add(newLeaf);
+        if(newFather)  father.add(this);
         // another origin node should be cut
         Collections.sort(splitNum);
-        for(int i = splitNum.size()-1; i >= 0; i++) {
+        for(int i = splitNum.size()-1; i >= 0; i--) {
             int removeIndex = splitNum.get(i);
             rectangleList.remove(removeIndex);
             treeList.remove(removeIndex);
         }
+        this.fatherNode = father;
         // update the bounds of this shrink node
         updateAllBounds();
     }
