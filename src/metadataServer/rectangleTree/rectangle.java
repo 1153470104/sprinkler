@@ -27,11 +27,15 @@ public class rectangle<K extends Comparable> {
      *         with four status: ACROSS CONTAIN PERTAIN IRRELEVANT
      */
     public int crossStatus(rectangle<K> other) {
-        if(bottom.compareTo(other.bottom) == -1 && top.compareTo(other.top) == 1)
+        // the first time, I forgot to compare the time stamp
+        // also change the  == 1 / == -1 to >0 <0
+        if(bottom.compareTo(other.bottom) < 0 && top.compareTo(other.top) > 0
+               && timeEnd < other.timeEnd && timeStart > other.timeStart)
             return PERTAIN;
-        if(other.bottom.compareTo(bottom) == -1 && other.top.compareTo(top) == 1)
+        if(other.bottom.compareTo(bottom) <= 0 && other.top.compareTo(top) >= 0
+                && timeEnd >= other.timeEnd && timeStart <= other.timeStart)
             return CONTAIN;
-        if ((bottom.compareTo(other.top) == 1 && other.bottom.compareTo(top) == 1)
+        if ((bottom.compareTo(other.top) > 0 && other.bottom.compareTo(top) > 0)
                  && (timeEnd > other.timeStart && other.timeEnd > timeStart))
             return ACROSS;
         return IRRELEVANT;

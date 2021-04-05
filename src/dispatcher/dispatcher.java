@@ -22,7 +22,7 @@ public class dispatcher {
     private MortonCode minKey;
     private BPTKey<MortonCode> tempEntry;
     private int tempEntryId;
-    private List<MortonCode> schema;
+    private List<MortonCode> schema;  // the schema store the boundary of the schema
     private int indexNum;
 
     private int time;

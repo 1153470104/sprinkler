@@ -38,6 +38,11 @@ public class RTreeNode<K extends Comparable> {
         return false;
     }
 
+    /**
+     * update the boundary due to one use, which is not complete
+     * TODO need to be simplified to some assist function
+     * @param newRectangle
+     */
     public void updateBounds(rectangle<K> newRectangle) {
         if(this.selfRectangle.top == null) this.selfRectangle = newRectangle; //确保在空状态下，update正常
         if(this.selfRectangle.top.compareTo(newRectangle.top) == 1)  this.selfRectangle.top = newRectangle.top;
@@ -45,15 +50,22 @@ public class RTreeNode<K extends Comparable> {
         if(this.selfRectangle.timeStart > newRectangle.timeStart)  this.selfRectangle.timeStart = newRectangle.timeStart;
         if(this.selfRectangle.timeEnd == -1 || this.selfRectangle.timeEnd < newRectangle.timeEnd)
             this.selfRectangle.timeEnd = newRectangle.timeEnd;
-
-        if (fatherNode!=null)  fatherNode.updateBounds(this.selfRectangle);
     }
 
     public void updateAllBounds() {
-        selfRectangle = rectangleList.get(0).copy();
-        for(rectangle<K> rec: rectangleList) {
-            updateBounds(rec);
+        if(this.getLength()>0) {
+            selfRectangle = rectangleList.get(0).copy();
+            for(rectangle<K> rec: rectangleList) {
+                updateBounds(rec);
+            }
         }
+        if(!this.isLeaf()) {
+            for(int i = 0; i < rectangleList.size(); i++) {
+                rectangleList.remove(i);
+                rectangleList.add(i, childList.get(i).selfRectangle);
+            }
+        }
+        if (fatherNode!=null)  fatherNode.updateAllBounds();
     }
 
     /**
@@ -70,7 +82,8 @@ public class RTreeNode<K extends Comparable> {
         int[] interStatus = new int[rectangleList.size()];
         for(int i = 0; i < rectangleList.size(); i++) {
             int status = rectangleList.get(i).crossStatus(inputRec);
-            if(status == 1) {  // if there's a node which covers it, return
+            if(status == rectangle.CONTAIN) {  // if there's a node which covers it, return
+//                System.out.println(rectangleList.get(i).toString() + " status with " + inputRec.toString() + ": contain");
                 return childList.get(i);
             }
             interStatus[i] = status;
@@ -79,12 +92,15 @@ public class RTreeNode<K extends Comparable> {
         int laterNodeIndex = -1;
         int left = 0;
         for(int i = 0; i < rectangleList.size(); i++) {
-            if((interStatus[i] == 2 || interStatus[i] == -1) && rectangleList.get(i).timeStart > left) {
+            if((interStatus[i] == rectangle.PERTAIN || interStatus[i] == rectangle.ACROSS) && rectangleList.get(i).timeStart > left) {
                 laterNodeIndex = i;
                 left = rectangleList.get(i).timeStart;
             }
         }
-        if(laterNodeIndex != -1)  return childList.get(laterNodeIndex);
+        if(laterNodeIndex != -1) {
+//            System.out.println(rectangleList.get(laterNodeIndex).toString() + " status with " + inputRec.toString() + ": across");
+            return childList.get(laterNodeIndex);
+        }
         // if no child node has any intersection with the input rectangle
         // return the most left one
         laterNodeIndex = -1;
@@ -95,6 +111,7 @@ public class RTreeNode<K extends Comparable> {
                 left = rectangleList.get(i).timeStart;
             }
         }
+//        System.out.println(rectangleList.get(laterNodeIndex).toString() + " status with " + inputRec.toString() + ": irrelevant");
         return childList.get(laterNodeIndex);
         // below code is wrong emmm, the -1 sign of unlimited bound is useless...
 //        for(int i = 0; i < rectangleList.size(); i++) {
@@ -173,8 +190,8 @@ public class RTreeNode<K extends Comparable> {
             }
         }
         // add to father
-        father.add(newNode);
         if(newFather)  father.add(this);
+        father.add(newNode);
         // another origin node should be cut
         Collections.sort(splitNum);
         for(int i = splitNum.size()-1; i >= 0; i++) {
@@ -195,7 +212,7 @@ public class RTreeNode<K extends Comparable> {
         return null;
     }
 
-    public void add(metadataServer.rectangleTree.rectangle<K> rectangle, externalTree tree) {
+    public void add(rectangle<K> rectangle, externalTree tree) {
         return;
     }
 

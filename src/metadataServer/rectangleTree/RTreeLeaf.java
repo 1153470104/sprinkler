@@ -27,7 +27,7 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
         }
         treeList.add(tree);
         // define the boundary's update rule
-        updateBounds(rectangle);  //use the update function in node implementation
+        updateAllBounds(); //use the update function in node implementation
 
 //        if(this.selfRectangle.top.compareTo(rectangle.top) == 1)  this.selfRectangle.top = rectangle.top;
 //        if(this.selfRectangle.bottom.compareTo(rectangle.bottom) == -1)  this.selfRectangle.bottom = rectangle.bottom;
@@ -89,26 +89,23 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
                 }
             }
             /* 这玩意居然本来被我放进for循环里面了 */
-            if(splitNum.size() < (len+1)/2 && !added) {
+            if(splitNum.size() < len/2 && !added) {
                 splitNum.add(i);
             }
-            if(splitNum.size() > (len+1)/2) {
+            if(splitNum.size() > len/2) {
                 splitNum.remove(splitNum.size()-1);
             }
 //            System.out.println(i);
         }
         // build the new node
-        Set<Integer> reserveSet = new HashSet<>(splitNum);
-        System.out.println(reserveSet);
+        Set<Integer> splitSet = new HashSet<>(splitNum);
+//        System.out.println(reserveSet);
         RTreeLeaf<K> newLeaf = new RTreeLeaf<>(m, null, null, -1, -1, father);
         for(int i = 0; i < rectangleList.size(); i++) {
-            if(reserveSet.contains(i)) {
+            if(splitSet.contains(i)) {
                 newLeaf.add(rectangleList.get(i), treeList.get(i));
             }
         }
-        // add to father
-        father.add(newLeaf);
-        if(newFather)  father.add(this);
         // another origin node should be cut
         Collections.sort(splitNum);
         for(int i = splitNum.size()-1; i >= 0; i--) {
@@ -117,8 +114,12 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
             treeList.remove(removeIndex);
         }
         this.fatherNode = father;
+        // add to father
+
+        this.updateAllBounds();
+        if(newFather)  father.add(this);
+        father.add(newLeaf);
         // update the bounds of this shrink node
-        updateAllBounds();
     }
 
     @Override
