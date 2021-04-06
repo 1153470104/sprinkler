@@ -52,9 +52,9 @@ public abstract class BPlusTree<K extends Comparable, V>{
     protected int timeStart; //the start time inserting time of the tree
     protected int timeEnd; // the time of stopping using the tree
 
-    //keystart仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
-    protected K keyStart; // the smallest key that could be in the tree
-    protected K keyEnd; // the biggest key that could be in the tree
+    //key start仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
+    protected K keyStart = null; // the smallest key that could be in the tree
+    protected K keyEnd = null; // the biggest key that could be in the tree
 
     /**
      * basic init of BPlusTree
@@ -318,6 +318,30 @@ public abstract class BPlusTree<K extends Comparable, V>{
         this.timeEnd = end;
     }
 
+    /**
+     * set the key bound of the tree
+     * the rule is: if the boundary is bigger, set it
+     *              if the boundary is smaller, ignore it
+     * origin:    [  ]    [    ]     []
+     * input:   [  ]       [ ]      [   ]
+     * result:  [    ]    [    ]    [   ]
+     * always return the biggest bound which cover prev & input bound
+     *
+     * @param start the new start bound
+     * @param end the new end bound
+     */
+    public void setKeyBound(K start, K end) {
+        if(keyStart == null && keyEnd == null) {
+            keyStart = start;
+            keyEnd = end;
+        }
+        if(keyStart != null && keyStart.compareTo(start) == 1) {
+            keyStart = start;
+        }
+        if(keyEnd != null && keyEnd.compareTo(end) == 1) {
+            keyEnd = end;
+        }
+    }
     /**
      * set the start key of the tree
      * @param start start key of the tree

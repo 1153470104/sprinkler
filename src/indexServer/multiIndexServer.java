@@ -7,6 +7,7 @@ import BPlusTree.configuration.externalConfiguration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.dataTool;
 import dispatcher.dispatcher;
+import dispatcher.dispatcher.*;
 import metadataServer.multiMetaServer;
 
 import java.io.IOException;
@@ -40,14 +41,17 @@ public class multiIndexServer {
     public void startIndexing() throws IOException {
         //get data
         System.out.println("****************** Index start ******************");
-        //TODO 还得考虑getEntry null的问题
         BPTKey<MortonCode> keyEntry = null;  // TODO maybe这一块需要考虑synchronize
         // 但这一块就不考虑数据输入会终止这件事情了。。。假设是数据流
         // TODO 未来肯定要加数据中断之类的处理，这里先没有。。。
-        while (keyEntry == null) {
-            keyEntry = dp.getEntry(id);
+        //还得考虑getEntry null的问题
+        entry newEntry = null; //get out one time, make sure synchronization
+
+        while (newEntry == null) {
+            newEntry = dp.getEntry(id); //get out one time, make sure synchronization
         }
-        this.time = dp.getTime(); // use dp to get dynamic time, update every time after getEntry operation
+        keyEntry = newEntry.key;
+        this.time = newEntry.time; // use dp to get dynamic time, update every time after getEntry operation
         currentBpt.setStartTime(this.time);
         /* forget to update at very first,
         so null pointer exception occurs in metaServer's search*/
@@ -63,6 +67,7 @@ public class multiIndexServer {
             // 2.0版本
             // if block full, store it in the disk
             if (currentBpt.isBlockFull()) {
+                dp.setSchema();  // 目前选择在每次有块被写入外存的时候，reset一次schema
                 System.out.print("finish data region ");
                 currentBpt.setEndTime(this.time);
                 currentBpt.printInfo();
@@ -77,11 +82,12 @@ public class multiIndexServer {
 
             try{
                 Thread.sleep(12);  //终止12ms，使得
-                keyEntry = null;  // TODO maybe这一块需要考虑synchronize
-                while (keyEntry == null) {
-                    keyEntry = dp.getEntry(id);
+                newEntry = null;  // TODO maybe这一块需要考虑synchronize
+                while (newEntry == null) {
+                    newEntry = dp.getEntry(id); //get out one time, make sure synchronization
                 }
-                this.time = dp.getTime();
+                keyEntry = newEntry.key;
+                this.time = newEntry.time; // use dp to get dynamic time, update every time after getEntry operation
                 if(flushed) {
                     currentBpt.setStartTime(this.time);
                     flushed= false;

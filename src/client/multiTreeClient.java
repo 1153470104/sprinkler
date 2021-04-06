@@ -14,12 +14,12 @@ public class multiTreeClient {
     private static multiIndexServer indexServer4;
     private static multiQueryServer queryServer;
 
-    private static multiMetaServer metaServer = new multiMetaServer("resource/database/0319-", 4, 16);
+    private static multiMetaServer metaServer = new multiMetaServer("resource/database/0406-", 4, 16);
 
     static {
         try {
             int indexM = 20;
-            dispatcher dp = new dispatcher("resource/data/100000s.txt", 4);
+            dispatcher dp = new dispatcher("resource/data/100000s.txt", 4, 500);
 
             indexServer1 = new multiIndexServer(indexM, metaServer, dp, 0);
             indexServer2 = new multiIndexServer(indexM, metaServer, dp, 1);
@@ -87,7 +87,7 @@ public class multiTreeClient {
         }
     }
 
-    public static void main(String [] args){
+    public static void main(String [] args) throws InterruptedException {
         multiTreeClient.indexThread1 index1 = new multiTreeClient.indexThread1();
         multiTreeClient.indexThread2 index2 = new multiTreeClient.indexThread2();
         multiTreeClient.indexThread3 index3 = new multiTreeClient.indexThread3();
@@ -98,6 +98,8 @@ public class multiTreeClient {
         index2.start();
         index3.start();
         index4.start();
+
+        Thread.sleep(50);
         query.start();
     }
 }

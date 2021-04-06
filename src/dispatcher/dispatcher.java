@@ -2,15 +2,14 @@ package dispatcher;
 
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTKey.BPTValueKey;
+import BPlusTree.BPlusTree;
 import BPlusTree.keyType.MortonCode;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  *
@@ -22,17 +21,32 @@ public class dispatcher {
     private BufferedReader buffer;
     private MortonCode maxKey;
     private MortonCode minKey;
-    private BPTKey<MortonCode> tempEntry;
+    private entry tempEntry;
     private int tempEntryId;
     private List<MortonCode> schema;  // the schema store the boundary of the schema
     private int indexNum;
+    private BPlusTree[] treeList;
 
      //使用最暴力的方式，留存最近的内容，然后直接求partition
     private Queue<MortonCode> cacheQueue;
     private int cacheLimit;
     private double loadGapLimit = 0.2;
 
-    private int time;
+    private int time; //time is set while retrieving the morton code
+
+    public class entry {
+        /* with a big bug
+         * first use morton code instead of BPTKey
+         * which ignore the truth that it's BPTValueKey instead of blank key!!!
+         * which lead to cast failure ... take care of generic
+         */
+        public BPTKey<MortonCode> key;
+        public int time;
+        public entry(BPTKey<MortonCode> key, int time) {
+            this.key = key;
+            this.time = time;
+        }
+    }
 
     public dispatcher(String dataPath, int indexNum, int cacheLimit) throws IOException {
         this.dataPath = dataPath;
@@ -41,6 +55,10 @@ public class dispatcher {
         this.getDomain();
         buffer = new BufferedReader(new FileReader(dataPath));
         this.cacheLimit = cacheLimit;
+        this.cacheQueue = new LinkedList<>();
+        this.treeList = new BPlusTree[indexNum];
+        setSchema();  // set the schema while initiating
+//        this.schema = new LinkedList<>();  // first initiate
     }
 
     public void updateQueue(MortonCode code) {
@@ -54,20 +72,76 @@ public class dispatcher {
         this.schema = schema;
     }
 
+    public void updateSchema() {
+        for(int i = 0; i < schema.size(); i++) {
+
+        }
+    }
+
+    public void setSchema() throws IOException {
+        BufferedReader bf = new BufferedReader(new FileReader(dataPath));
+        maxKey = null;
+        minKey = null;
+
+        int limit = 0;
+        String line = bf.readLine();
+        while(limit < this.cacheLimit) {
+            StringTokenizer st = new StringTokenizer(line, "|");
+            st.nextToken(); /*有必要的，因为nextToken是一个个读的，coordTxt要基于前面的读取*/
+            String coordTxt = st.nextToken();
+            MortonCode mc = new MortonCode(coordTxt);
+
+            this.cacheQueue.add(mc);
+            line = bf.readLine();
+            limit++;
+        }
+        balanceSchema(true);
+        this.cacheQueue = new LinkedList<>(); // renew the cache queue
+
+        bf.close();
+    }
+
+    public boolean loadBalance() {
+        int[] freq = new int[indexNum];
+        List<MortonCode> curList = new LinkedList<>(cacheQueue);
+        for(MortonCode code: curList) {
+            for(int i = 0; i < schema.size(); i++) {
+                if(code.compareTo(schema.get(i)) == -1) {
+                    freq[i] += 1;
+                    break;
+                }
+            }
+            freq[schema.size()] += 1;
+        }
+        int max = freq[0];
+        int min = freq[0];
+        for(int i = 1; i < indexNum; i++) {
+            if(freq[i]<min) min = freq[i];
+            if(freq[i]>max) max = freq[i];
+        }
+        if((double)(max-min)/(double)min > loadGapLimit) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     /**
      * use to alternate schema with the frequency of schema
      * TODO need to implement some new data structure to store the frequency info
      * TODO 具体的边界是不要，还是固定的，先不确定，未来做！
+     * 目前是只分分界点，没有指定边界点！
+     * @param force the boolean to show if need to force renew the schema
      */
-    public void balanceSchema() {
+    public void balanceSchema(boolean force) {
         // 以下的实现，是以schema 没有边界，只有分点来实现的
         //如果数量不够，不更新边界
         if (cacheQueue.size() < cacheLimit) return;
         List<MortonCode> newSchema = new LinkedList<>();
         //如果现阶段的 work load 差距不大，也不更新
-        //TODO
         //如果work load 相差很大，更新！
-        // TODO 用indexNum-1个最大堆，找出所有分界值。。。
+        if(loadBalance() && !force)  return;
+
+        // 用indexNum-1个最大堆，找出所有分界值。。。
         // get a copy of cache queue
         Queue<MortonCode> newQueue = new LinkedList<>(cacheQueue);
         Queue<MortonCode> tempQueue = new LinkedList<>();
@@ -136,12 +210,17 @@ public class dispatcher {
     /**
      * use to decide which index server should get tempEntry
      * according to the schema of partition
-     * @param code the morton code BPTKey which need to be located
+     * @param code the morton code which need to be located
      * @return the id of corresponding index server's id
      *         which is start from 0 !!!
      */
-    private int searchId(BPTKey<MortonCode> code) {
-        return -1;
+    private int searchId(MortonCode code) {
+        for(int i = 0; i < schema.size(); i++) {
+            if(code.compareTo(schema.get(i)) == -1) {
+                return i;
+            }
+        }
+        return schema.size();
     }
 
     /**
@@ -152,19 +231,23 @@ public class dispatcher {
      * @return corresponding entry or null
      * @throws IOException thrown when an I/O operation fails
      */
-    public BPTKey<MortonCode> getEntry(int id) throws IOException {
+    public entry getEntry(int id) throws IOException {
+//        System.out.println(id);
         if(tempEntryId == id) {
             tempEntryId = -1;
+//            System.out.println(tempEntry.code);
             return tempEntry;
         } else if(tempEntryId == -1) {
             String line = buffer.readLine();
             if(line != null) {
-                tempEntry = getMortonCode(line);
-                updateQueue(tempEntry.key());  // update queue
-                tempEntryId = searchId(tempEntry);
+                tempEntry = new entry(getMortonCode(line), time);
+                tempEntryId = searchId(tempEntry.key.key());
+                updateQueue(tempEntry.key.key());  // update queue
+//                System.out.println();
                 return getEntry(id);  //做完了所有准备则
             }
         } else {
+//            System.out.println();
             return null;
         }
         return null;

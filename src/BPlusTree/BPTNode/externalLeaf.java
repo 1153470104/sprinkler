@@ -27,7 +27,8 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         super(node);
         valueList = new LinkedList<>();
         for(int i = 0; i < keyList.size(); i++) {
-            valueList.add(((BPTValueKey<K, Object>)keyList.get(i)).getValue());
+            Object value = ((BPTValueKey<K, Object>)(keyList.get(i))).getValue();
+            valueList.add(value);
         }
     }
 
