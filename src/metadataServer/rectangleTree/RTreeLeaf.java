@@ -17,6 +17,7 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
     }
 
     public void add(rectangle<K> rectangle, externalTree tree) {
+        System.out.println("current: "+ rectangle);
         // 添加之后边界会改变，而父节点的边界如何改变将在外面的add function中去实现
         // 这里仅仅调用父节点的upgrade
         rectangleList.add(rectangle);

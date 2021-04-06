@@ -134,6 +134,11 @@ public class MortonCode implements Comparable{
 
     @Override
     public int compareTo(Object o) {
+        // this part is to extend the compareTo() function   //seems useless....
+        // to make it fit the null input
+        if(o == null) {
+            return -2;
+        }
         //这里idea叫我替换，那就替换了，原来并不知道还能这样子
         return Long.compare(this.code, ((MortonCode) o).code);
     }

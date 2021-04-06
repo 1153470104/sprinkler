@@ -6,7 +6,6 @@ import BPlusTree.BPlusTree;
 import BPlusTree.keyType.MortonCode;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -57,7 +56,7 @@ public class dispatcher {
         this.cacheLimit = cacheLimit;
         this.cacheQueue = new LinkedList<>();
         this.treeList = new BPlusTree[indexNum];
-        setSchema();  // set the schema while initiating
+        initSchema();  // set the schema while initiating
 //        this.schema = new LinkedList<>();  // first initiate
     }
 
@@ -68,17 +67,31 @@ public class dispatcher {
         }
     }
 
-    public void setSchema(List<MortonCode> schema) {
-        this.schema = schema;
+//    public void setSchema(List<MortonCode> schema) {
+//        this.schema = schema;
+//    }
+
+    public void updateTree(BPlusTree tree, int id) {
+        this.treeList[id]= tree;
+        updateTreeSchema();
     }
 
-    public void updateSchema() {
+    public void updateTreeSchema() {
         for(int i = 0; i < schema.size(); i++) {
-
+            if(this.treeList[i] != null) {
+                if(i == 0){
+                    treeList[i].setKeyBound(null, schema.get(i));
+                } else {
+                    treeList[i].setKeyBound(schema.get(i-1), schema.get(i));
+                }
+            }
+        }
+        if(treeList[schema.size()] != null) {
+            treeList[schema.size()].setKeyBound(schema.get(schema.size()-1), null);
         }
     }
 
-    public void setSchema() throws IOException {
+    public void initSchema() throws IOException {
         BufferedReader bf = new BufferedReader(new FileReader(dataPath));
         maxKey = null;
         minKey = null;
@@ -139,7 +152,7 @@ public class dispatcher {
         List<MortonCode> newSchema = new LinkedList<>();
         //如果现阶段的 work load 差距不大，也不更新
         //如果work load 相差很大，更新！
-        if(loadBalance() && !force)  return;
+        if(!force && loadBalance())  return;
 
         // 用indexNum-1个最大堆，找出所有分界值。。。
         // get a copy of cache queue
@@ -150,7 +163,10 @@ public class dispatcher {
             List<MortonCode> maxHeap = new LinkedList<>();
             while(newQueue.size() > 0) {
                 MortonCode temp = newQueue.poll();
-                if(maxHeap.size() < heapLength-1) {
+//                System.out.println(temp);
+                /* a big bug! size is not serial num! it shows the real length
+                * mis-write to '...< heapLength-1' at first */
+                if(maxHeap.size() < heapLength) {
                     addHeap(maxHeap, temp);
                 } else if(temp.compareTo(maxHeap.get(0)) == -1) {
                     tempQueue.add(maxHeap.remove(0));
@@ -165,11 +181,14 @@ public class dispatcher {
             tempQueue = new LinkedList<>();
         }
         this.schema = newSchema;
+        updateTreeSchema(); // after change schema, change the tree schema as well
     }
 
     public void addHeap(List<MortonCode> heap, MortonCode code) {
+        heap.add(code);
         int index = heap.size()-1;
         while(index > 0) {
+//            System.out.println("index: " + index);
             int father = (index-1) / 2;
             if(heap.get(index).compareTo(heap.get(father)) == 1) {
                 MortonCode temp = heap.get(index);
@@ -177,6 +196,8 @@ public class dispatcher {
                 heap.remove(index); heap.add(tempBig);
                 heap.remove(father); heap.add(temp);
                 index = father;
+            } else {
+                break;
             }
         }
     }
@@ -231,23 +252,28 @@ public class dispatcher {
      * @return corresponding entry or null
      * @throws IOException thrown when an I/O operation fails
      */
-    public entry getEntry(int id) throws IOException {
-//        System.out.println(id);
+    public synchronized entry getEntry(int id) throws IOException {
+//        System.out.println("current id " + tempEntryId + " input id " + id);
         if(tempEntryId == id) {
             tempEntryId = -1;
-//            System.out.println(tempEntry.code);
+//            System.out.println(tempEntry.key.key());
+//            System.out.println("temp id: "+ tempEntryId);
             return tempEntry;
         } else if(tempEntryId == -1) {
+//            System.out.println("-1 temp id: "+ tempEntryId);
             String line = buffer.readLine();
+//            System.out.println(line);
             if(line != null) {
                 tempEntry = new entry(getMortonCode(line), time);
                 tempEntryId = searchId(tempEntry.key.key());
                 updateQueue(tempEntry.key.key());  // update queue
 //                System.out.println();
                 return getEntry(id);  //做完了所有准备则
+            } else {
+                System.out.println("input over!!!");
+                System.exit(0);
             }
         } else {
-//            System.out.println();
             return null;
         }
         return null;

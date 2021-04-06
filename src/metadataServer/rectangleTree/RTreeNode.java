@@ -44,9 +44,9 @@ public class RTreeNode<K extends Comparable> {
      * @param newRectangle
      */
     public void updateBounds(rectangle<K> newRectangle) {
-        if(this.selfRectangle.top == null) this.selfRectangle = newRectangle; //确保在空状态下，update正常
-        if(this.selfRectangle.top.compareTo(newRectangle.top) == 1)  this.selfRectangle.top = newRectangle.top;
-        if(this.selfRectangle.bottom.compareTo(newRectangle.bottom) == -1)  this.selfRectangle.bottom = newRectangle.bottom;
+        if(this.selfRectangle.top == null && this.selfRectangle.bottom == null) this.selfRectangle = newRectangle; //确保在空状态下，update正常
+        if(selfRectangle.top != null && this.selfRectangle.top.compareTo(newRectangle.top) == 1)  this.selfRectangle.top = newRectangle.top;
+        if(selfRectangle.bottom != null && this.selfRectangle.bottom.compareTo(newRectangle.bottom) == -1)  this.selfRectangle.bottom = newRectangle.bottom;
         if(this.selfRectangle.timeStart > newRectangle.timeStart)  this.selfRectangle.timeStart = newRectangle.timeStart;
         if(this.selfRectangle.timeEnd == -1 || this.selfRectangle.timeEnd < newRectangle.timeEnd)
             this.selfRectangle.timeEnd = newRectangle.timeEnd;
