@@ -60,6 +60,14 @@ public class dispatcher {
 //        this.schema = new LinkedList<>();  // first initiate
     }
 
+    public void printSchema() {
+        System.out.print("---");
+        for(MortonCode code: schema) {
+            System.out.print(code.toString() + "---");
+        }
+        System.out.println();
+    }
+
     public void updateQueue(MortonCode code) {
         this.cacheQueue.add(code);
         if(this.cacheQueue.size() > cacheLimit) {
@@ -110,7 +118,6 @@ public class dispatcher {
         }
         balanceSchema(true);
         this.cacheQueue = new LinkedList<>(); // renew the cache queue
-
         bf.close();
     }
 
@@ -181,6 +188,8 @@ public class dispatcher {
             tempQueue = new LinkedList<>();
         }
         this.schema = newSchema;
+        System.out.print("current schema: ");
+        printSchema();
         updateTreeSchema(); // after change schema, change the tree schema as well
     }
 
@@ -193,8 +202,11 @@ public class dispatcher {
             if(heap.get(index).compareTo(heap.get(father)) == 1) {
                 MortonCode temp = heap.get(index);
                 MortonCode tempBig = heap.get(father);
-                heap.remove(index); heap.add(tempBig);
-                heap.remove(father); heap.add(temp);
+                /* the most silly error...
+                 * forgot to write add(index, content), only write add(content)
+                 * make the max heap result strange...*/
+                heap.remove(index); heap.add(index, tempBig);
+                heap.remove(father); heap.add(father, temp);
                 index = father;
             } else {
                 break;
@@ -219,8 +231,8 @@ public class dispatcher {
                 // swap the MortonCode
                 MortonCode temp = heap.get(index);
                 MortonCode tempBig = heap.get(bigIndex);
-                heap.remove(index); heap.add(tempBig);
-                heap.remove(bigIndex); heap.add(temp);
+                heap.remove(index); heap.add(index, tempBig);
+                heap.remove(bigIndex); heap.add(bigIndex, temp);
                 index = bigIndex;
             } else {
                 break;
@@ -252,8 +264,9 @@ public class dispatcher {
      * @return corresponding entry or null
      * @throws IOException thrown when an I/O operation fails
      */
-    public synchronized entry getEntry(int id) throws IOException {
+    public synchronized entry getEntry(int id) throws IOException, InterruptedException {
 //        System.out.println("current id " + tempEntryId + " input id " + id);
+//        Thread.sleep(2);
         if(tempEntryId == id) {
             tempEntryId = -1;
 //            System.out.println(tempEntry.key.key());

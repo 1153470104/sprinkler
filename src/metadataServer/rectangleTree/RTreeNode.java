@@ -41,7 +41,7 @@ public class RTreeNode<K extends Comparable> {
     /**
      * update the boundary due to one use, which is not complete
      * TODO need to be simplified to some assist function
-     * @param newRectangle
+     * @param newRectangle the input param used to update the bound
      */
     public void updateBounds(rectangle<K> newRectangle) {
         if(this.selfRectangle.top == null && this.selfRectangle.bottom == null) this.selfRectangle = newRectangle; //确保在空状态下，update正常

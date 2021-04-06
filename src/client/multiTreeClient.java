@@ -38,7 +38,7 @@ public class multiTreeClient {
         public void run(){
             try {
                 indexServer1.startIndexing();
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -48,7 +48,7 @@ public class multiTreeClient {
         public void run(){
             try {
                 indexServer2.startIndexing();
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -58,7 +58,7 @@ public class multiTreeClient {
         public void run(){
             try {
                 indexServer3.startIndexing();
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -68,7 +68,7 @@ public class multiTreeClient {
         public void run(){
             try {
                 indexServer4.startIndexing();
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }

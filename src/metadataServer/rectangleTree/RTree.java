@@ -22,7 +22,7 @@ public class RTree<K extends Comparable> {
         while(!temp.isLeaf()) {
             temp = temp.searchNode(top, bottom, timeStart, timeEnd);
         }
-        System.out.println(top + "; " + bottom);
+//        System.out.println(top + "; " + bottom);
         temp.add(new rectangle<K>(top, bottom, timeStart, timeEnd), tree);
         while(temp.overflow()) {
             temp.split();

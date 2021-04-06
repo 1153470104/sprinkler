@@ -39,7 +39,7 @@ public class multiIndexServer {
      * the indexing starting function
      * @throws IOException is thrown when a data I/O operation fails
      */
-    public void startIndexing() throws IOException {
+    public void startIndexing() throws IOException, InterruptedException {
         //get data
         System.out.println("****************** Index start ******************");
         BPTKey<MortonCode> keyEntry = null;  // TODO maybe这一块需要考虑synchronize
@@ -78,6 +78,8 @@ public class multiIndexServer {
                 //flush old tree into disk
                 metaServer.addTree(new externalTree<MortonCode, String>(
                         currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
+                System.out.println(id + " server stores a tree\nthe bound: "
+                        +currentBpt.getKeyStart()+", "+currentBpt.getKeyEnd()+", "+currentBpt.getTimeStart()+", "+currentBpt.getTimeEnd());
                 //create a new template tree
                 currentBpt = new BPlusTreeTemplated<MortonCode, String>(currentBpt);
                 this.dp.updateTree(this.currentBpt, id);
