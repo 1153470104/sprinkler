@@ -7,7 +7,9 @@ import BPlusTree.keyType.MortonCode;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
@@ -25,14 +27,31 @@ public class dispatcher {
     private List<MortonCode> schema;  // the schema store the boundary of the schema
     private int indexNum;
 
+     //使用最暴力的方式，留存最近的内容，然后直接求partition
+    private Queue<MortonCode> cacheQueue;
+    private int cacheLimit;
+    private double loadGapLimit = 0.2;
+
     private int time;
 
-    public dispatcher(String dataPath, int indexNum) throws IOException {
+    public dispatcher(String dataPath, int indexNum, int cacheLimit) throws IOException {
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
         this.getDomain();
         buffer = new BufferedReader(new FileReader(dataPath));
+        this.cacheLimit = cacheLimit;
+    }
+
+    public void updateQueue(MortonCode code) {
+        this.cacheQueue.add(code);
+        if(this.cacheQueue.size() > cacheLimit) {
+            cacheQueue.remove();
+        }
+    }
+
+    public void setSchema(List<MortonCode> schema) {
+        this.schema = schema;
     }
 
     /**
@@ -41,7 +60,77 @@ public class dispatcher {
      * TODO 具体的边界是不要，还是固定的，先不确定，未来做！
      */
     public void balanceSchema() {
-        // TODO
+        // 以下的实现，是以schema 没有边界，只有分点来实现的
+        //如果数量不够，不更新边界
+        if (cacheQueue.size() < cacheLimit) return;
+        List<MortonCode> newSchema = new LinkedList<>();
+        //如果现阶段的 work load 差距不大，也不更新
+        //TODO
+        //如果work load 相差很大，更新！
+        // TODO 用indexNum-1个最大堆，找出所有分界值。。。
+        // get a copy of cache queue
+        Queue<MortonCode> newQueue = new LinkedList<>(cacheQueue);
+        Queue<MortonCode> tempQueue = new LinkedList<>();
+        int heapLength = cacheLimit / indexNum;
+        for(int i = 0; i < indexNum-1; i++) {
+            List<MortonCode> maxHeap = new LinkedList<>();
+            while(newQueue.size() > 0) {
+                MortonCode temp = newQueue.poll();
+                if(maxHeap.size() < heapLength-1) {
+                    addHeap(maxHeap, temp);
+                } else if(temp.compareTo(maxHeap.get(0)) == -1) {
+                    tempQueue.add(maxHeap.remove(0));
+                    maxHeap.add(0, temp);
+                    updateHeap(maxHeap, heapLength);
+                } else {
+                    tempQueue.add(temp);
+                }
+            }
+            newSchema.add(maxHeap.get(0));
+            newQueue = tempQueue;
+            tempQueue = new LinkedList<>();
+        }
+        this.schema = newSchema;
+    }
+
+    public void addHeap(List<MortonCode> heap, MortonCode code) {
+        int index = heap.size()-1;
+        while(index > 0) {
+            int father = (index-1) / 2;
+            if(heap.get(index).compareTo(heap.get(father)) == 1) {
+                MortonCode temp = heap.get(index);
+                MortonCode tempBig = heap.get(father);
+                heap.remove(index); heap.add(tempBig);
+                heap.remove(father); heap.add(temp);
+                index = father;
+            }
+        }
+    }
+
+    public void updateHeap(List<MortonCode> heap, int maxLength) {
+        int index = 0;
+        while(2*index+1 < maxLength) { // 以是否到了叶节点层为判断，来终止循环
+            int bigIndex;
+            if(2*index+2 >= maxLength) {
+                bigIndex = 2*index+1;
+            } else {
+                if (heap.get(2 * index + 2).compareTo(heap.get(2 * index + 1)) == -1) {
+                    bigIndex = 2 * index + 1;
+                } else {
+                    bigIndex = 2 * index + 2;
+                }
+            }
+            if(heap.get(index).compareTo(heap.get(bigIndex)) == -1) {
+                // swap the MortonCode
+                MortonCode temp = heap.get(index);
+                MortonCode tempBig = heap.get(bigIndex);
+                heap.remove(index); heap.add(tempBig);
+                heap.remove(bigIndex); heap.add(temp);
+                index = bigIndex;
+            } else {
+                break;
+            }
+        }
     }
 
     /**
@@ -52,7 +141,6 @@ public class dispatcher {
      *         which is start from 0 !!!
      */
     private int searchId(BPTKey<MortonCode> code) {
-        // TODO
         return -1;
     }
 
@@ -72,6 +160,7 @@ public class dispatcher {
             String line = buffer.readLine();
             if(line != null) {
                 tempEntry = getMortonCode(line);
+                updateQueue(tempEntry.key());  // update queue
                 tempEntryId = searchId(tempEntry);
                 return getEntry(id);  //做完了所有准备则
             }
