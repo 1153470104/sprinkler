@@ -69,11 +69,11 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
      */
     @Override
     public List<BPTKey<K>> search(K key1, K key2) {
+        List<BPTKey<K>> nodeList = new ArrayList<>();
         if(key1.compareTo(key2) == 1) {
             System.out.println("wrong input, key1 should less than key2");
-            return null;
+            return nodeList;
         }
-        List<BPTKey<K>> nodeList = new ArrayList<>();
         BPTNode<K> node = root;
         while(node.childLength() > 0) {
             node = node.getChild(0);
@@ -96,9 +96,10 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
             node = node.getLeafNext();
         } while(node != null);
 
-        if(nodeList.size() == 0) {
-            return null;
-        }
+        // 这里是为了multi-server改的！！
+//        if(nodeList.size() == 0) {
+//            return null;
+//
         return nodeList;
     }
 

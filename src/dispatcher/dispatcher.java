@@ -119,7 +119,7 @@ public class dispatcher {
         balanceSchema(true);
         this.cacheQueue = new LinkedList<>(); // renew the cache queue
         bf.close();
-    }
+}
 
     public boolean loadBalance() {
         int[] freq = new int[indexNum];
@@ -266,7 +266,7 @@ public class dispatcher {
      */
     public synchronized entry getEntry(int id) throws IOException, InterruptedException {
 //        System.out.println("current id " + tempEntryId + " input id " + id);
-//        Thread.sleep(2);
+        Thread.sleep(5);
         if(tempEntryId == id) {
             tempEntryId = -1;
 //            System.out.println(tempEntry.key.key());

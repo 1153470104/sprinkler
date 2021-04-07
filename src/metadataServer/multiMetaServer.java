@@ -66,10 +66,14 @@ public class multiMetaServer {
         // search the in memory data
         boolean allInMemory = true;
         for(int i = 0; i < this.boundTime.length; i++) {
-            if(boundTime[i] < startTime) {
+            if(boundTime[i] < endTime) {
+//                if(inMemoryTreeArray == null) System.out.print("null");
+//                else  System.out.print("true!!");
+
                 keyList.addAll(inMemoryTreeArray[i].search(startTime, endTime, startkey, endkey));
+//                System.out.println("end");
             }
-            if(boundTime[i]<endTime) {
+            if(boundTime[i] > startTime) {
                 allInMemory = false;
             }
         }

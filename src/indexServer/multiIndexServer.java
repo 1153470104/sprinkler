@@ -42,6 +42,9 @@ public class multiIndexServer {
     public void startIndexing() throws IOException, InterruptedException {
         //get data
         System.out.println("****************** Index start ******************");
+        /* forget to update at very first,
+        so null pointer exception occurs in metaServer's search*/
+        metaServer.update(-1, currentBpt, this.id);
         BPTKey<MortonCode> keyEntry = null;  // TODO maybe这一块需要考虑synchronize
         // 但这一块就不考虑数据输入会终止这件事情了。。。假设是数据流
         // TODO 未来肯定要加数据中断之类的处理，这里先没有。。。
@@ -54,9 +57,7 @@ public class multiIndexServer {
         keyEntry = newEntry.key;
         this.time = newEntry.time; // use dp to get dynamic time, update every time after getEntry operation
         currentBpt.setStartTime(this.time);
-        /* forget to update at very first,
-        so null pointer exception occurs in metaServer's search*/
-        metaServer.update(-1, currentBpt, this.id);
+
         //iterate & deal with data
         boolean flushed = false;
         while (true) {
