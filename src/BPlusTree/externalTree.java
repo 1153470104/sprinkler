@@ -20,6 +20,17 @@ import java.util.List;
 /**
  * class of external tree
  *
+ * the structure of B+ tree on disk:
+ *
+ *     header：first block 用于存储基本信息，以及根节点的块位置
+ *   | pageSize | keySize | valueSize | rootPointer |
+ *
+ *     externalNonLeaf：存储非叶节点的信息与数据
+ *   |nodeType | length | pointer | key | pointer | key | ... | pointer |
+ *
+ *     externalLeaf：存储叶节点的信息与数据
+ *   | nodeType | length | prev | next | key | value | key | ... | value |
+ *
  * @param <K> the key's type
  */
 public class externalTree<K extends Comparable, V> {

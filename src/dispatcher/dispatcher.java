@@ -12,7 +12,9 @@ import java.util.*;
 
 /**
  *
- * use to
+ * use to simulate the dispatch process of the system
+ * the schema of partition is maintained by this
+ *
  * the formal edition of dataTool
  */
 public class dispatcher {
@@ -33,7 +35,11 @@ public class dispatcher {
 
     private int time; //time is set while retrieving the morton code
 
-    public class entry {
+    /**
+     * the inner class entry
+     * used to pass the content of index data
+     */
+    public static class entry {
         /* with a big bug
          * first use morton code instead of BPTKey
          * which ignore the truth that it's BPTValueKey instead of blank key!!!
@@ -60,6 +66,9 @@ public class dispatcher {
 //        this.schema = new LinkedList<>();  // first initiate
     }
 
+    /**
+     * print the current schema
+     */
     public void printSchema() {
         System.out.print("---");
         for(MortonCode code: schema) {
@@ -68,6 +77,11 @@ public class dispatcher {
         System.out.println();
     }
 
+    /**
+     * add current code into cache queue
+     * remove the one exceeding the limit boundary
+     * @param code the current MortonCode need to be cached
+     */
     public void updateQueue(MortonCode code) {
         this.cacheQueue.add(code);
         if(this.cacheQueue.size() > cacheLimit) {
@@ -75,15 +89,19 @@ public class dispatcher {
         }
     }
 
-//    public void setSchema(List<MortonCode> schema) {
-//        this.schema = schema;
-//    }
-
+    /**
+     * update the corresponding tree by id
+     * @param tree the new index tree
+     * @param id the id of the tree
+     */
     public void updateTree(BPlusTree tree, int id) {
         this.treeList[id]= tree;
         updateTreeSchema();
     }
 
+    /**
+     * change the schema of the tree
+     */
     public void updateTreeSchema() {
         for(int i = 0; i < schema.size(); i++) {
             if(this.treeList[i] != null) {
@@ -99,6 +117,10 @@ public class dispatcher {
         }
     }
 
+    /**
+     * initiate the schema using the
+     * @throws IOException be thrown when any I/O function fails
+     */
     public void initSchema() throws IOException {
         BufferedReader bf = new BufferedReader(new FileReader(dataPath));
         maxKey = null;
@@ -121,6 +143,10 @@ public class dispatcher {
         bf.close();
 }
 
+    /**
+     * calculate if the current schema is balanced according to the schema
+     * @return a boolean of if current load is balanced
+     */
     public boolean loadBalance() {
         int[] freq = new int[indexNum];
         List<MortonCode> curList = new LinkedList<>(cacheQueue);
@@ -145,6 +171,7 @@ public class dispatcher {
             return true;
         }
     }
+
     /**
      * use to alternate schema with the frequency of schema
      * TODO need to implement some new data structure to store the frequency info
@@ -266,7 +293,7 @@ public class dispatcher {
      */
     public synchronized entry getEntry(int id) throws IOException, InterruptedException {
 //        System.out.println("current id " + tempEntryId + " input id " + id);
-        Thread.sleep(5);
+//        Thread.sleep(5);
         if(tempEntryId == id) {
             tempEntryId = -1;
 //            System.out.println(tempEntry.key.key());

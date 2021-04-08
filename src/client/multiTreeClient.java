@@ -7,6 +7,10 @@ import queryServer.multiQueryServer;
 
 import java.io.IOException;
 
+/**
+ * the client of multi-server system
+ * use 4 index thread & 1 query server to realize the system
+ */
 public class multiTreeClient {
     private static multiIndexServer indexServer1;
     private static multiIndexServer indexServer2;

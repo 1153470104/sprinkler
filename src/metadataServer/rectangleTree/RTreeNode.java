@@ -52,6 +52,9 @@ public class RTreeNode<K extends Comparable> {
             this.selfRectangle.timeEnd = newRectangle.timeEnd;
     }
 
+    /**
+     * update all the boundary of this node & the father node
+     */
     public void updateAllBounds() {
         if(this.getLength()>0) {
             selfRectangle = rectangleList.get(0).copy();
@@ -121,6 +124,11 @@ public class RTreeNode<K extends Comparable> {
 //        }
     }
 
+    /**
+     * search & get all the data chunk has overlap with the input rectangle
+     * @param rec the searching area rectangle
+     * @return
+     */
     public List<externalTree> searchChunk(rectangle<K> rec) {
         List<externalTree> leafList = new LinkedList<>();
         for(RTreeNode<K> node: childList) {
@@ -139,6 +147,9 @@ public class RTreeNode<K extends Comparable> {
         updateAllBounds();
     }
 
+    /**
+     * split function of node
+     */
     public void split() {
         if(!overflow())  return;  //再检查一下
         RTreeNode<K> father;

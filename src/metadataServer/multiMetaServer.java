@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * the multi-server meta server
+ * maintain the data storage information
+ */
 public class multiMetaServer {
     private RTree<MortonCode> externalTreeChunk;
     private String dataPath;
@@ -57,6 +61,16 @@ public class multiMetaServer {
         return dataPath;
     }
 
+    /**
+     * the function to search the key according to a specific boundary
+     * @param startTime the start boundary of time
+     * @param endTime the end boundary of time
+     * @param startkey the start key boundary of key
+     * @param endkey the end key boundary of key
+     * @return the key-value list in the query boundary
+     * @throws IOException throws when any io operation fails
+     * @throws NullPointerException throws when any input key is null
+     */
     // TODO synchronization should be considered
     // TODO this part just have to make sure no more new external tree being flushed into metadata
     public List<BPTKey<MortonCode>> searchKey(

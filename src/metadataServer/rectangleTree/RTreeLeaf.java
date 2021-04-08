@@ -16,6 +16,13 @@ public class RTreeLeaf<K extends Comparable> extends RTreeNode<K>{
         treeList = new LinkedList<>();
     }
 
+    /**
+     * add the rectangle-tree those key-value pair to the leaf
+     * @param rectangle the rectangle area of the tree
+     * @param tree the external tree
+     *
+     * TODO maybe no need to add rectangle, because the tree has the boundary info inside
+     */
     public void add(rectangle<K> rectangle, externalTree tree) {
         // 添加之后边界会改变，而父节点的边界如何改变将在外面的add function中去实现
         // 这里仅仅调用父节点的upgrade
