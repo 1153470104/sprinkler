@@ -293,7 +293,7 @@ public class dispatcher {
      */
     public synchronized entry getEntry(int id) throws IOException, InterruptedException {
 //        System.out.println("current id " + tempEntryId + " input id " + id);
-//        Thread.sleep(5);
+        Thread.sleep(1);
         if(tempEntryId == id) {
             tempEntryId = -1;
 //            System.out.println(tempEntry.key.key());

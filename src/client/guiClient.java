@@ -7,20 +7,16 @@ import queryServer.multiQueryServer;
 
 import java.io.IOException;
 
-/**
- * the client of multi-server system
- * use 4 index thread & 1 query server to realize the system
- */
-public class multiTreeClient {
-    private static multiIndexServer indexServer1;
-    private static multiIndexServer indexServer2;
-    private static multiIndexServer indexServer3;
-    private static multiIndexServer indexServer4;
-    public static multiQueryServer queryServer;
+public class guiClient {
+    private multiIndexServer indexServer1;
+    private multiIndexServer indexServer2;
+    private multiIndexServer indexServer3;
+    private multiIndexServer indexServer4;
+    public multiQueryServer queryServer;
 
-    private static multiMetaServer metaServer = new multiMetaServer("resource/database/0406-", 4, 16);
+    private  multiMetaServer metaServer = new multiMetaServer("resource/database/0406-", 4, 16);
 
-    static {
+    public guiClient() {
         try {
             int indexM = 20;
             dispatcher dp = new dispatcher("resource/data/100000s.txt", 4, 500);
@@ -38,7 +34,7 @@ public class multiTreeClient {
     /**
      * indexing thread1, with 2 3 4 below
      */
-    static class indexThread1 extends Thread{
+    class indexThread1 extends Thread{
         public void run(){
             try {
                 indexServer1.startIndexing();
@@ -48,7 +44,7 @@ public class multiTreeClient {
         }
     }
 
-    static class indexThread2 extends Thread{
+    class indexThread2 extends Thread{
         public void run(){
             try {
                 indexServer2.startIndexing();
@@ -58,7 +54,7 @@ public class multiTreeClient {
         }
     }
 
-    static class indexThread3 extends Thread{
+    class indexThread3 extends Thread{
         public void run(){
             try {
                 indexServer3.startIndexing();
@@ -68,7 +64,7 @@ public class multiTreeClient {
         }
     }
 
-    static class indexThread4 extends Thread{
+    class indexThread4 extends Thread{
         public void run(){
             try {
                 indexServer4.startIndexing();
@@ -81,7 +77,7 @@ public class multiTreeClient {
     /**
      * querying thread
      */
-    static class queryThread extends Thread{
+    class queryThread extends Thread{
         public void run(){
             try {
                 queryServer.querying();
@@ -91,12 +87,12 @@ public class multiTreeClient {
         }
     }
 
-    public static void startSystem() throws InterruptedException {
-        multiTreeClient.indexThread1 index1 = new multiTreeClient.indexThread1();
-        multiTreeClient.indexThread2 index2 = new multiTreeClient.indexThread2();
-        multiTreeClient.indexThread3 index3 = new multiTreeClient.indexThread3();
-        multiTreeClient.indexThread4 index4 = new multiTreeClient.indexThread4();
-        multiTreeClient.queryThread query = new multiTreeClient.queryThread();
+    public void startSystem() throws InterruptedException {
+        indexThread1 index1 = new indexThread1();
+        indexThread2 index2 = new indexThread2();
+        indexThread3 index3 = new indexThread3();
+        indexThread4 index4 = new indexThread4();
+        queryThread query = new queryThread();
 
         index1.start();
         index2.start();
@@ -108,6 +104,7 @@ public class multiTreeClient {
     }
 
     public static void main(String [] args) throws InterruptedException {
-        multiTreeClient.startSystem();
+        guiClient client = new guiClient();
+        client.startSystem();
     }
 }
