@@ -123,6 +123,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * 本函数用于打印基本信息，以及树结构
      */
     public void printInfo() {
+        StringBuilder ss = new StringBuilder();
         System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
 //        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
         System.out.print("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
@@ -132,6 +133,20 @@ public abstract class BPlusTree<K extends Comparable, V>{
             System.out.println();
         }
         printBasic();
+    }
+
+    public String getInfo() {
+        StringBuilder ss = new StringBuilder();
+        ss.append("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
+//        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
+        ss.append("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
+        if(this.isTemplate())  {
+            ss.append(" is templated");
+        } else {
+            ss.append("\n");
+        }
+        ss.append(printBasic());
+        return ss.toString();
     }
 
     /**

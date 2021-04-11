@@ -5,6 +5,7 @@ import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.BPlusTree;
 import BPlusTree.keyType.MortonCode;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,6 +28,9 @@ public class dispatcher {
     private List<MortonCode> schema;  // the schema store the boundary of the schema
     private int indexNum;
     private BPlusTree[] treeList;
+
+    private JTextArea dataArea;
+    private JTextArea statusArea;
 
      //使用最暴力的方式，留存最近的内容，然后直接求partition
     private Queue<MortonCode> cacheQueue;
@@ -53,7 +57,23 @@ public class dispatcher {
         }
     }
 
+    public dispatcher(String dataPath, int indexNum, int cacheLimit, JTextArea dataArea, JTextArea statusArea) throws IOException {
+        this.dataArea = dataArea;
+        this.statusArea = statusArea;
+        this.dataPath = dataPath;
+        this.indexNum = indexNum;
+        this.tempEntryId = -1;
+        this.getDomain();
+        buffer = new BufferedReader(new FileReader(dataPath));
+        this.cacheLimit = cacheLimit;
+        this.cacheQueue = new LinkedList<>();
+        this.treeList = new BPlusTree[indexNum];
+        initSchema();  // set the schema while initiating
+    }
+
     public dispatcher(String dataPath, int indexNum, int cacheLimit) throws IOException {
+        this.dataArea = null;
+        this.statusArea = null;
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
@@ -66,6 +86,14 @@ public class dispatcher {
 //        this.schema = new LinkedList<>();  // first initiate
     }
 
+    public String getSchema() {
+        StringBuilder ss = new StringBuilder();
+        ss.append("---");
+        for(MortonCode code: schema) {
+            ss.append(code.toString()).append("---");
+        }
+        return ss.toString();
+    }
     /**
      * print the current schema
      */
@@ -215,8 +243,14 @@ public class dispatcher {
             tempQueue = new LinkedList<>();
         }
         this.schema = newSchema;
-        System.out.print("current schema: ");
-        printSchema();
+        if(statusArea == null){
+            System.out.print("current schema: ");
+            printSchema();
+        } else {
+            statusArea.append("current schema: ");
+            statusArea.append(getSchema());
+            statusArea.append("\n");
+        }
         updateTreeSchema(); // after change schema, change the tree schema as well
     }
 
@@ -293,7 +327,7 @@ public class dispatcher {
      */
     public synchronized entry getEntry(int id) throws IOException, InterruptedException {
 //        System.out.println("current id " + tempEntryId + " input id " + id);
-        Thread.sleep(1);
+        Thread.sleep(0);
         if(tempEntryId == id) {
             tempEntryId = -1;
 //            System.out.println(tempEntry.key.key());
@@ -302,7 +336,11 @@ public class dispatcher {
         } else if(tempEntryId == -1) {
 //            System.out.println("-1 temp id: "+ tempEntryId);
             String line = buffer.readLine();
-//            System.out.println(line);
+            if(dataArea == null){
+                System.out.println(line);
+            } else {
+                dataArea.insert(line+"\n", 0);
+            }
             if(line != null) {
                 tempEntry = new entry(getMortonCode(line), time);
                 tempEntryId = searchId(tempEntry.key.key());
@@ -342,7 +380,11 @@ public class dispatcher {
             }
             line = bf.readLine();
         }
-        System.out.println("domain from: " + minKey.toString() + " - " + maxKey.toString());
+        if(statusArea == null){
+            System.out.println("domain from: " + minKey.toString() + " - " + maxKey.toString());
+        } else {
+            statusArea.append("domain from: " + minKey.toString() + " - " + maxKey.toString() + "\n");
+        }
         bf.close();
     }
 

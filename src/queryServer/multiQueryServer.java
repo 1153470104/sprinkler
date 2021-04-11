@@ -83,31 +83,38 @@ public class multiQueryServer implements ActionListener {
      * the query line should be like that:
      * {srart time};{end time};{start coordinate};{end coordinate}
      */
-    public void guiQuerying() throws IOException, NullPointerException{
-        System.out.println("Query start: ");
+    public void guiQuerying(JTextArea outArea, JTextArea statusArea) throws IOException, NullPointerException, InterruptedException {
+        statusArea.append("Query start: \n");
         int queryTimeStart;
         int queryTimeEnd;
         MortonCode startKey;
         MortonCode endKey;
         while(true){
             if(querySentence == null) {
+//                System.out.println("emmm");
+                Thread.sleep(5); /*加上这个sleep之后效果好多了，我的天，是我不知道的领域*/
                 continue;
             }
+//            System.out.println("emmm");
             String s = querySentence;
             List<String> queryValue = null;
             try {
                 queryValue = queryLineParse(s);
+//                outArea.setText(s);
             } catch (NoSuchElementException e) {
-                System.out.println("Illegal input, please query again.");
+//                System.out.println("Illegal input, please query again.");
+                outArea.setText("Illegal input, please query again.");
+                querySentence = null;
                 continue;
             }
             queryTimeStart = Integer.parseInt(queryValue.get(0));
             queryTimeEnd = Integer.parseInt(queryValue.get(1));
             startKey = new MortonCode(queryValue.get(2));
             endKey = new MortonCode(queryValue.get(3));
-            System.out.println();
+//            System.out.println();
             List<BPTKey<MortonCode>> result = metaServer.searchKey(queryTimeStart, queryTimeEnd, startKey, endKey);
-            System.out.println(dataTool.listToString(result)); // TODO maybe could make some output
+//            System.out.println(dataTool.listToString(result)); // TODO maybe could make some output
+            outArea.setText(dataTool.listToString(result));
 
             querySentence = null;
 
@@ -123,5 +130,7 @@ public class multiQueryServer implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JTextField field = (JTextField)e.getSource();
         this.querySentence = field.getText();
+//        System.out.println("get!!! " + this.querySentence);
+        field.setText("");
     }
 }

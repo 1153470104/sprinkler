@@ -14,7 +14,6 @@ public class displayFrame extends JFrame {
         setTitle("data stream display");
         Container container = this.getContentPane();
         container.setLayout(null);
-        client = new guiClient();
 
         //text area
         JTextArea outputArea = new JTextArea(100, 30);
@@ -30,8 +29,8 @@ public class displayFrame extends JFrame {
         JLabel queryLabel = new JLabel("query statement");
         JLabel insertLabel = new JLabel("insert data");
         JLabel resultLabel = new JLabel("query result");
-        JButton queryButton = new JButton("query");
-        queryButton.addActionListener(client.queryServer);
+//        JButton queryButton = new JButton("query");
+//        queryButton.addActionListener(client.queryServer);
 //        queryButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
@@ -67,7 +66,7 @@ public class displayFrame extends JFrame {
         queryLabel.setBounds(1070, 5, 400, 20);
         inputArea.setBounds(1070, 30, 400, 60);
         resultLabel.setBounds(1070, 120, 100, 20);
-        queryButton.setBounds(1170, 100, 300, 30);
+//        queryButton.setBounds(1170, 100, 300, 30);
         js.setBounds(1070, 150, 400, 650);
 
         //add all
@@ -75,7 +74,7 @@ public class displayFrame extends JFrame {
         container.add(queryLabel);
         container.add(insertLabel);
         container.add(resultLabel);
-        container.add(queryButton);
+//        container.add(queryButton);
         container.add(startButton);
         container.add(endButton);
 
@@ -87,6 +86,9 @@ public class displayFrame extends JFrame {
         this.setVisible(true);
         this.setBounds(30, 30, 1500, 730);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        client = new guiClient(outputArea, statusArea, dataArea);
+        inputArea.addActionListener(client.queryServer);
     }
 
     public static void main(String[] args) {

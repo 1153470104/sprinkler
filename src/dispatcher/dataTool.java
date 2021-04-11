@@ -108,11 +108,11 @@ public class dataTool {
 
     public static String listToString(List<BPTKey<MortonCode>> list) {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Total Entry Num: ").append(list.size()).append("\n");
         for(BPTKey<MortonCode> k: list) {
             stringBuilder.append(k.key()).append(":");
             stringBuilder.append(((BPTValueKey<MortonCode, String>)k).getValue()).append("\n");
         }
-        stringBuilder.append("Total Entry Num: ").append(list.size());
         return stringBuilder.toString();
     }
 
