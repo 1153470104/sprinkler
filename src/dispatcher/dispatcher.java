@@ -57,6 +57,15 @@ public class dispatcher {
         }
     }
 
+    /**
+     * the initiation for gui
+     * @param dataPath the data storage path
+     * @param indexNum the index number
+     * @param cacheLimit the limit of cached entries
+     * @param dataArea the gui data area
+     * @param statusArea the gui status area
+     * @throws IOException thrown when any I/O operation fails
+     */
     public dispatcher(String dataPath, int indexNum, int cacheLimit, JTextArea dataArea, JTextArea statusArea) throws IOException {
         this.dataArea = dataArea;
         this.statusArea = statusArea;
@@ -71,6 +80,13 @@ public class dispatcher {
         initSchema();  // set the schema while initiating
     }
 
+    /**
+     * normal initiation of dispatcher
+     * @param dataPath the data storage path
+     * @param indexNum the index number
+     * @param cacheLimit the limit of cached entries
+     * @throws IOException thrown when any I/O operation fails
+     */
     public dispatcher(String dataPath, int indexNum, int cacheLimit) throws IOException {
         this.dataArea = null;
         this.statusArea = null;
@@ -86,6 +102,12 @@ public class dispatcher {
 //        this.schema = new LinkedList<>();  // first initiate
     }
 
+    /**
+     * get current schema
+     * the mode is:
+     *  --- key_1 --- key_2 --- ... --- key_n ---
+     * @return a string showing current schema
+     */
     public String getSchema() {
         StringBuilder ss = new StringBuilder();
         ss.append("---");
@@ -94,6 +116,7 @@ public class dispatcher {
         }
         return ss.toString();
     }
+
     /**
      * print the current schema
      */
