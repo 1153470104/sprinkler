@@ -107,6 +107,7 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
     public List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2) {
 //        System.out.println("test query");
         List<BPTKey<K>> domainKeys = new LinkedList<>();
+        //TODO this is not a good way to
         List<BPTKey<K>> rawKeys = this.search(key1, key2);
         for(BPTKey k: rawKeys) {
 //            System.out.println("test query2");
