@@ -18,11 +18,12 @@ public class bloomFilter {
     public bloomFilter(int gap, int m) {
         this.gap = gap;
         this.m = m;
-        bitMap = new int[m%32+1]; // initiate map length according to m's quantity
+        /*jesus! a ridiculous fault! divide'/' was mis-written into mod '%' */
+        bitMap = new int[m / 32+1]; // initiate map length according to m's quantity
     }
 
     public void insert(int index) {
-        int intNum = index % 32;
+        int intNum = index / 32;
         int orderNum = index - intNum * 32;
         int mask = 0b01 << 31 >>> orderNum;
         bitMap[intNum] = bitMap[intNum] | mask;
@@ -41,8 +42,8 @@ public class bloomFilter {
 
     // multiplication method by 0.414
     public int hashMap3(int time) {
-        double goldRatio = (Math.sqrt(2.0)-1);
-        return (int)(((goldRatio * time) - (int)(goldRatio * time)) * m);
+        double ratio = (Math.sqrt(2.0)-1);
+        return (int)(((ratio * time) - (int)(ratio * time)) * m);
     }
 
     /**
@@ -56,7 +57,7 @@ public class bloomFilter {
     }
 
     public boolean isIndexIn(int index) {
-        int intNum = index % 32;
+        int intNum = index / 32;
         int orderNum = index - intNum * 32;
         int mask = 0b01 << 31 >> orderNum;
         return bitMap[intNum] << orderNum >>> 31 << orderNum == mask;
