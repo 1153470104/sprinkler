@@ -24,9 +24,14 @@ public class bloomFilter {
 
     public void insert(int index) {
         int intNum = index / 32;
-        int orderNum = index - intNum * 32;
+        int orderNum = index % 32;
+        System.out.print("index: "+intNum);
+        System.out.println(" - "+orderNum);
+//        int mask = 0b01 << 31;
         int mask = 0b01 << 31 >>> orderNum;
+        System.out.println("before: "+Integer.toBinaryString(bitMap[intNum]));
         bitMap[intNum] = bitMap[intNum] | mask;
+        System.out.println("after: "+Integer.toBinaryString(bitMap[intNum])+"\n");
     }
 
     // simple division method
@@ -51,6 +56,7 @@ public class bloomFilter {
      * @param time the time need to be mapped
      */
     public void addMap(int time) {
+        time = time - time % gap; // used to fulfill a block of time
         insert(hashMap1(time));
         insert(hashMap2(time));
         insert(hashMap3(time));
@@ -58,15 +64,20 @@ public class bloomFilter {
 
     public boolean isIndexIn(int index) {
         int intNum = index / 32;
-        int orderNum = index - intNum * 32;
-        int mask = 0b01 << 31 >> orderNum;
-        return bitMap[intNum] << orderNum >>> 31 << orderNum == mask;
+        int orderNum = index % 32;
+        System.out.print("index: "+intNum);
+        System.out.println(" - "+orderNum);
+        int mask = 0b01 << 31 >>> orderNum;
+        System.out.println("mask: "+Integer.toBinaryString(mask));
+        System.out.println("bitmap: "+Integer.toBinaryString(bitMap[intNum])+"\n");
+        return (bitMap[intNum] & mask) == mask;
     }
 
     public boolean isIn(int time) {
+        time = time - time % gap; // used to fulfill a block of time
         int index1 = hashMap1(time);
-        int index2 = hashMap1(time);
-        int index3 = hashMap1(time);
+        int index2 = hashMap2(time);
+        int index3 = hashMap3(time);
         return isIndexIn(index1) && isIndexIn(index2) && isIndexIn(index3);
     }
 

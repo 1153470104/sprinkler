@@ -14,7 +14,7 @@ class bloomFilterTest {
         bf.addMap(20001);
         bf.addMap(20002);
         assertTrue(bf.isIn(20000));
-        assertFalse(bf.isIn(20004));
+        assertFalse(bf.isIn(20024));
     }
 
     @Test
@@ -28,7 +28,7 @@ class bloomFilterTest {
         bf.addMap(33002);
 
         assertTrue(bf.isInRegion(19999, 20005));
-        assertTrue(bf.isInRegion(29999, 31005));
+        assertFalse(bf.isInRegion(29999, 31005));
         assertTrue(bf.isInRegion(32890, 33001));
     }
 }
