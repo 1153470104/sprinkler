@@ -15,11 +15,17 @@ import java.util.StringTokenizer;
 public class dataProcess {
     private BufferedReader buffer;
     private String dataPath;
+    private int fileNum;
 
     public dataProcess(String dataPath) throws FileNotFoundException {
         this.dataPath = dataPath;
     }
 
+    public void countFile() {
+        File root = new File(dataPath);
+        File[] files = root.listFiles();
+        fileNum = files.length;
+    }
     /**
      * transform the coordinates in simulation data to z-order
      * @param fileName the file name of simulation data
@@ -37,11 +43,26 @@ public class dataProcess {
             String otherData = st.nextToken();
             MortonCode mc = new MortonCode(coordTxt);
             long zOrder = mc.getCode();
-//            System.out.println(zOrder);
+////            System.out.println(zOrder);
             out.write(timestamp + "|" + String.valueOf(zOrder) + "|" + otherData+"\n");
             line = buffer.readLine();
         }
         out.close();
+    }
+
+    public void externalSort1(String fileName) throws IOException {
+        countFile();
+        // first sort every data part individually
+        for(int i = 0; i < fileNum; i++) {
+            sortByTime(dataPath+"/part"+Integer.toString(i)+".txt", dataPath+"/s_part"+Integer.toString(i)+".txt");
+        }
+    }
+
+    public void externalSort2(String fileName) throws IOException {
+        // combine every sorted result
+        for(int i = 0; i < fileNum; i++) {
+            sortByTime(dataPath+"/part"+Integer.toString(i)+".txt", dataPath+"/s_part"+Integer.toString(i)+".txt");
+        }
     }
 
     /**
@@ -50,8 +71,8 @@ public class dataProcess {
      * @param fileName the file of simulation data
      * @throws IOException thrown when an I/O operation fails
      */
-    public void sortByTime(String fileName) throws IOException {
-        buffer = new BufferedReader(new FileReader(dataPath));
+    public void sortByTime(String originFile, String fileName) throws IOException {
+        buffer = new BufferedReader(new FileReader(originFile));
         List<String> sortList = new ArrayList<>();
         sortList.add(""); //为了方便堆排序的父子节点之间查找，加一个空节点就可以直接1/2找了
         String line = buffer.readLine();
@@ -181,7 +202,7 @@ public class dataProcess {
 
     public static void main(String[] args) throws IOException {
         dataProcess ds = new dataProcess("resource/data/100000.txt");
-        ds.transZOrder("resource/data/100000z.txt");
-//        ds.sortByTime("resource/data/100000s.txt");
+//        ds.transZOrder("resource/data/100000z.txt");
+//        ds.sortByTime(ds.dataPath, "resource/data/100000s.txt");
     }
 }
