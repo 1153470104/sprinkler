@@ -28,6 +28,7 @@ public class dispatcher {
     private List<MortonCode> schema;  // the schema store the boundary of the schema
     private int indexNum;
     private BPlusTree[] treeList;
+    private int currentNum;
 
     private JTextArea dataArea;
     private JTextArea statusArea;
@@ -72,7 +73,7 @@ public class dispatcher {
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
-        this.getDomain();
+//        this.getDomain();
         buffer = new BufferedReader(new FileReader(dataPath));
         this.cacheLimit = cacheLimit;
         this.cacheQueue = new LinkedList<>();
@@ -86,15 +87,18 @@ public class dispatcher {
      * @param indexNum the index number
      * @param cacheLimit the limit of cached entries
      * @throws IOException thrown when any I/O operation fails
+     *
+     * the data source must be multi file, so
      */
     public dispatcher(String dataPath, int indexNum, int cacheLimit) throws IOException {
+        this.currentNum = 0;
         this.dataArea = null;
         this.statusArea = null;
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
-        this.getDomain();
-        buffer = new BufferedReader(new FileReader(dataPath));
+        this.getDomain();  // TODO with big data, you can not get a clear view of data
+        buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
         this.cacheLimit = cacheLimit;
         this.cacheQueue = new LinkedList<>();
         this.treeList = new BPlusTree[indexNum];
@@ -173,7 +177,8 @@ public class dispatcher {
      * @throws IOException be thrown when any I/O function fails
      */
     public void initSchema() throws IOException {
-        BufferedReader bf = new BufferedReader(new FileReader(dataPath));
+        BufferedReader bf = new BufferedReader(
+                new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
         maxKey = null;
         minKey = null;
 
@@ -371,8 +376,19 @@ public class dispatcher {
 //                System.out.println();
                 return getEntry(id);  //做完了所有准备则
             } else {
-                System.out.println("input over!!!");
-                System.exit(0);
+                if(currentNum < 57) {  //这里是一个特殊处理！！！我知道只有0-57这些文件，如果原始数据组织发生变化，一定需要改。
+                    // if current file is meeting end, open the exceeding file
+                    this.currentNum += 1;
+                    buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
+                    line = buffer.readLine();
+                    tempEntry = new entry(getMortonCode(line), time);
+                    tempEntryId = searchId(tempEntry.key.key());
+                    updateQueue(tempEntry.key.key());  // update queue
+                    return getEntry(id);  //做完了所有准备则
+                } else {
+                    System.out.println("input over!!!");
+                    System.exit(0);
+                }
             }
         } else {
             return null;
@@ -385,7 +401,8 @@ public class dispatcher {
      * @throws IOException is thrown when an I/O operation fails
      */
     public void getDomain() throws IOException {
-        BufferedReader bf = new BufferedReader(new FileReader(dataPath));
+        BufferedReader bf = new BufferedReader(
+                new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
         maxKey = null;
         minKey = null;
 

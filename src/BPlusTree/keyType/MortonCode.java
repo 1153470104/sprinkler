@@ -155,14 +155,15 @@ public class MortonCode implements Comparable{
      * @param mList the raw morton code get from B+ tree
      * @return the list of morton code in assigned region
      */
-    public static List<BPTKey<MortonCode>> regionCut(List<BPTKey<MortonCode>> mList) {
+    public static List<BPTKey<MortonCode>> regionCut(List<BPTKey<MortonCode>> mList, MortonCode startKey, MortonCode endKey) {
         // get the real boundary of the search region
-        // TODO!幼稚！幼稚！你以为你得到的顺序就是最后的顺序吗
-        // TODO!
-        int xMin = mList.get(0).key().getX();
-        int yMin = mList.get(0).key().getY();
-        int xMax = mList.get(mList.size()-1).key().getX();
-        int yMax = mList.get(mList.size()-1).key().getY();
+        /* 幼稚！幼稚！你以为你得到的顺序就是最后的顺序吗
+           原来的一个问题，即没有输入骑士河结束的key。。。
+           以为list里第一个就是开始而最后一个就是结束。。 */
+        int xMin = startKey.getX();
+        int yMin = startKey.getY();
+        int xMax = endKey.getX();
+        int yMax = endKey.getY();
 
         // this function just use inner params which maybe not ok after
         // because the storage on disk is morton code only

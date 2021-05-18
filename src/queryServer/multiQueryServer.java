@@ -51,7 +51,8 @@ public class multiQueryServer implements ActionListener {
             endKey = new MortonCode(queryValue.get(3));
             System.out.println();
             List<BPTKey<MortonCode>> result = metaServer.searchKey(queryTimeStart, queryTimeEnd, startKey, endKey);
-            System.out.println(dataTool.listToString(result)); // TODO maybe could make some output
+            result = MortonCode.regionCut(result, startKey, endKey);
+            System.out.println(dataTool.listToString(result));
 
             if(s.equals("exit")) {
                 break;
@@ -113,7 +114,7 @@ public class multiQueryServer implements ActionListener {
             endKey = new MortonCode(queryValue.get(3));
 //            System.out.println();
             List<BPTKey<MortonCode>> result = metaServer.searchKey(queryTimeStart, queryTimeEnd, startKey, endKey);
-//            System.out.println(dataTool.listToString(result)); // TODO maybe could make some output
+            result = MortonCode.regionCut(result, startKey, endKey);
             outArea.setText(dataTool.listToString(result));
 
             querySentence = null;
