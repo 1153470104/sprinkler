@@ -50,7 +50,7 @@ public class externalTree<K extends Comparable, V> {
      * init of an external tree
      * @param tree the tree in memory
      * @param filePath the file to store external tree
-     * @param conf the configuration of external tre
+     * @param conf the configuration of external tree
      * @throws IOException be thrown when an I/O operation fails
      */
     public externalTree(BPlusTree<K, V> tree, String filePath, externalConfiguration conf) throws IOException {

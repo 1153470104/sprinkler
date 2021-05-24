@@ -246,7 +246,15 @@ public class dispatcher {
 
         // 用indexNum-1个最大堆，找出所有分界值。。。
         // get a copy of cache queue
-        Queue<MortonCode> newQueue = new LinkedList<>(cacheQueue);
+        /*下面的以cacheQueue给newQueue赋值的时候有时候会出现溢出的问题，就离谱
+         * 尚未解决！！！TODO，只能说未来可以直接把这个计算schema的方式替换掉 */
+        Queue<MortonCode> newQueue = null;
+        try {
+             newQueue = new LinkedList<>(cacheQueue);
+        } catch(ArrayIndexOutOfBoundsException e) {
+            System.out.println(cacheQueue.size());
+            System.exit(-1);
+        }
         Queue<MortonCode> tempQueue = new LinkedList<>();
         int heapLength = cacheLimit / indexNum;
         for(int i = 0; i < indexNum-1; i++) {
@@ -365,7 +373,7 @@ public class dispatcher {
 //            System.out.println("-1 temp id: "+ tempEntryId);
             String line = buffer.readLine();
             if(dataArea == null){
-                System.out.println(line);
+//                System.out.println(line);
             } else {
                 dataArea.insert(line+"\n", 0);
             }

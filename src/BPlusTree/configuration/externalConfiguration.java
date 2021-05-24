@@ -3,6 +3,7 @@ package BPlusTree.configuration;
 import BPlusTree.keyType.MortonCode;
 
 import java.lang.reflect.Type;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -29,7 +30,7 @@ public class externalConfiguration {
         this.nonLeafHeaderSize = (Short.SIZE + Integer.SIZE) / 8; // 22 bytes
         this.leafHeaderSize = (Short.SIZE + 2 * Long.SIZE + Integer.SIZE) / 8; // 22 bytes
 
-        this.pageSize = 1024; // default pageSize, 1024
+        this.pageSize = 4096; // default pageSize, 1024
 
         //assign key-value pair's size
         this.keySize = keySize;
@@ -50,7 +51,11 @@ public class externalConfiguration {
             // TODO a stupid realization, use some specific manipulation
             // TODO to make up the previews design fault, just like no design
             long realKey =((MortonCode)key).getCode();
-            bbuffer.putLong(realKey);
+            try {
+                bbuffer.putLong(realKey);
+            }catch (BufferOverflowException e) {
+                System.out.println("key exception: " + key);
+            }
         }
     }
 
@@ -80,7 +85,11 @@ public class externalConfiguration {
      */
     public void writeValue(ByteBuffer bbuffer, Object value){
         if(valueType == String.class) {
-            bbuffer.put(((String) value).getBytes(StandardCharsets.UTF_8));
+            try {
+                bbuffer.put(((String) value).getBytes(StandardCharsets.UTF_8));
+            } catch (BufferOverflowException e) {
+                System.out.println("value exception: " + value);
+            }
         }else if(valueType == Integer.class) {
             bbuffer.putInt((int)value);
         }

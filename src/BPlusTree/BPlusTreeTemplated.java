@@ -245,7 +245,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
 //        System.out.println((this.leafNum > this.entryNum) || this.isBalanced());
         /* 本来出现一个离奇bug，后来才发现是因为leafNum的存在依赖于isBalance的计算 */
         boolean balanceOrNot = this.isBalanced();
-        if (this.leafNum >= this.entryNum || balanceOrNot) {
+        if (this.leafNum*10 >= this.entryNum || balanceOrNot) {
 //            System.out.println("shit");
             return;
         }
@@ -389,8 +389,20 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
             }
             sum = sum-1;
         } while(tempNode.getFather() != null);
-//        System.out.println("balanced!");
-//        this.printInfo();
+        System.out.println("balanced!");
+        this.printInfo();
     }
 
+    @Override
+    public void printInfo() {
+        StringBuilder ss = new StringBuilder();
+        System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
+        System.out.print("tree's m: " + String.valueOf(m) + "; nodeNum: " + String.valueOf(leafNum) + "; entryNum: " + String.valueOf(entryNum));
+        if(this.isTemplate())  {
+            System.out.println(" is templated");
+        } else {
+            System.out.println();
+        }
+        printBasic();
+    }
 }

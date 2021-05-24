@@ -232,7 +232,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * @return a boolean value of if the block is full
      */
     public boolean isBlockFull() {
-        if (this.entryNum < 1000) {
+        if (this.entryNum < 2000) {
             return false;
         }
         return true;
