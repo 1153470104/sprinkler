@@ -22,6 +22,14 @@ public class bloomFilter {
         bitMap = new int[m / 32+1]; // initiate map length according to m's quantity
     }
 
+    // used to recover bloom filter from external tree
+    /*there's no need! could just copy bloom filter, because part of external tree is in memory*/
+//    public bloomFilter(int gap, int m, int[] bitMap){
+//        this.gap = gap;
+//        this.m = m;
+//        this.bitMap = bitMap;
+//    }
+
     public static bloomFilter bloomFilterFactory() {
         return new bloomFilter(15, 203);
     }

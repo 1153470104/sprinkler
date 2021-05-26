@@ -45,6 +45,8 @@ public class externalTree<K extends Comparable, V> {
     private int m;
     private String filePath;
 
+    private bloomFilter bf;
+
     /**
      * init of an external tree
      * @param tree the tree in memory
@@ -59,6 +61,7 @@ public class externalTree<K extends Comparable, V> {
         this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
         this.conf = conf;
         this.treeFile = tree.storeFile(filePath, conf);
+        this.bf = tree.bf;
         this.totalPages = treeFile.length() / conf.pageSize;
         this.m = tree.m;
         this.filePath = filePath;
@@ -167,6 +170,11 @@ public class externalTree<K extends Comparable, V> {
     public List<BPTKey<K>> searchNode(int tStart, int tEnd, K key1, K key2) throws IOException {
 //        System.out.println("externalTree");
         List<BPTKey<K>> domainKeys = new LinkedList<>();
+
+        // this part is using bloom filter to test if there's entry in that time gap
+        if (!bf.isInRegion(timeStart, timeEnd)) { /*emmm既然一个bf.isInRegion搞定，为什么要写个新函数*/
+            return domainKeys;
+        }
         List<BPTKey<K>> rawKeys = this.searchNode(key1, key2);
         for(BPTKey k: rawKeys) {
             //TODO this place is not generic any more,
