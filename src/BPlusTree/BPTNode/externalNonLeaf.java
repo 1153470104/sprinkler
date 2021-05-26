@@ -1,12 +1,11 @@
 package BPlusTree.BPTNode;
 
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
      * write node of non leaf node into the tree file
      */
     @Override
-    public void writeNode(RandomAccessFile r, externalConfiguration conf) throws IOException {
+    public void writeNode(RandomAccessFile r, configuration conf) throws IOException {
         super.writeNode(r, conf);
         r.seek(this.pageIndex);
         byte[] buffer = new byte[conf.pageSize];

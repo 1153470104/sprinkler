@@ -27,7 +27,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
      * @param tree the scratched B+ tree
      */
     public BPlusTreeTemplated(BPlusTree<K, V> tree) {
-        super(tree.getM());
+        super(tree.conf);
         this.onlyRoot = false;
         this.templateBased = true;
         this.root = tree.rootCopy();

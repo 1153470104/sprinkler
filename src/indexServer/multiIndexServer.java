@@ -3,7 +3,7 @@ package indexServer;
 import BPlusTree.*;
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPlusTree;
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.dispatcher;
 import dispatcher.dispatcher.*;
@@ -18,20 +18,20 @@ import java.io.IOException;
 public class multiIndexServer {
     private BPlusTree<MortonCode, String> currentBpt;
     private int time;
-    private externalConfiguration conf;
+    private configuration conf;
     private multiMetaServer metaServer;
     private int id;
 
     private dispatcher dp;
 
-    public multiIndexServer(int m, multiMetaServer metaServer, dispatcher dp, int id) throws IOException {
+    public multiIndexServer(configuration conf, multiMetaServer metaServer, dispatcher dp, int id) throws IOException {
         this.id = id;
         this.dp = dp;
 
         /*jesus!!! one bug occur: Long.class was mis-write into long.class
          * so that, the conf.readKey function fails !!! */
-        this.conf = new externalConfiguration(8, 21, Long.class, String.class);
-        currentBpt = new BPlusTreeScratched<MortonCode, String>(m);
+        currentBpt = new BPlusTreeScratched<MortonCode, String>(conf);
+        this.conf = new configuration(8, 21, Long.class, String.class);
         this.dp.updateTree(this.currentBpt, id);
         this.metaServer = metaServer;
     }

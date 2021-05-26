@@ -1,5 +1,6 @@
 package client;
 
+import BPlusTree.configuration.configuration;
 import dispatcher.dispatcher;
 import indexServer.multiIndexServer;
 import metadataServer.multiMetaServer;
@@ -23,13 +24,14 @@ public class multiTreeClient {
     static {
         try {
             int indexM = 20;
+            configuration conf = new configuration(8, 21, Long.class, String.class);
 //            dispatcher dp = new dispatcher("resource/data/100000s.txt", 4, 500);
             dispatcher dp = new dispatcher("resource/data/data_sort/", 4, 500);
 
-            indexServer1 = new multiIndexServer(indexM, metaServer, dp, 0);
-            indexServer2 = new multiIndexServer(indexM, metaServer, dp, 1);
-            indexServer3 = new multiIndexServer(indexM, metaServer, dp, 2);
-            indexServer4 = new multiIndexServer(indexM, metaServer, dp, 3);
+            indexServer1 = new multiIndexServer(conf, metaServer, dp, 0);
+            indexServer2 = new multiIndexServer(conf, metaServer, dp, 1);
+            indexServer3 = new multiIndexServer(conf, metaServer, dp, 2);
+            indexServer4 = new multiIndexServer(conf, metaServer, dp, 3);
             queryServer = new multiQueryServer(metaServer);
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,6 @@
 package BPlusTree;
 
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class externalTreeTest {
     testTool ts = new testTool();
-    externalConfiguration IIconf = new externalConfiguration(4, 4, Integer.class, Integer.class);
-    externalConfiguration ISconf = new externalConfiguration(4, 3, Integer.class, String.class);
+    configuration IIconf = new configuration(4, 4, Integer.class, Integer.class);
+    configuration ISconf = new configuration(4, 3, Integer.class, String.class);
 
     /**
      * this is a small test of generic

@@ -2,7 +2,7 @@ package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -47,6 +47,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
     protected boolean templateBased = false; // to show if it's template tree
     protected int entryNum = 0; // the total entry number
 
+    protected configuration conf; // the configuration
 
     //由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
     protected int timeStart; //the start time inserting time of the tree
@@ -60,6 +61,13 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * basic init of BPlusTree
      * @param m the capacity of every node
      */
+    public BPlusTree(configuration conf){
+        this.m = conf.m;
+        this.conf = conf;
+        this.maxNumber = m-1;
+        this.minNumber = (int) (Math.ceil(m / 2.0) -1);
+    }
+
     public BPlusTree(int m){
         this.m = m;
         this.maxNumber = m-1;
@@ -232,6 +240,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * @return a boolean value of if the block is full
      */
     public boolean isBlockFull() {
+//        int pageLimit = this.conf.chunkSize / this.conf.pageSize;
         if (this.entryNum < 2000) {
             return false;
         }
@@ -380,7 +389,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * @return a RandomAccessFile that store the tree's data
      * @throws IOException be thrown when an I/O operation fails
      */
-    public RandomAccessFile storeFile(String filePath, externalConfiguration conf)
+    public RandomAccessFile storeFile(String filePath, configuration conf)
             throws IOException {
 
         RandomAccessFile rf = new RandomAccessFile(filePath, "rw");
@@ -460,7 +469,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * @param conf external tree configuration
      * @throws IOException
      */
-    private void writeFileHeader(RandomAccessFile treeFile, externalConfiguration conf)
+    private void writeFileHeader(RandomAccessFile treeFile, configuration conf)
             throws IOException {
         treeFile.seek(0L);
         treeFile.writeInt(conf.pageSize);

@@ -5,11 +5,10 @@ import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.BPTNode.externalLeaf;
 import BPlusTree.BPTNode.externalNode;
 import BPlusTree.BPTNode.externalNonLeaf;
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.dataTool;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -39,7 +38,7 @@ public class externalTree<K extends Comparable, V> {
     private K keyStart;
     private K keyEnd;
 
-    private externalConfiguration conf;
+    private configuration conf;
     private RandomAccessFile treeFile;
     private long totalPages;
     private externalNode root;
@@ -53,7 +52,7 @@ public class externalTree<K extends Comparable, V> {
      * @param conf the configuration of external tree
      * @throws IOException be thrown when an I/O operation fails
      */
-    public externalTree(BPlusTree<K, V> tree, String filePath, externalConfiguration conf) throws IOException {
+    public externalTree(BPlusTree<K, V> tree, String filePath, configuration conf) throws IOException {
         this.timeStart = ((BPlusTree<K, V>)tree).getTimeStart();
         this.timeEnd = ((BPlusTree<K, V>)tree).getTimeEnd();
         this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();

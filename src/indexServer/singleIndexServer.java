@@ -2,14 +2,12 @@ package indexServer;
 
 import BPlusTree.*;
 import BPlusTree.BPTKey.BPTKey;
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.*;
 import metadataServer.singleMetaServer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * index server for single in memory node version
@@ -18,7 +16,7 @@ public class singleIndexServer {
 //    List<BPlusTree<K>> bptList;
     private BPlusTree<MortonCode, String> currentBpt;
     private int time;
-    private externalConfiguration conf;
+    private configuration conf;
     private singleMetaServer metaServer;
 //    private List<externalTree<MortonCode>> externalTreeList;
 //    private String externalBase;
@@ -26,13 +24,13 @@ public class singleIndexServer {
 
     dataTool dt;
 
-    public singleIndexServer(String dataPath, int m, singleMetaServer metaServer) throws IOException {
+    public singleIndexServer(String dataPath, configuration conf, singleMetaServer metaServer) throws IOException {
         this.dt = new dataTool(dataPath);
 //        this.externalTreeList = new ArrayList<>();
         /*jesus!!! one bug occur: Long.class was mis-write into long.class
         * so that, the conf.readKey function fails !!! */
-        this.conf = new externalConfiguration(8, 21, Long.class, String.class);
-        currentBpt = new BPlusTreeScratched<MortonCode, String>(m);
+        this.conf = new configuration(8, 21, Long.class, String.class);
+        currentBpt = new BPlusTreeScratched<MortonCode, String>(conf);
 //        this.externalBase = externalBase;
         this.metaServer = metaServer;
 //        bptList = new ArrayList<>();

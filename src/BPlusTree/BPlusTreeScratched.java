@@ -3,6 +3,7 @@ package BPlusTree;
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.BPTNode.*;
+import BPlusTree.configuration.configuration;
 import BPlusTree.keyType.MortonCode;
 import dispatcher.dataTool;
 
@@ -17,6 +18,13 @@ import java.util.List;
  * @param <K> the key's type
  */
 public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V> {
+
+    public BPlusTreeScratched(configuration conf){
+        super(conf);
+        this.onlyRoot = true;
+        this.root = new BPTLeaf<K>(m, null);
+        this.templateBased = false;
+    }
 
     public BPlusTreeScratched(int m){
         super(m);

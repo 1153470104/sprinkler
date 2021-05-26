@@ -1,12 +1,10 @@
 package BPlusTree.BPTNode;
 
 import BPlusTree.BPTKey.BPTKey;
-import BPlusTree.configuration.externalConfiguration;
+import BPlusTree.configuration.configuration;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -105,7 +103,7 @@ public class externalNode<K extends Comparable> {
     /**
      * the specific external node write functions are implemented in the children class
      */
-    public void writeNode(RandomAccessFile r, externalConfiguration conf) throws IOException {
+    public void writeNode(RandomAccessFile r, configuration conf) throws IOException {
     }
 
     /**

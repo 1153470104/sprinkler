@@ -14,23 +14,32 @@ import java.nio.charset.StandardCharsets;
  * all the size are in bytes
  *
  */
-public class externalConfiguration {
+public class configuration {
     public int headerSize;              // header size
     public int pageSize;                // page size
     public int nonLeafHeaderSize;       // non leaf node header size
     public int leafHeaderSize;          // leaf node header size
+
+    public int m;
+    public double skewness;
+    public double loadGaplimit;
+    public int chunkSize;
 
     public Type keyType;
     public Type valueType;
     public int keySize;                 // key's size
     public int valueSize;               // value's size
 
-    public externalConfiguration(int keySize, int valueSize, Type keyType, Type valueType) {
+    public configuration(int keySize, int valueSize, Type keyType, Type valueType) {
         this.headerSize = (Integer.SIZE * 3 + Long.SIZE) / 8;          // header size in bytes
         this.nonLeafHeaderSize = (Short.SIZE + Integer.SIZE) / 8; // 22 bytes
         this.leafHeaderSize = (Short.SIZE + 2 * Long.SIZE + Integer.SIZE) / 8; // 22 bytes
 
-        this.pageSize = 4096; // default pageSize, 1024
+        this.pageSize = 4096; // default pageSize, 1024 B
+        this.m = 20; // tree's m
+        this.skewness = 0.2; // template tree's skewness limit
+        this.loadGaplimit = 0.2; // dispatcher's index server load gap limit
+        this.chunkSize = 4 * 1024 * 1024; // default chunk size 4 MB
 
         //assign key-value pair's size
         this.keySize = keySize;

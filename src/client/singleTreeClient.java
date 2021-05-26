@@ -1,5 +1,6 @@
 package client;
 
+import BPlusTree.configuration.configuration;
 import indexServer.*;
 import metadataServer.singleMetaServer;
 import queryServer.*;
@@ -19,8 +20,9 @@ public class singleTreeClient {
 
     static {
         try {
+            configuration conf = new configuration(8, 21, Long.class, String.class);
             indexServer = new singleIndexServer(
-                    "resource/data/100000s.txt", 20, metaServer);
+                    "resource/data/100000s.txt", conf, metaServer);
             queryServer = new singleQueryServer(metaServer);
         } catch (IOException e) {
             e.printStackTrace();
