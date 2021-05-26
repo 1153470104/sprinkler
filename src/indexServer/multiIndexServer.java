@@ -62,7 +62,9 @@ public class multiIndexServer {
         //iterate & deal with data
         boolean flushed = false;
         while (true) {
+            // in order to use bloom filter the next two statements should be bond together
             currentBpt.addKey(keyEntry);
+            currentBpt.addBloomfilter(this.time);
 //            System.out.println("index server "+ id + " indexing" );
             if(currentBpt.isTemplate()) {
                 ((BPlusTreeTemplated)currentBpt).balance();
@@ -141,6 +143,7 @@ public class multiIndexServer {
         boolean flushed = false;
         while (true) {
             currentBpt.addKey(keyEntry);
+            currentBpt.addBloomfilter(this.time);
 //            System.out.println("index server "+ id + " indexing" );
             if(currentBpt.isTemplate()) {
                 ((BPlusTreeTemplated)currentBpt).balance();

@@ -121,6 +121,10 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
     @Override
     public List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2) {
         List<BPTKey<K>> domainKeys = new LinkedList<>();
+        // this part is using bloom filter to test if there's entry in that time gap
+        if (!hasTime(timeStart, timeEnd)) {
+            return domainKeys;
+        }
         List<BPTKey<K>> rawKeys = this.search(key1, key2);
         for(BPTKey k: rawKeys) {
             //TODO this place is not generic any more,

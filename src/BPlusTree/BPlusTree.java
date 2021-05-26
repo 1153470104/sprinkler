@@ -43,17 +43,18 @@ public abstract class BPlusTree<K extends Comparable, V>{
     protected int m; // capacity of node
     protected int maxNumber;
     protected int minNumber;
-    protected BPTNode<K> root; //root pointer
+    protected BPTNode<K> root; // root pointer
     protected boolean templateBased = false; // to show if it's template tree
     protected int entryNum = 0; // the total entry number
 
     protected configuration conf; // the configuration
+    protected bloomFilter bf; // the bloomFilter
 
-    //由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
+    // 由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
     protected int timeStart; //the start time inserting time of the tree
     protected int timeEnd; // the time of stopping using the tree
 
-    //key start仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
+    // key start仅仅用于分配，没有在addKey的时候对其进行检验，所以一定要注意
     protected K keyStart = null; // the smallest key that could be in the tree
     protected K keyEnd = null; // the biggest key that could be in the tree
 
@@ -63,6 +64,8 @@ public abstract class BPlusTree<K extends Comparable, V>{
      */
     public BPlusTree(configuration conf){
         this.m = conf.m;
+//        this.bf = bloomFilter.bloomFilterFactory();
+        this.bf = new bloomFilter(conf.gap, conf.slot);
         this.conf = conf;
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
@@ -83,6 +86,10 @@ public abstract class BPlusTree<K extends Comparable, V>{
         entryNum = entryNum+1;
     }
 
+    public void addBloomfilter(int time) {
+        this.bf.addMap(time);
+    }
+
     /**
      * Abstract method that all classes must implement that
      * search keys in a domain which two boundaries is key1 & key2
@@ -94,6 +101,10 @@ public abstract class BPlusTree<K extends Comparable, V>{
     public abstract List<BPTKey<K>> search(K key1, K key2);
 
     public abstract List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2);
+
+    public boolean hasTime(int timeStart, int timeEnd) {
+        return bf.isInRegion(timeStart, timeEnd);
+    }
 
     /**
      * getter of start time

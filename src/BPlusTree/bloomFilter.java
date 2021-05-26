@@ -22,6 +22,10 @@ public class bloomFilter {
         bitMap = new int[m / 32+1]; // initiate map length according to m's quantity
     }
 
+    public static bloomFilter bloomFilterFactory() {
+        return new bloomFilter(15, 203);
+    }
+
     public void insert(int index) {
         int intNum = index / 32;
         int orderNum = index % 32;
