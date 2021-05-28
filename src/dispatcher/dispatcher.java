@@ -199,11 +199,22 @@ public class dispatcher {
         bf.close();
 }
 
+    public boolean loadBalance() {
+        //TODO
+        return false;
+    }
+
+    public void balanceSchema(boolean force) {
+        //TODO
+    }
+
     /**
+     *                   previous bad realization!
+     *
      * calculate if the current schema is balanced according to the schema
      * @return a boolean of if current load is balanced
      */
-    public boolean loadBalance() {
+    public boolean loadBalance0() {
         int[] freq = new int[indexNum];
         List<MortonCode> curList = new LinkedList<>(cacheQueue);
         for(MortonCode code: curList) {
@@ -229,13 +240,15 @@ public class dispatcher {
     }
 
     /**
+     *                   previous bad realization!
+     *
      * use to alternate schema with the frequency of schema
      * TODO need to implement some new data structure to store the frequency info
      * TODO 具体的边界是不要，还是固定的，先不确定，未来做！
      * 目前是只分分界点，没有指定边界点！
      * @param force the boolean to show if need to force renew the schema
      */
-    public void balanceSchema(boolean force) {
+    public void balanceSchema0(boolean force) {
         // 以下的实现，是以schema 没有边界，只有分点来实现的
         //如果数量不够，不更新边界
         if (cacheQueue.size() < cacheLimit) return;
