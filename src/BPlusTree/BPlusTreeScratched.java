@@ -1,5 +1,6 @@
 package BPlusTree;
 
+import BPTException.fullTreeException;
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTKey.BPTValueKey;
 import BPlusTree.BPTNode.*;
@@ -48,6 +49,7 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
             index = node.searchKey(key);
             checkNum = node.insertKey(index, key);
             if (checkNum == 1) {
+                this.blockNum += 1; //每分裂一次block num这里+1
                 split(node);
             }
         } else {
@@ -58,6 +60,14 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
             index = node.searchKey((key));
             checkNum = node.insertKey(index, key);
             while (checkNum == 1) {
+                if (blockLimit - blockNum < depth) {
+                    this.blockFull = true;
+                    node.deleteKey(index);
+                    this.scratchNumLimit = this.entryNum;
+                    break;
+//                    throw new fullTreeException("full!");
+                }
+                this.blockNum += 1; //每分裂一次block num这里+1
                 if (this.split(node) != -1) {
                     node = node.getFather();
                     checkNum = node.checkout();
@@ -151,6 +161,8 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
         int siblingIsLeaf = 0;
         if(node.getFather() == null) {
             /* 需要新建父节点的情况 */
+            this.blockNum += 1; // 因为新建父节点，所以需要在这里多加blockNum一次
+            this.depth += 1;
             BPTNonLeaf<K> father = new BPTNonLeaf<K>(this.m, null);
             father.insertKey(0, node.getKey(minNumber));
             BPTNode<K> siblingNode = new BPTNode<K>(this.m, father);

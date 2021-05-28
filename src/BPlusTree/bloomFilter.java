@@ -37,13 +37,13 @@ public class bloomFilter {
     public void insert(int index) {
         int intNum = index / 32;
         int orderNum = index % 32;
-        System.out.print("index: "+intNum);
-        System.out.println(" - "+orderNum);
+//        System.out.print("index: "+intNum);
+//        System.out.println(" - "+orderNum);
 //        int mask = 0b01 << 31;
         int mask = 0b01 << 31 >>> orderNum;
-        System.out.println("before: "+Integer.toBinaryString(bitMap[intNum]));
+//        System.out.println("before: "+Integer.toBinaryString(bitMap[intNum]));
         bitMap[intNum] = bitMap[intNum] | mask;
-        System.out.println("after: "+Integer.toBinaryString(bitMap[intNum])+"\n");
+//        System.out.println("after: "+Integer.toBinaryString(bitMap[intNum])+"\n");
     }
 
     // simple division method

@@ -33,10 +33,13 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
         this.root = tree.rootCopy();
         this.entryNum = 0;
 
-        this.timeStart = ((BPlusTree<K, V>)tree).getTimeStart();
-        this.timeEnd = ((BPlusTree<K, V>)tree).getTimeEnd();
-        this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();
-        this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
+//        this.timeStart = ((BPlusTree<K, V>)tree).getTimeStart();
+//        this.timeEnd = ((BPlusTree<K, V>)tree).getTimeEnd();
+//        this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();
+//        this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
+
+        this.scratchNumLimit = tree.scratchNumLimit;
+        this.blockNum = tree.blockNum;
     }
 
     /**
@@ -67,13 +70,19 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
         }
         index = node.searchKey((key));
         checkNum = node.insertKey(index, key);
+        if(checkNum == 1 && this.entryNum > this.scratchNumLimit) {
+            blockFull = true;
+        }
+
+
+        /*这里因为template的时候已经有相应的块数目了，所以不分裂了，超出的部分直接由balance来解决*/
         // because the insert of templated tree could only happen in the bottom
         // so, increasing layers is not considered
-        if (checkNum == 1) {
-            // 判断是否要超出数量限制，超出就split
-            // 有可能成功，有可能不成功
-            this.split(node);
-        }
+//        if (checkNum == 1) {
+//            // 判断是否要超出数量限制，超出就split
+//            // 有可能成功，有可能不成功
+//            this.split(node);
+//        }
     }
 
     /**
@@ -235,21 +244,21 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
     /**
      * balance function of template tree
      * averagely assign keys onto every leaf node
-     * then rewrite the non-leaf nodes' keys to make sure the correctness of the frame
-     *
+                * then rewrite the non-leaf nodes' keys to make sure the correctness of the frame
+                *
      * if tree is balance or not, the function would be execute
      * the isBalance function is set in balance function
      */
-    public void balance(){
-        // !TODO 突然想到，对于每个不同的 m 可能都有无法balance的情况，balance操作完了，还不balance
-        //居然是因为测试方便把 is balance放到balance功能中进行检测
-        //这就要求使用template的人手动balance 而非 add的同时balance
-        /* 叶节点和entrynum数目的比较顺序都能写反我也是菜 */
-        // 有点私心，写成一定比叶节点数要大两倍
+        public void balance(){
+            // !TODO 突然想到，对于每个不同的 m 可能都有无法balance的情况，balance操作完了，还不balance
+            //居然是因为测试方便把 is balance放到balance功能中进行检测
+            //这就要求使用template的人手动balance 而非 add的同时balance
+            /* 叶节点和entrynum数目的比较顺序都能写反我也是菜 */
+            // 有点私心，写成一定比叶节点数要大两倍
 //        System.out.println((this.leafNum > this.entryNum) || this.isBalanced());
-        /* 本来出现一个离奇bug，后来才发现是因为leafNum的存在依赖于isBalance的计算 */
-        boolean balanceOrNot = this.isBalanced();
-        if (this.leafNum*10 >= this.entryNum || balanceOrNot) {
+            /* 本来出现一个离奇bug，后来才发现是因为leafNum的存在依赖于isBalance的计算 */
+            boolean balanceOrNot = this.isBalanced();
+        if (this.leafNum*8 >= this.entryNum || balanceOrNot) {
 //            System.out.println("shit");
             return;
         }
@@ -332,9 +341,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
                 prevLeaf.setLeafNext(newLeaf);
             }
 
-//            System.out.print("averageNum+plus: ");
-//            System.out.println(averageNum+plus);
-
             for(int k = 0; k < averageNum+plus; k++) {
 //                System.out.print(keyDeque.getFirst().getKey());
 //                System.out.print(" ");
@@ -400,7 +406,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
     @Override
     public void printInfo() {
         StringBuilder ss = new StringBuilder();
-        System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
+//        System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
         System.out.print("tree's m: " + String.valueOf(m) + "; nodeNum: " + String.valueOf(leafNum) + "; entryNum: " + String.valueOf(entryNum));
         if(this.isTemplate())  {
             System.out.println(" is templated");

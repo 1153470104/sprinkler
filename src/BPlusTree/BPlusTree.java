@@ -1,5 +1,6 @@
 package BPlusTree;
 
+import BPTException.fullTreeException;
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTNode.*;
 import BPlusTree.configuration.configuration;
@@ -46,9 +47,15 @@ public abstract class BPlusTree<K extends Comparable, V>{
     protected BPTNode<K> root; // root pointer
     protected boolean templateBased = false; // to show if it's template tree
     protected int entryNum = 0; // the total entry number
+    protected int scratchNumLimit; // 用于记录从头建B+树满了之后的数据个数数目
 
     protected configuration conf; // the configuration
     protected bloomFilter bf; // the bloomFilter
+
+    protected int blockLimit;
+    protected int blockNum = 1;
+    protected boolean blockFull = false;
+    protected int depth = 1;
 
     // 由于这四个元素和对象声明没用绑在一块，所以使用的时候一定要注意，别忘了
     protected int timeStart; //the start time inserting time of the tree
@@ -69,12 +76,14 @@ public abstract class BPlusTree<K extends Comparable, V>{
         this.conf = conf;
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
+        this.blockLimit = conf.chunkSize / conf.pageSize;
     }
 
     public BPlusTree(int m){
         this.m = m;
         this.maxNumber = m-1;
         this.minNumber = (int) (Math.ceil(m / 2.0) -1);
+        this.blockLimit = 1000;  // 阉割不用conf的版本，为了测试可以通过，随便放了一个
     }
 
     /**
@@ -145,7 +154,8 @@ public abstract class BPlusTree<K extends Comparable, V>{
         StringBuilder ss = new StringBuilder();
         System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
 //        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
-        System.out.print("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
+        System.out.print("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum)
+                + "; entry's num: " + blockNum);
         if(this.isTemplate())  {
             System.out.println(" is templated");
         } else {
@@ -156,7 +166,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
 
     public String getInfo() {
         StringBuilder ss = new StringBuilder();
-        ss.append("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
+//        ss.append("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
 //        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
         ss.append("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
         if(this.isTemplate())  {
@@ -252,10 +262,10 @@ public abstract class BPlusTree<K extends Comparable, V>{
      */
     public boolean isBlockFull() {
 //        int pageLimit = this.conf.chunkSize / this.conf.pageSize;
-        if (this.entryNum < 2000) {
-            return false;
-        }
-        return true;
+//        if (this.entryNum < 2000) {
+//            return false;
+//        }
+        return blockFull;
     }
 
     /**
