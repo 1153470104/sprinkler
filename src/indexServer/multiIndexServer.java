@@ -77,7 +77,8 @@ public class multiIndexServer {
             // if block full, store it in the disk
             if (currentBpt.isBlockFull()) {
 //                System.out.println("block");
-                dp.initSchema();  // 目前选择在每次有块被写入外存的时候，reset一次schema
+                // TODO 有问题
+                this.dp.balanceSchema(true);  // 目前选择在每次有块被写入外存的时候，reset一次schema
                 System.out.print("finish data region ");
                 currentBpt.setEndTime(this.time);
                 currentBpt.printInfo();
@@ -88,8 +89,8 @@ public class multiIndexServer {
                         +currentBpt.getKeyStart()+", "+currentBpt.getKeyEnd()+", "+currentBpt.getTimeStart()+", "+currentBpt.getTimeEnd());
                 //create a new template tree
                 currentBpt = new BPlusTreeTemplated<MortonCode, String>(currentBpt);
-                this.dp.updateTree(this.currentBpt, id);
-                metaServer.update(time, currentBpt, id); //update the time in metaServer
+                this.dp.updateTree(this.currentBpt, id); // update the schema of this tree
+                metaServer.update(time, currentBpt, id); // update the time in metaServer
                 flushed = true;
             } else {
                 //只有你正常时候才会需要读一个新的，如果新建树，上一个树没放入的块可以继续放

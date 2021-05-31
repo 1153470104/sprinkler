@@ -25,7 +25,7 @@ public class dispatcher {
     private MortonCode minKey;
     private entry tempEntry;
     private int tempEntryId;
-    private List<MortonCode> schema;  // the schema store the boundary of the schema
+    private List<Long> schema;  // the schema store the boundary of the schema
     private int indexNum;
     private BPlusTree[] treeList;
     private int currentNum;
@@ -39,6 +39,11 @@ public class dispatcher {
     private double loadGapLimit = 0.2;
 
     private int time; //time is set while retrieving the morton code
+    private Deque<hashCounter> schemaCounter;
+    private int timeGap;  // the time gap to change another hash counter
+    private int cacheSpan;  // the length of past time interval which determines the dispatch schema
+    private int counterTime;
+    private int schemaCodeGap;
 
     /**
      * the inner class entry
@@ -97,13 +102,18 @@ public class dispatcher {
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
-        this.getDomain();  // TODO with big data, you can not get a clear view of data
+//        this.getDomain();  // TODO with big data, you can not get a clear view of data
         buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
         this.cacheLimit = cacheLimit;
         this.cacheQueue = new LinkedList<>();
         this.treeList = new BPlusTree[indexNum];
         initSchema();  // set the schema while initiating
 //        this.schema = new LinkedList<>();  // first initiate
+        this.schemaCounter = new LinkedList<>();
+        this.counterTime = -1;
+        this.timeGap = 60;  // default time gap
+        this.cacheSpan = 600;  // default cache span
+        this.schemaCodeGap = 500000000;
     }
 
     /**
@@ -115,8 +125,8 @@ public class dispatcher {
     public String getSchema() {
         StringBuilder ss = new StringBuilder();
         ss.append("---");
-        for(MortonCode code: schema) {
-            ss.append(code.toString()).append("---");
+        for(long code: schema) {
+            ss.append(code).append("---");
         }
         return ss.toString();
     }
@@ -126,8 +136,8 @@ public class dispatcher {
      */
     public void printSchema() {
         System.out.print("---");
-        for(MortonCode code: schema) {
-            System.out.print(code.toString() + "---");
+        for(long code: schema) {
+            System.out.print(code + "---");
         }
         System.out.println();
     }
@@ -137,11 +147,23 @@ public class dispatcher {
      * remove the one exceeding the limit boundary
      * @param code the current MortonCode need to be cached
      */
-    public void updateQueue(MortonCode code) {
+    public void updateQueue0(MortonCode code) {
         this.cacheQueue.add(code);
         if(this.cacheQueue.size() > cacheLimit) {
             cacheQueue.remove();
         }
+    }
+
+    public void updateQueue(long code, int time) {
+        if (this.counterTime < 0 || this.counterTime + timeGap < time) {
+            this.counterTime = time;
+            schemaCounter.add(new hashCounter(schemaCodeGap, 203));
+            // remove the most previous hash counter
+            if (schemaCounter.size() > this.cacheSpan / this.timeGap) {
+                schemaCounter.removeFirst();
+            }
+        }
+        this.schemaCounter.getLast().add(code);
     }
 
     /**
@@ -179,29 +201,71 @@ public class dispatcher {
     public void initSchema() throws IOException {
         BufferedReader bf = new BufferedReader(
                 new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
+
         maxKey = null;
         minKey = null;
 
         int limit = 0;
         String line = bf.readLine();
-        while(limit < this.cacheLimit) {
+        while(limit < 1000) {
             StringTokenizer st = new StringTokenizer(line, "|");
             st.nextToken(); /*有必要的，因为nextToken是一个个读的，coordTxt要基于前面的读取*/
             String coordTxt = st.nextToken();
             MortonCode mc = new MortonCode(coordTxt);
-
-            this.cacheQueue.add(mc);
+            if (limit == 0) {
+                maxKey = mc;
+                minKey = mc;
+            } else {
+                if(mc.compareTo(maxKey) == 1) {
+                    maxKey = mc;
+                } else {
+                    minKey = mc;
+                }
+            }
+            long schemaGap = (maxKey.getCode() - minKey.getCode()) / this.indexNum;
+            for(int i = 1; i < indexNum; i++) {
+                schema.add(minKey.getCode() + i * schemaGap);
+            }
             line = bf.readLine();
             limit++;
         }
-        balanceSchema(true);
-        this.cacheQueue = new LinkedList<>(); // renew the cache queue
         bf.close();
 }
 
-    public boolean loadBalance() {
-        //TODO
-        return false;
+    public boolean loadBalance() throws IOException {
+        if(schema.size() == 0) {
+            initSchema();
+            return true;
+        }
+        int[] countArray = new int[this.indexNum];
+        long codeStart = minKey.getCode();
+        long codeEnd = schema.get(0);
+        int i = -1;
+        do {
+            i = i+1;
+            int count = 0;
+            for(long j = codeStart; j < codeEnd; j += schemaCodeGap) {
+                for(hashCounter counter: schemaCounter) {
+                    count += counter.count(j);
+                }
+            }
+            countArray[i] = count;
+            if(i != schema.size()-1) {
+                codeStart = schema.get(i);
+                codeEnd = schema.get(i+1);
+            } else {
+                codeStart = schema.get(i);
+                codeEnd = maxKey.getCode();
+            }
+        } while(i < schema.size()-1);
+
+        int max = countArray[0];
+        int min = countArray[0];
+        for(i = 1; i < indexNum; i++) {
+            if(countArray[i]<min) min = countArray[i];
+            if(countArray[i]>max) max = countArray[i];
+        }
+        return !((double) (max - min) / (double) min > loadGapLimit);
     }
 
     public void balanceSchema(boolean force) {
@@ -252,10 +316,10 @@ public class dispatcher {
         // 以下的实现，是以schema 没有边界，只有分点来实现的
         //如果数量不够，不更新边界
         if (cacheQueue.size() < cacheLimit) return;
-        List<MortonCode> newSchema = new LinkedList<>();
+        List<Long> newSchema = new LinkedList<>();
         //如果现阶段的 work load 差距不大，也不更新
         //如果work load 相差很大，更新！
-        if(!force && loadBalance())  return;
+        if(!force && loadBalance0())  return;
 
         // 用indexNum-1个最大堆，找出所有分界值。。。
         // get a copy of cache queue
@@ -287,19 +351,20 @@ public class dispatcher {
                     tempQueue.add(temp);
                 }
             }
-            newSchema.add(maxHeap.get(0));
+            newSchema.add(maxHeap.get(0).getCode());
             newQueue = tempQueue;
             tempQueue = new LinkedList<>();
         }
         this.schema = newSchema;
-        if(statusArea == null){
-            System.out.print("current schema: ");
-            printSchema();
-        } else {
-            statusArea.append("current schema: ");
-            statusArea.append(getSchema());
-            statusArea.append("\n");
-        }
+        // 先摒除一些gui的东西，至于之后还要不要就再说
+//        if(statusArea == null){
+//            System.out.print("current schema: ");
+//            printSchema();
+//        } else {
+//            statusArea.append("current schema: ");
+//            statusArea.append(getSchema());
+//            statusArea.append("\n");
+//        }
         updateTreeSchema(); // after change schema, change the tree schema as well
     }
 
@@ -385,15 +450,19 @@ public class dispatcher {
         } else if(tempEntryId == -1) {
 //            System.out.println("-1 temp id: "+ tempEntryId);
             String line = buffer.readLine();
-            if(dataArea == null){
-//                System.out.println(line);
-            } else {
+            if(dataArea != null){
                 dataArea.insert(line+"\n", 0);
             }
             if(line != null) {
+//                this.balanceSchema(false);
                 tempEntry = new entry(getMortonCode(line), time);
-                tempEntryId = searchId(tempEntry.key.key());
-                updateQueue(tempEntry.key.key());  // update queue
+                MortonCode tempkey = tempEntry.key.key();
+                tempEntryId = searchId(tempkey);
+                if(tempkey.compareTo(maxKey) == 1)
+                    maxKey = tempkey;
+                else if(tempkey.compareTo(minKey) == -1)
+                    minKey = tempkey;
+                updateQueue(tempkey.getCode(), time);  // update queue
 //                System.out.println();
                 return getEntry(id);  //做完了所有准备则
             } else {
@@ -403,8 +472,13 @@ public class dispatcher {
                     buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
                     line = buffer.readLine();
                     tempEntry = new entry(getMortonCode(line), time);
-                    tempEntryId = searchId(tempEntry.key.key());
-                    updateQueue(tempEntry.key.key());  // update queue
+                    MortonCode tempkey = tempEntry.key.key();
+                    tempEntryId = searchId(tempkey);
+                    if(tempkey.compareTo(maxKey) == 1)
+                        maxKey = tempkey;
+                    else if(tempkey.compareTo(minKey) == -1)
+                        minKey = tempkey;
+                    updateQueue(tempkey.getCode(), time);  // update queue
                     return getEntry(id);  //做完了所有准备则
                 } else {
                     System.out.println("input over!!!");
@@ -458,15 +532,14 @@ public class dispatcher {
     public BPTKey<MortonCode> getMortonCode(String line) {
         StringTokenizer st = new StringTokenizer(line, "|");
         String timestamp = st.nextToken();
-        this.time = Integer.valueOf(timestamp);
+        this.time = Integer.parseInt(timestamp);
         String coordTxt = st.nextToken();
         String otherData = st.nextToken();
 
         //wrangle data
         MortonCode key = new MortonCode(coordTxt);
         String value = timestamp + "," + otherData;
-        BPTKey<MortonCode> bptKey = new BPTValueKey<>(key, value);
-        return bptKey;
+        return new BPTValueKey<>(key, value);
     }
 
     /**
@@ -479,11 +552,7 @@ public class dispatcher {
     public static boolean inTimeDomain(BPTValueKey<MortonCode, String> key, int timeStart, int timeEnd) {
         StringTokenizer st = new StringTokenizer(key.getValue(), ",");
         int timestamp = Integer.parseInt(st.nextToken());
-        if(timestamp >= timeStart && timestamp <= timeEnd) {
-            return true;
-        } else {
-            return false;
-        }
+        return timestamp >= timeStart && timestamp <= timeEnd;
     }
 
 
