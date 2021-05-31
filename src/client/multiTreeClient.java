@@ -26,7 +26,7 @@ public class multiTreeClient {
             int indexM = 20;
             configuration conf = new configuration(8, 21, Long.class, String.class);
 //            dispatcher dp = new dispatcher("resource/data/100000s.txt", 4, 500);
-            dispatcher dp = new dispatcher("resource/data/data_sort/", 4, 500);
+            dispatcher dp = new dispatcher("resource/data/data_sort/", 4);
 
             indexServer1 = new multiIndexServer(conf, metaServer, dp, 0);
             indexServer2 = new multiIndexServer(conf, metaServer, dp, 1);

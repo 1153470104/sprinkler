@@ -11,7 +11,6 @@ public class hashCounter {
     private int[] counter3;
 
     public hashCounter(int gap, int m) {
-        //TODO
         this.gap = gap;
         this.m = m;
         this.counter1 = new int[m];
@@ -32,7 +31,7 @@ public class hashCounter {
     public int count(long code){
         code = code - code % gap;  // use gap to combine some
         int min = counter1[hashMap1(code)];  // the first count become
-        int count2 = counter2[(int)hashMap2(code)];
+        int count2 = counter2[hashMap2(code)];
         if(count2 < min)
             min = count2;
         int count3 = counter3[(int)hashMap3(code)];
@@ -43,18 +42,20 @@ public class hashCounter {
 
     // simple division method
     public int hashMap1(long code) {
-        return (int)code % m;
+        return (int)(code % m);
     }
 
     // multiplication method by 0.618
     public int hashMap2(long code) {
         double goldRatio = (Math.sqrt(5.0)-1) / 2;
-        return (int)(((goldRatio * code) - (int)(goldRatio * code)) * m);
+
+        int a = (int)(((goldRatio * code) - (long)(goldRatio * code)) * m);
+        return a;
     }
 
     // multiplication method by 0.414
     public int hashMap3(long code) {
         double ratio = (Math.sqrt(2.0) - 1);
-        return (int) (((ratio * code) - (int) (ratio * code)) * m);
+        return (int) (((ratio * code) - (long) (ratio * code)) * m);
     }
 }

@@ -95,7 +95,7 @@ public class dispatcher {
      *
      * the data source must be multi file, so
      */
-    public dispatcher(String dataPath, int indexNum, int cacheLimit) throws IOException {
+    public dispatcher(String dataPath, int indexNum) throws IOException {
         this.currentNum = 0;
         this.dataArea = null;
         this.statusArea = null;
@@ -104,9 +104,10 @@ public class dispatcher {
         this.tempEntryId = -1;
 //        this.getDomain();  // TODO with big data, you can not get a clear view of data
         buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
-        this.cacheLimit = cacheLimit;
-        this.cacheQueue = new LinkedList<>();
+//        this.cacheLimit = cacheLimit;
+//        this.cacheQueue = new LinkedList<>();
         this.treeList = new BPlusTree[indexNum];
+        schema = new ArrayList<>();
         initSchema();  // set the schema while initiating
 //        this.schema = new LinkedList<>();  // first initiate
         this.schemaCounter = new LinkedList<>();
@@ -158,6 +159,7 @@ public class dispatcher {
         if (this.counterTime < 0 || this.counterTime + timeGap < time) {
             this.counterTime = time;
             schemaCounter.add(new hashCounter(schemaCodeGap, 203));
+            this.balanceSchema(true);
             // remove the most previous hash counter
             if (schemaCounter.size() > this.cacheSpan / this.timeGap) {
                 schemaCounter.removeFirst();
@@ -183,14 +185,16 @@ public class dispatcher {
         for(int i = 0; i < schema.size(); i++) {
             if(this.treeList[i] != null) {
                 if(i == 0){
-                    treeList[i].setKeyBound(null, schema.get(i));
+                    /*下面因为key bound曾经出现一个bug，因为本该赋值MortonCode却赋值了long
+                       其实keybound没有太大用？暴露了冗余的问题*/
+                    treeList[i].setKeyBound(null, new MortonCode(schema.get(i)));
                 } else {
-                    treeList[i].setKeyBound(schema.get(i-1), schema.get(i));
+                    treeList[i].setKeyBound(new MortonCode(schema.get(i-1)), new MortonCode(schema.get(i)));
                 }
             }
         }
         if(treeList[schema.size()] != null) {
-            treeList[schema.size()].setKeyBound(schema.get(schema.size()-1), null);
+            treeList[schema.size()].setKeyBound(new MortonCode(schema.get(schema.size()-1)), null);
         }
     }
 
@@ -222,12 +226,13 @@ public class dispatcher {
                     minKey = mc;
                 }
             }
-            long schemaGap = (maxKey.getCode() - minKey.getCode()) / this.indexNum;
-            for(int i = 1; i < indexNum; i++) {
-                schema.add(minKey.getCode() + i * schemaGap);
-            }
             line = bf.readLine();
             limit++;
+        }
+        /*乱七八糟的bug，为什么我会把下面几行代码放在while里面？？*/
+        long schemaGap = (maxKey.getCode() - minKey.getCode()) / this.indexNum;
+        for(int i = 1; i < indexNum; i++) {
+            schema.add(minKey.getCode() + i * schemaGap);
         }
         bf.close();
 }
@@ -269,7 +274,30 @@ public class dispatcher {
     }
 
     public void balanceSchema(boolean force) {
-        //TODO
+        int sum = 0;
+        List<Integer> countList = new ArrayList<>();
+        for(long i = minKey.getCode(); i < maxKey.getCode(); i+=schemaCodeGap) {
+            int count = 0;
+            for(hashCounter counter: schemaCounter) {
+                count += counter.count(i);
+            }
+            countList.add(count);
+            sum += count;
+        }
+        List<Long> new_schema = new ArrayList<>();  // the schema store the boundary of the schema
+        int average = sum / this.indexNum;
+        int temp = 0;
+        for(int i = 0; i < (maxKey.getCode()-minKey.getCode()) / schemaCodeGap; i++) {
+            temp += countList.get(i);
+            if(temp > average) {
+                temp = 0;
+                new_schema.add(minKey.getCode()+i*schemaCodeGap);
+                if(new_schema.size() == indexNum-1){
+                    break;
+                }
+            }
+        }
+        schema = new_schema;
     }
 
     /**
@@ -424,7 +452,7 @@ public class dispatcher {
      */
     private int searchId(MortonCode code) {
         for(int i = 0; i < schema.size(); i++) {
-            if(code.compareTo(schema.get(i)) == -1) {
+            if(code.getCode() < schema.get(i)) {
                 return i;
             }
         }
@@ -454,7 +482,6 @@ public class dispatcher {
                 dataArea.insert(line+"\n", 0);
             }
             if(line != null) {
-//                this.balanceSchema(false);
                 tempEntry = new entry(getMortonCode(line), time);
                 MortonCode tempkey = tempEntry.key.key();
                 tempEntryId = searchId(tempkey);
