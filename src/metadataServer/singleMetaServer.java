@@ -58,7 +58,7 @@ public class singleMetaServer {
                 if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {
                     treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
                 } else if(tree.getTimeStart() >= startTime && tree.getTimeEnd() <= endTime) {
-                    treeKeyList = tree.searchNode(startkey, endkey);
+                    treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
                 } else if(tree.getTimeStart() <= endTime && tree.getTimeEnd() >= endTime) {
                     treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
                 }

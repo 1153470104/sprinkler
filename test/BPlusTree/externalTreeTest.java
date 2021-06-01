@@ -48,12 +48,12 @@ class externalTreeTest {
      * test 2 level tree
      * @throws IOException throws when any I/O operation fails
      */
-    @Test
-    void domainSearch0() throws IOException {
-        ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31));
-        externalTree<Integer, String> extree = new externalTree<Integer, String>(ts.bpt(), "resource/database/f0", ISconf);
-        assertEquals("4:  4|6:  6|7:  7", extree.valueListPrint(extree.searchNode(4, 8)));
-        assertEquals("1:  1|2:  2|4:  4|6:  6|7:  7", extree.valueListPrint(extree.searchNode(-1, 8)));
-        assertEquals("21: 21|22: 22|30: 30|31: 31", extree.valueListPrint(extree.searchNode(21, 31)));
-    }
+//    @Test
+//    void domainSearch0() throws IOException {
+//        ts.makeBPT(5, Arrays.asList(30, 7, 21, 35, 45, 1, 2, 4, 6, 9, 10, 22, 31));
+//        externalTree<Integer, String> extree = new externalTree<Integer, String>(ts.bpt(), "resource/database/f0", ISconf);
+//        assertEquals("4:  4|6:  6|7:  7", extree.valueListPrint(extree.searchNode(4, 8)));
+//        assertEquals("1:  1|2:  2|4:  4|6:  6|7:  7", extree.valueListPrint(extree.searchNode(-1, 8)));
+//        assertEquals("21: 21|22: 22|30: 30|31: 31", extree.valueListPrint(extree.searchNode(21, 31)));
+//    }
 }

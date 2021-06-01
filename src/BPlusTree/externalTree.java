@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * class of external tree
@@ -46,6 +45,7 @@ public class externalTree<K extends Comparable, V> {
     private String filePath;
 
     private bloomFilter bf;
+    private Map<Long, bloomFilter> blockBloomFilterList;
 
     /**
      * init of an external tree
@@ -60,8 +60,11 @@ public class externalTree<K extends Comparable, V> {
         this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();
         this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
         this.conf = conf;
-        this.treeFile = tree.storeFile(filePath, conf);
+
         this.bf = tree.bf;
+        this.blockBloomFilterList = new HashMap<>();
+
+        this.treeFile = tree.storeFile(filePath, conf, this.blockBloomFilterList);
         this.totalPages = treeFile.length() / conf.pageSize;
         this.m = tree.m;
         this.filePath = filePath;
@@ -112,7 +115,7 @@ public class externalTree<K extends Comparable, V> {
      * @return the list of keys in that domain
      * @throws IOException throws when any I/O operation fails
      */
-    public List<BPTKey<K>> searchNode(K key1, K key2) throws IOException {
+    public List<BPTKey<K>> searchDomain(int tStart, int tEnd, K key1, K key2) throws IOException {
         // TODO the abuse & misuse of generic would finally kill this system
         // TODO which I should optimize the core structure of key & value
         List<BPTKey<K>> domainKeys = new LinkedList<>();
@@ -122,35 +125,39 @@ public class externalTree<K extends Comparable, V> {
         }
 //        System.out.println("read node!");
         externalNode<K> cur = this.readNode(1*conf.pageSize);
+        long nextIndex = 0;
         while(cur.getNodeType()!=1){
 //            System.out.println("node level ");
 //            System.out.println(cur.toString());
             int pointerIndex = cur.searchKey(key1);
-            cur = this.readNode(((externalNonLeaf)cur).getPointer(pointerIndex));
+            nextIndex = ((externalNonLeaf)cur).getPointer(pointerIndex);
+            cur = this.readNode(nextIndex);
         }
         while(cur.searchKey(key2)!=-1) {
 //            System.out.println("leaf level");
-            int start = cur.searchKey(key1);
-            if (start == -1) start = 0;
-            int end = cur.searchKey(key2);
-            for(int i = start; i < end; i++) {
-                //getKey already get the key-value pair
-                domainKeys.add(((externalLeaf)cur).getKey(i));
-            }
-            if(end < cur.getLength()) {
-                // if the key2 doesn't extend out the boundary,
-                // test if the last key is equals to key2
-                // if so, add the end key-value pair into domain-keys
-                BPTKey temp = ((externalLeaf)cur).getKey(end);
-                if(temp.key().compareTo(key2) == 0) {
-                    domainKeys.add(temp);
+            if(blockBloomFilterList.get(nextIndex).isInRegion(tStart, tEnd)) {
+                int start = cur.searchKey(key1);
+                if (start == -1) start = 0;
+                int end = cur.searchKey(key2);
+                for(int i = start; i < end; i++) {
+                    //getKey already get the key-value pair
+                    domainKeys.add(((externalLeaf)cur).getKey(i));
+                }
+                if(end < cur.getLength()) {
+                    // if the key2 doesn't extend out the boundary,
+                    // test if the last key is equals to key2
+                    // if so, add the end key-value pair into domain-keys
+                    BPTKey temp = ((externalLeaf)cur).getKey(end);
+                    if(temp.key().compareTo(key2) == 0) {
+                        domainKeys.add(temp);
+                    }
                 }
             }
-            long next = ((externalLeaf)cur).getNextLeaf();
-            if(next == -1) {
+            nextIndex = ((externalLeaf)cur).getNextLeaf();
+            if(nextIndex == -1) {
                 return domainKeys;
             }
-            cur = this.readNode(next);
+            cur = this.readNode(nextIndex);
 
         }
         return domainKeys;
@@ -175,7 +182,7 @@ public class externalTree<K extends Comparable, V> {
         if (!bf.isInRegion(timeStart, timeEnd)) { /*emmm既然一个bf.isInRegion搞定，为什么要写个新函数*/
             return domainKeys;
         }
-        List<BPTKey<K>> rawKeys = this.searchNode(key1, key2);
+        List<BPTKey<K>> rawKeys = this.searchDomain(tStart, tEnd, key1, key2);
         for(BPTKey k: rawKeys) {
             //TODO this place is not generic any more,
             //TODO the timestamp should have a better way to be brought in

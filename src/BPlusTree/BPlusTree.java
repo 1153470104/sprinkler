@@ -67,7 +67,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
 
     /**
      * basic init of BPlusTree
-     * @param m the capacity of every node
      */
     public BPlusTree(configuration conf){
         this.m = conf.m;
@@ -410,7 +409,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * @return a RandomAccessFile that store the tree's data
      * @throws IOException be thrown when an I/O operation fails
      */
-    public RandomAccessFile storeFile(String filePath, configuration conf)
+    public RandomAccessFile storeFile(String filePath, configuration conf, Map<Long, bloomFilter> bfMap)
             throws IOException {
 
         RandomAccessFile rf = new RandomAccessFile(filePath, "rw");
@@ -448,7 +447,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
             //if temp is non leaf node, add it's children to deque & write temp on disk
             if(!temp.isLeaf()) {
                 externalNode<K> node = new externalNonLeaf<K>(temp);
-                node.setPageIndex(current * conf.pageSize);
+                    node.setPageIndex(current * conf.pageSize);
                 for(int i = 0; i < temp.childLength(); i++) {
                     deque.add(temp.getChild(i));
                     pageCount++; // plus plus before & add pointer after
@@ -475,7 +474,9 @@ public abstract class BPlusTree<K extends Comparable, V>{
                 } else {
                     ((externalLeaf)node).setNextLeaf((current+1) * conf.pageSize);
                 }
-                node.writeNode(rf, conf);
+                bloomFilter tempBf = bloomFilter.bloomFilterFactory();
+                ((externalLeaf<K>)node).writeNode(rf, conf, tempBf);
+                bfMap.put(current, tempBf);
                 deque.pop();
             }
             current++;

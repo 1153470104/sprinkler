@@ -2,6 +2,7 @@ package BPlusTree.BPTNode;
 
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTKey.BPTValueKey;
+import BPlusTree.bloomFilter;
 import BPlusTree.configuration.configuration;
 
 import java.io.IOException;
@@ -43,6 +44,30 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         this.prevLeaf = prevLeaf;
         this.nextLeaf = nextLeaf;
         valueList = new LinkedList<>();
+    }
+
+    /**
+     * write node of leaf node into the tree file
+     */
+    public void writeNode(RandomAccessFile r, configuration conf, bloomFilter bf) throws IOException {
+        super.writeNode(r, conf);
+        r.seek(this.pageIndex);
+        byte[] buffer = new byte[conf.pageSize];
+        ByteBuffer bbuffer = ByteBuffer.wrap(buffer); bbuffer.order(ByteOrder.BIG_ENDIAN);
+        // write header info
+        bbuffer.putShort(this.nodeType);
+        bbuffer.putInt(this.length);
+        bbuffer.putLong(this.prevLeaf);
+        bbuffer.putLong(this.nextLeaf);
+        for(int i = 0; i < this.length; i++) {
+            // use conf to write in data
+            conf.writeKey(bbuffer, this.keyList.get(i).key());
+            int time = Integer.parseInt((((String)this.valueList.get(i)).substring(0,10)));
+            bf.addMap(time);
+//            System.out.println(time);
+            conf.writeValue(bbuffer, this.valueList.get(i));
+        }
+        r.write(buffer);
     }
 
     /**

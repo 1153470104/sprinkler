@@ -77,11 +77,11 @@ public class bloomFilter {
     public boolean isIndexIn(int index) {
         int intNum = index / 32;
         int orderNum = index % 32;
-        System.out.print("index: "+intNum);
-        System.out.println(" - "+orderNum);
+//        System.out.print("index: "+intNum);
+//        System.out.println(" - "+orderNum);
         int mask = 0b01 << 31 >>> orderNum;
-        System.out.println("mask: "+Integer.toBinaryString(mask));
-        System.out.println("bitmap: "+Integer.toBinaryString(bitMap[intNum])+"\n");
+//        System.out.println("mask: "+Integer.toBinaryString(mask));
+//        System.out.println("bitmap: "+Integer.toBinaryString(bitMap[intNum])+"\n");
         return (bitMap[intNum] & mask) == mask;
     }
 
