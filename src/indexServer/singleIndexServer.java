@@ -55,7 +55,7 @@ public class singleIndexServer {
         while (keyEntry != null) {
             currentBpt.addKey(keyEntry);
             if(currentBpt.isTemplate()) {
-                ((BPlusTreeTemplated)currentBpt).balance();
+                ((BPlusTreeTemplated)currentBpt).balance(false);
             }
 
             // 1.0版本

@@ -69,7 +69,7 @@ public class multiIndexServer {
 //            System.out.println("index server "+ id + " indexing" );
             }
             if(currentBpt.isTemplate()) {
-                ((BPlusTreeTemplated)currentBpt).balance();
+                ((BPlusTreeTemplated)currentBpt).balance(false);
 //                System.out.println("balance");
             }
 
@@ -150,7 +150,7 @@ public class multiIndexServer {
             currentBpt.addBloomfilter(this.time);
 //            System.out.println("index server "+ id + " indexing" );
             if(currentBpt.isTemplate()) {
-                ((BPlusTreeTemplated)currentBpt).balance();
+                ((BPlusTreeTemplated)currentBpt).balance(false);
 //                System.out.println("balance");
             }
 

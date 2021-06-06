@@ -25,8 +25,8 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     public externalLeaf(BPTNode<K> node) {
         super(node);
         valueList = new LinkedList<>();
-        for(int i = 0; i < keyList.size(); i++) {
-            Object value = ((BPTValueKey<K, Object>)(keyList.get(i))).getValue();
+        for (BPTKey<K> kbptKey : keyList) {
+            Object value = ((BPTValueKey<K, Object>) kbptKey).getValue();
             valueList.add(value);
         }
     }
@@ -59,14 +59,22 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         bbuffer.putInt(this.length);
         bbuffer.putLong(this.prevLeaf);
         bbuffer.putLong(this.nextLeaf);
+//        System.out.print("write node! length: ");
+//        System.out.println(this.valueList.size());
         for(int i = 0; i < this.length; i++) {
             // use conf to write in data
             conf.writeKey(bbuffer, this.keyList.get(i).key());
-            int time = Integer.parseInt((((String)this.valueList.get(i)).substring(0,10)));
-            bf.addMap(time);
-//            System.out.println(time);
+//            System.out.print(this.keyList.get(i).key() + " ");
+            try {
+                int time = Integer.parseInt((((String) this.valueList.get(i)).substring(0, 10)));
+                bf.addMap(time);
+            } catch (StringIndexOutOfBoundsException | ClassCastException e) {
+//                continue; /*这个continue可害惨了呀，continue不是啥都不做而是直接进下一个循环了*/
+            }
+//            System.out.print(this.valueList.get(i) + " ");
             conf.writeValue(bbuffer, this.valueList.get(i));
         }
+        System.out.println();
         r.write(buffer);
     }
 

@@ -2,20 +2,23 @@ package BPlusTree;
 
 import BPlusTree.BPTKey.BPTKey;
 import BPlusTree.BPTKey.BPTValueKey;
+import BPlusTree.configuration.configuration;
 
+import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class testTool {
     private List<BPTKey<Integer>> keyList;
     private BPlusTree<Integer, String> bpt;
+    private BPlusTree<Integer, String> confBpt;
     private BPlusTree<Integer, Integer> intBpt;
 
     public testTool(){
     }
 
     public static BPTValueKey<Integer, String> IntegerKey(int i) {
-        return new BPTValueKey<Integer, String>(i, Integer.toString(i));
+        return new BPTValueKey<>(i, Integer.toString(i));
     }
 
     public BPlusTree<Integer, String> bpt() {
@@ -26,9 +29,16 @@ public class testTool {
         return intBpt;
     }
 
+    public BPlusTree<Integer, String> confBpt() {
+        return confBpt;
+    }
+
     public void initBPT(int m) {
-        bpt = new BPlusTreeScratched<Integer, String>(m);
+        configuration conf = new configuration(4, 2, Integer.class, String.class);
+        conf.m = m;
+        bpt = new BPlusTreeScratched<Integer, String>(conf);
         intBpt = new BPlusTreeScratched<Integer, Integer>(m);
+//        confBpt = new BPlusTreeScratched<Integer, String>(conf);
     }
 
     public void initKeyList(int number) {
@@ -54,9 +64,10 @@ public class testTool {
                         s.insert(0, " ");
                     }
                 }
-                bpt.addKey(new BPTValueKey<Integer, String>(i, s.toString()));
+//                System.out.print(s + " ");
+                bpt.addKey(new BPTValueKey<>(i, s.toString()));
             } else if(valueType.equals("Integer"))  {
-                intBpt.addKey(new BPTValueKey<Integer, Integer>(i, i));
+                intBpt.addKey(new BPTValueKey<>(i, i));
             }
         }
     }

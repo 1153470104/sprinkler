@@ -249,7 +249,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
      * if tree is balance or not, the function would be execute
      * the isBalance function is set in balance function
      */
-        public void balance(){
+        public void balance(boolean force){
             // !TODO 突然想到，对于每个不同的 m 可能都有无法balance的情况，balance操作完了，还不balance
             //居然是因为测试方便把 is balance放到balance功能中进行检测
             //这就要求使用template的人手动balance 而非 add的同时balance
@@ -258,8 +258,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
 //        System.out.println((this.leafNum > this.entryNum) || this.isBalanced());
             /* 本来出现一个离奇bug，后来才发现是因为leafNum的存在依赖于isBalance的计算 */
             boolean balanceOrNot = this.isBalanced();
-        if (this.leafNum*8 >= this.entryNum || balanceOrNot) {
-//            System.out.println("shit");
+        if (!force && this.leafNum*8 >= this.entryNum || balanceOrNot) {
             return;
         }
 
@@ -299,8 +298,9 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
         if(entryNum - averageNum * leafNum == 0) {
             complement = 0;
         } else {
-            complement = leafNum / (entryNum - averageNum * leafNum);
+            complement = leafNum / leftNum;
         }
+        System.out.println("complement: " + complement);
         int plus = 0; //用于complement的辅助变量，为 1或0
 
         Deque<BPTKey<K>> keyDeque = new LinkedList<>();
