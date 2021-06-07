@@ -33,7 +33,6 @@ public class dataProcess {
     public void transZOrder(String fileName) throws IOException {
         buffer = new BufferedReader(new FileReader(dataPath));
         String line = buffer.readLine();
-//        System.out.println(line);
         BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
         while(line != null) {
             StringTokenizer st = new StringTokenizer(line, "|");
@@ -42,7 +41,6 @@ public class dataProcess {
             String otherData = st.nextToken();
             MortonCode mc = new MortonCode(coordTxt);
             long zOrder = mc.getCode();
-////            System.out.println(zOrder);
             out.write(timestamp + "|" + String.valueOf(zOrder) + "|" + otherData+"\n");
             line = buffer.readLine();
         }
@@ -151,7 +149,6 @@ public class dataProcess {
         String line = buffer.readLine();
         System.out.println("start to get lines");
         while(line != null) {
-//            System.out.println(line);
             sortList.add(line);
             line = buffer.readLine();
         }
@@ -160,7 +157,6 @@ public class dataProcess {
         System.out.println(bound);
         for(int i = bound; i > 1; i--) { /* 老是在边界上搞错, 把 >1 写成 >0，忘记根节点不需要比较*/
             if(lineCompare(sortList.get(i), sortList.get(i/2))) {
-//                System.out.println(i);
                 // compare with father node, if bigger, swap value
                 String temp = sortList.get(i);
                 sortList.set(i, sortList.get(i/2));
@@ -168,7 +164,6 @@ public class dataProcess {
                 //compare with child node if smaller, swap downward
                 int current = i;
                 while (true) {
-//                    System.out.println("current:  " + current);
                     if (current * 2 > bound) {
                         break;
                     } else if (current * 2 + 1 <= bound) {
@@ -198,13 +193,11 @@ public class dataProcess {
                         }
                     }
                 }
-//                System.out.println();
             }
         }
         System.out.println("sort!!!");
         //下面写堆排序取max和维护的过程
         while(bound > 1) {
-//            System.out.print(1);
             String temp = sortList.get(bound);
             sortList.set(bound, sortList.get(1));
             sortList.set(1, temp);
@@ -212,7 +205,6 @@ public class dataProcess {
             int current = 1;
             while (true) {
                 /* 重大失误，如果找到更大的就交换如果没找到就结束循环，我tm没结束循环 */
-//                System.out.print(2);
                 if (current * 2 > bound) {
                     break;
                 } else if (current * 2 + 1 <= bound) {
@@ -240,9 +232,7 @@ public class dataProcess {
                         break;
                     }
                 }
-//                System.out.print(3);
             }
-//            System.out.println(bound);
         }
         /* 下面的方式不可取，每次不维护堆结构，那就相当于n^2的计算量了
         while(bound > 1) {
@@ -305,8 +295,6 @@ public class dataProcess {
     public class glComparator implements Comparator<groupLine> {
         @Override
         public int compare(groupLine o1, groupLine o2) {
-//            System.out.print(o1.line + o2.line + ": ");
-//            System.out.println(lineCompare(o1.line, o2.line));
             /*这里一定要是相反的数！-1 1 这样，不能够 0 1
               从java1.7开始就得这样了，具体涉及到什么timesort 没细看*/
             if (lineCompare(o1.line, o2.line)) return 1;

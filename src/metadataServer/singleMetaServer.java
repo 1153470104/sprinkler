@@ -53,7 +53,6 @@ public class singleMetaServer {
         // if the time region covers the external part of data
         if(this.boundTime > startTime) {
             for(externalTree<MortonCode, String> tree: externalTreeList) {
-//                System.out.println("metaServer");
                 List<BPTKey<MortonCode>> treeKeyList = new LinkedList<>();
                 if(tree.getTimeStart() <= startTime && tree.getTimeEnd() >= startTime) {
                     treeKeyList = tree.searchNode(startTime, endTime, startkey, endkey);
@@ -68,9 +67,7 @@ public class singleMetaServer {
 
         // search the in memory data
         if(this.boundTime < endTime) {
-//            System.out.println("test query out");
             List<BPTKey<MortonCode>> treeKeyList = inMemoryTree.search(startTime, endTime, startkey, endkey);
-//            System.out.println("test query out2");
             keyList.addAll(treeKeyList);
         }
 

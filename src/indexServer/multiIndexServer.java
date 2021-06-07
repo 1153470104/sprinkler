@@ -66,25 +66,24 @@ public class multiIndexServer {
             currentBpt.addKey(keyEntry);
             if(!currentBpt.isBlockFull()) {
                 currentBpt.addBloomfilter(this.time);
-//            System.out.println("index server "+ id + " indexing" );
             }
             if(currentBpt.isTemplate()) {
                 ((BPlusTreeTemplated)currentBpt).balance(false);
-//                System.out.println("balance");
             }
 
             // 2.0版本
             // if block full, store it in the disk
             if (currentBpt.isBlockFull()) {
-//                System.out.println("block");
                 // TODO 有问题
                 this.dp.balanceSchema(true);  // 目前选择在每次有块被写入外存的时候，reset一次schema
                 System.out.print("finish data region ");
                 currentBpt.setEndTime(this.time);
                 currentBpt.printInfo();
+
                 //flush old tree into disk
                 metaServer.addTree(new externalTree<MortonCode, String>(
                         currentBpt, metaServer.getDataPath()+ metaServer.length(), conf));
+
                 System.out.println(id + " server stores a tree\nthe bound: "
                         +currentBpt.getKeyStart()+", "+currentBpt.getKeyEnd()+", "+currentBpt.getTimeStart()+", "+currentBpt.getTimeEnd());
                 //create a new template tree
@@ -94,9 +93,6 @@ public class multiIndexServer {
                 flushed = true;
             } else {
                 //只有你正常时候才会需要读一个新的，如果新建树，上一个树没放入的块可以继续放
-//              System.out.println(id + " get new");
-//              Thread.sleep(5);  //终止12ms，使得
-//              System.out.println(id + " get new1");
                 newEntry = null;  // TODO maybe这一块需要考虑synchronize
                 while (newEntry == null) {
                     /*
@@ -106,18 +102,14 @@ public class multiIndexServer {
                      *
                      * 所有的所有，所有的问题在我注释掉所有sleep甚至都不用抛出异常之后，消失了！！！yes！
                      */
-//                  Thread.sleep(20);
-//                  System.out.println(id + " get new while");
                     newEntry = dp.getEntry(id); //get out one time, make sure synchronization
                 }
-//              System.out.println(id + " get new3");
                 keyEntry = newEntry.key;
                 this.time = newEntry.time; // use dp to get dynamic time, update every time after getEntry operation
                 if(flushed) {
                     currentBpt.setStartTime(this.time);
                     flushed= false;
                 }
-//              System.out.println(id+" get new end");
             }
         }
     }
@@ -125,7 +117,6 @@ public class multiIndexServer {
 
     public void guiIndexing(JTextArea statusArea) throws IOException, InterruptedException {
         //get data
-//        System.out.println("****************** Index start ******************");
         statusArea.append("****************** Index start ******************\n");
         /* forget to update at very first,
         so null pointer exception occurs in metaServer's search*/
@@ -148,20 +139,16 @@ public class multiIndexServer {
         while (true) {
             currentBpt.addKey(keyEntry);
             currentBpt.addBloomfilter(this.time);
-//            System.out.println("index server "+ id + " indexing" );
             if(currentBpt.isTemplate()) {
                 ((BPlusTreeTemplated)currentBpt).balance(false);
-//                System.out.println("balance");
             }
 
             // 2.0版本
             // if block full, store it in the disk
             if (currentBpt.isBlockFull()) {
-//                System.out.println("block");
                 dp.initSchema();  // 目前选择在每次有块被写入外存的时候，reset一次schema
                 statusArea.append("finish data region \n");
                 currentBpt.setEndTime(this.time);
-//                currentBpt.printInfo();
                 statusArea.append(currentBpt.getInfo());
                 //flush old tree into disk
                 metaServer.addTree(new externalTree<MortonCode, String>(
@@ -175,9 +162,6 @@ public class multiIndexServer {
                 flushed = true;
             }
 
-//            System.out.println(id + " get new");
-//                Thread.sleep(5);  //终止12ms，使得
-//            System.out.println(id + " get new1");
             newEntry = null;  // TODO maybe这一块需要考虑synchronize
             while (newEntry == null) {
                 /*
@@ -187,18 +171,14 @@ public class multiIndexServer {
                  *
                  * 所有的所有，所有的问题在我注释掉所有sleep甚至都不用抛出异常之后，消失了！！！yes！
                  */
-//                    Thread.sleep(20);
-//                System.out.println(id + " get new while");
                 newEntry = dp.getEntry(id); //get out one time, make sure synchronization
             }
-//            System.out.println(id + " get new3");
             keyEntry = newEntry.key;
             this.time = newEntry.time; // use dp to get dynamic time, update every time after getEntry operation
             if(flushed) {
                 currentBpt.setStartTime(this.time);
                 flushed= false;
             }
-//            System.out.println(id+" get new end");
         }
     }
 }

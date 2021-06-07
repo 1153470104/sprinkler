@@ -31,10 +31,7 @@ public class singleIndexServer {
         * so that, the conf.readKey function fails !!! */
         this.conf = new configuration(8, 21, Long.class, String.class);
         currentBpt = new BPlusTreeScratched<MortonCode, String>(conf);
-//        this.externalBase = externalBase;
         this.metaServer = metaServer;
-//        bptList = new ArrayList<>();
-//        bptList.add(currentBpt);
     }
 
     /**

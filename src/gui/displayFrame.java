@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * the display frame of gui
+ */
 public class displayFrame extends JFrame {
     private guiClient client;
 

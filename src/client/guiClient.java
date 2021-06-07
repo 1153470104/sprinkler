@@ -9,6 +9,11 @@ import queryServer.multiQueryServer;
 import javax.swing.*;
 import java.io.IOException;
 
+/**
+ * gui client of system
+ *
+ * with gui, more info could be revealed at a time
+ */
 public class guiClient {
     private multiIndexServer indexServer1;
     private multiIndexServer indexServer2;
@@ -57,7 +62,6 @@ public class guiClient {
     class indexThread2 extends Thread{
         public void run(){
             try {
-//                indexServer2.startIndexing();
                 indexServer2.guiIndexing(statusArea);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -68,7 +72,6 @@ public class guiClient {
     class indexThread3 extends Thread{
         public void run(){
             try {
-//                indexServer3.startIndexing();
                 indexServer3.guiIndexing(statusArea);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -79,7 +82,6 @@ public class guiClient {
     class indexThread4 extends Thread{
         public void run(){
             try {
-//                indexServer4.startIndexing();
                 indexServer4.guiIndexing(statusArea);
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -114,10 +116,5 @@ public class guiClient {
 
         Thread.sleep(50);
         query.start();
-    }
-
-    public static void main(String [] args) throws InterruptedException {
-//        guiClient client = new guiClient();
-//        client.startSystem();
     }
 }

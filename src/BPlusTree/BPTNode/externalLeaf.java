@@ -70,7 +70,6 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
             }
             conf.writeValue(bbuffer, this.valueList.get(i));
         }
-        System.out.println();
         r.write(buffer);
     }
 

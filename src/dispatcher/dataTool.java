@@ -100,9 +100,6 @@ public class dataTool {
         if(line != null) {
             return getMortonCode(line);
         }
-//         else {
-//            return null;
-//        }
         return null;
     }
 

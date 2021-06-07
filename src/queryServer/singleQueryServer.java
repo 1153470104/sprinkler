@@ -47,14 +47,11 @@ public class singleQueryServer {
             endKey = new MortonCode(queryValue.get(3));
             System.out.println();
             List<BPTKey<MortonCode>> result = metaServer.searchKey(queryTimeStart, queryTimeEnd, startKey, endKey);
-//            List<BPTKey<MortonCode>> fineResult = MortonCode.regionCut(result);
             System.out.println(dataTool.listToString(result)); // TODO maybe could make some output
-//            System.out.println(dataTool.listToString(fineResult)); // TODO maybe could make some output
 
             if(s.equals("exit")) {
                 break;
             }
-//            System.out.println("Query request: " + s);
         }
         scan.close();
     }

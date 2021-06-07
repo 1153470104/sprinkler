@@ -78,7 +78,6 @@ public class dispatcher {
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
-//        this.getDomain();
         buffer = new BufferedReader(new FileReader(dataPath));
         this.cacheLimit = cacheLimit;
         this.cacheQueue = new LinkedList<>();
@@ -90,7 +89,6 @@ public class dispatcher {
      * normal initiation of dispatcher
      * @param dataPath the data storage path
      * @param indexNum the index number
-     * @param cacheLimit the limit of cached entries
      * @throws IOException thrown when any I/O operation fails
      *
      * the data source must be multi file, so
@@ -102,14 +100,10 @@ public class dispatcher {
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
-//        this.getDomain();  // TODO with big data, you can not get a clear view of data
         buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
-//        this.cacheLimit = cacheLimit;
-//        this.cacheQueue = new LinkedList<>();
         this.treeList = new BPlusTree[indexNum];
         schema = new ArrayList<>();
         initSchema();  // set the schema while initiating
-//        this.schema = new LinkedList<>();  // first initiate
         this.schemaCounter = new LinkedList<>();
         this.counterTime = -1;
         this.timeGap = 60;  // default time gap
@@ -366,7 +360,6 @@ public class dispatcher {
             List<MortonCode> maxHeap = new LinkedList<>();
             while(newQueue.size() > 0) {
                 MortonCode temp = newQueue.poll();
-//                System.out.println(temp);
                 /* a big bug! size is not serial num! it shows the real length
                 * mis-write to '...< heapLength-1' at first */
                 if(maxHeap.size() < heapLength) {
@@ -400,7 +393,6 @@ public class dispatcher {
         heap.add(code);
         int index = heap.size()-1;
         while(index > 0) {
-//            System.out.println("index: " + index);
             int father = (index-1) / 2;
             if(heap.get(index).compareTo(heap.get(father)) == 1) {
                 MortonCode temp = heap.get(index);
@@ -468,15 +460,11 @@ public class dispatcher {
      * @throws IOException thrown when an I/O operation fails
      */
     public synchronized entry getEntry(int id) throws IOException, InterruptedException {
-//        System.out.println("current id " + tempEntryId + " input id " + id);
         Thread.sleep(0);
         if(tempEntryId == id) {
             tempEntryId = -1;
-//            System.out.println(tempEntry.key.key());
-//            System.out.println("temp id: "+ tempEntryId);
             return tempEntry;
         } else if(tempEntryId == -1) {
-//            System.out.println("-1 temp id: "+ tempEntryId);
             String line = buffer.readLine();
             if(dataArea != null){
                 dataArea.insert(line+"\n", 0);
@@ -490,7 +478,6 @@ public class dispatcher {
                 else if(tempkey.compareTo(minKey) == -1)
                     minKey = tempkey;
                 updateQueue(tempkey.getCode(), time);  // update queue
-//                System.out.println();
                 return getEntry(id);  //做完了所有准备则
             } else {
                 if(currentNum < 57) {  //这里是一个特殊处理！！！我知道只有0-57这些文件，如果原始数据组织发生变化，一定需要改。

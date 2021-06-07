@@ -57,7 +57,6 @@ public class multiQueryServer implements ActionListener {
             if(s.equals("exit")) {
                 break;
             }
-//            System.out.println("Query request: " + s);
         }
         scan.close();
     }
@@ -92,18 +91,14 @@ public class multiQueryServer implements ActionListener {
         MortonCode endKey;
         while(true){
             if(querySentence == null) {
-//                System.out.println("emmm");
                 Thread.sleep(5); /*加上这个sleep之后效果好多了，我的天，是我不知道的领域*/
                 continue;
             }
-//            System.out.println("emmm");
             String s = querySentence;
             List<String> queryValue = null;
             try {
                 queryValue = queryLineParse(s);
-//                outArea.setText(s);
             } catch (NoSuchElementException e) {
-//                System.out.println("Illegal input, please query again.");
                 outArea.setText("Illegal input, please query again.");
                 querySentence = null;
                 continue;
@@ -112,7 +107,6 @@ public class multiQueryServer implements ActionListener {
             queryTimeEnd = Integer.parseInt(queryValue.get(1));
             startKey = new MortonCode(queryValue.get(2));
             endKey = new MortonCode(queryValue.get(3));
-//            System.out.println();
             List<BPTKey<MortonCode>> result = metaServer.searchKey(queryTimeStart, queryTimeEnd, startKey, endKey);
             result = MortonCode.regionCut(result, startKey, endKey);
             outArea.setText(dataTool.listToString(result));
@@ -122,7 +116,6 @@ public class multiQueryServer implements ActionListener {
             if(s.equals("exit")) {
                 break;
             }
-//            System.out.println("Query request: " + s);
         }
         scan.close();
     }
@@ -131,7 +124,6 @@ public class multiQueryServer implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JTextField field = (JTextField)e.getSource();
         this.querySentence = field.getText();
-//        System.out.println("get!!! " + this.querySentence);
         field.setText("");
     }
 }

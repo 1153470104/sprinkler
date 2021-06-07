@@ -152,7 +152,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
     public void printInfo() {
         StringBuilder ss = new StringBuilder();
         System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
-//        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
         System.out.print("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum)
                 + "; entry's num: " + blockNum);
         if(this.isTemplate())  {
@@ -165,8 +164,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
 
     public String getInfo() {
         StringBuilder ss = new StringBuilder();
-//        ss.append("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
-//        System.out.println("key domain: "+keyStart.toString() + " to "+ keyEnd.toString());
         ss.append("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
         if(this.isTemplate())  {
             ss.append(" is templated");
@@ -432,7 +429,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
 //        fatherDeque.add((long)-1);
 
         while(deque.size()>0) {
-//            System.out.println("num: "+deque.size());
             temp = deque.getFirst();
             //if temp is non leaf node, add it's children to deque & write temp on disk
             if(!temp.isLeaf()) {
