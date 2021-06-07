@@ -67,7 +67,6 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
      * @param point a long value as the pointer
      */
     public void addPointer(long point) {
-//        System.out.println(point);
         pointerList.add(point);
     }
 
@@ -83,7 +82,6 @@ public class externalNonLeaf<K extends Comparable> extends externalNode<K>{
             stringBuilder.append(this.keyList.get(i).key()).append("|");
         }
         stringBuilder.append(this.keyList.get(length-1).key());
-//        System.out.println(common + stringBuilder.toString());
         return common + stringBuilder.toString();
     }
 }

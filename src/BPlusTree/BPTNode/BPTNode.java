@@ -21,7 +21,6 @@ public class BPTNode<K extends Comparable> {
     protected BPTNode<K> fatherNode;
     protected boolean isLeaf;
 
-    // TODO reorganize the frame of BPTNode
     private BPTNode<K> leafPrev = null; // those elements should be realized in leaf node implement
     private BPTNode<K> leafNext = null; // but due to some convenience I put them here
 

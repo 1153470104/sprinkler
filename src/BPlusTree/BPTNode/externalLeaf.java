@@ -59,19 +59,15 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
         bbuffer.putInt(this.length);
         bbuffer.putLong(this.prevLeaf);
         bbuffer.putLong(this.nextLeaf);
-//        System.out.print("write node! length: ");
-//        System.out.println(this.valueList.size());
         for(int i = 0; i < this.length; i++) {
             // use conf to write in data
             conf.writeKey(bbuffer, this.keyList.get(i).key());
-//            System.out.print(this.keyList.get(i).key() + " ");
             try {
                 int time = Integer.parseInt((((String) this.valueList.get(i)).substring(0, 10)));
                 bf.addMap(time);
             } catch (StringIndexOutOfBoundsException | ClassCastException e) {
 //                continue; /*这个continue可害惨了呀，continue不是啥都不做而是直接进下一个循环了*/
             }
-//            System.out.print(this.valueList.get(i) + " ");
             conf.writeValue(bbuffer, this.valueList.get(i));
         }
         System.out.println();
@@ -126,9 +122,9 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
      * @param value the value of BPTKey
      */
     public void addKey(K key, Object value) {
-//        System.out.println("value: " + value);
         // TODO a big mistake !!! generic fails here
-        //  if i want to simplify, i have to add all V once I left
+        //  if I want to simplify, I have to add all V once I left
+        //  the thing is if I need to generic, all the system should change
         this.keyList.add(new BPTKey<>(key));
         this.valueList.add(value);
     }
@@ -179,13 +175,10 @@ public class externalLeaf<K extends Comparable> extends externalNode<K>{
     public String toString() {
         String common = super.toString();
         StringBuilder stringBuilder = new StringBuilder();
-//        System.out.println("keyList length: " + keyList.size());
         for(int i = 0; i < length-1; i++) {
-//            System.out.println("i:" + i);
             stringBuilder.append(keyList.get(i).key()).append(":").append(valueList.get(i)).append("|");
         }
         stringBuilder.append(keyList.get(length-1).key()).append(":").append(valueList.get(length-1));
-//        System.out.println(common+stringBuilder.toString());
         return common+stringBuilder.toString();
     }
 }

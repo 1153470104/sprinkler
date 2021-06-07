@@ -158,7 +158,7 @@ public class MortonCode implements Comparable{
     public static List<BPTKey<MortonCode>> regionCut(List<BPTKey<MortonCode>> mList, MortonCode startKey, MortonCode endKey) {
         // get the real boundary of the search region
         /* 幼稚！幼稚！你以为你得到的顺序就是最后的顺序吗
-           原来的一个问题，即没有输入骑士河结束的key。。。
+           原来的一个问题，即没有输入起始和结束的key。。。
            以为list里第一个就是开始而最后一个就是结束。。 */
         int xMin = startKey.getX();
         int yMin = startKey.getY();

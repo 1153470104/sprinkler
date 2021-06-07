@@ -90,7 +90,6 @@ public class externalTree<K extends Comparable, V> {
             // TODO get the key-value pair
             ((externalNonLeaf)node).addPointer(bbuffer.getLong());
             for(int i = 0; i < length; i++) {
-//                System.out.println("conf readkey level");
                 node.addKey((K)conf.readKey(bbuffer));
                 ((externalNonLeaf)node).addPointer(bbuffer.getLong());
             }
@@ -123,18 +122,14 @@ public class externalTree<K extends Comparable, V> {
             System.out.println("oops, the domain do not exists");
             return domainKeys;
         }
-//        System.out.println("read node!");
         externalNode<K> cur = this.readNode(1*conf.pageSize);
         long nextIndex = 0;
         while(cur.getNodeType()!=1){
-//            System.out.println("node level ");
-//            System.out.println(cur.toString());
             int pointerIndex = cur.searchKey(key1);
             nextIndex = ((externalNonLeaf)cur).getPointer(pointerIndex);
             cur = this.readNode(nextIndex);
         }
         while(cur.searchKey(key2)!=-1) {
-//            System.out.println("leaf level");
             if(blockBloomFilterList.get(nextIndex).isInRegion(tStart, tEnd)) {
                 int start = cur.searchKey(key1);
                 if (start == -1) start = 0;
@@ -175,7 +170,6 @@ public class externalTree<K extends Comparable, V> {
      * @throws IOException thrown when any I/O function fails
      */
     public List<BPTKey<K>> searchNode(int tStart, int tEnd, K key1, K key2) throws IOException {
-//        System.out.println("externalTree");
         List<BPTKey<K>> domainKeys = new LinkedList<>();
 
         // this part is using bloom filter to test if there's entry in that time gap

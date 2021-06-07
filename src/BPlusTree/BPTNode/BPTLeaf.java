@@ -5,8 +5,7 @@ package BPlusTree.BPTNode;
  *
  * a class of LeafNode
  *
- * TODO I don't know why I have to had a leafNode with just name...
- *
+ * TODO the structure need to be optimized
  */
 public class BPTLeaf<K extends Comparable> extends BPTNode<K> {
 

@@ -4,8 +4,6 @@ package BPlusTree.BPTKey;
  *
  * the BPTKey class with value
  *
- * TODO though now I think it's so useless
- *
  */
 public class BPTValueKey<K extends Comparable, V> extends BPTKey<K>{
 
@@ -37,8 +35,7 @@ public class BPTValueKey<K extends Comparable, V> extends BPTKey<K>{
 
     @Override
     public String toString() {
-        // very redundant for a toString function
-        // just be used when I want to check sth
+        // just to be used when I want to check sth
         return "BPTValueKey{" +
                 "key=" + key +
                 ", value=" + value +

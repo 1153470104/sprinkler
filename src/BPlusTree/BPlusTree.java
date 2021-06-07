@@ -194,7 +194,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
         while (!nodeQueue.isEmpty()) {
             BPTNode<K> node = nodeQueue.remove();
             int keyNum = node.keyLength();
-//            System.out.println("node key length: " + Integer.toString(keyNum) + " child length" + Integer.toString(node.childLength()));
             sb.append("| ");
             System.out.print("| ");
             for (int i = 0; i < keyNum; i++) {
@@ -232,13 +231,10 @@ public abstract class BPlusTree<K extends Comparable, V>{
         BPTNode<K> node = root;
         while(node.childLength() > 0) {
             node = node.getChild(0);
-//            System.out.println(node.childLength());
-//            System.out.println("here");
         }
         do {
             for(int i = 0; i < node.keyLength(); i++){
                 sb.append("| ").append(node.getKey(i).key().toString()).append(" ");
-//                System.out.print(node.getKey(i).key.toString());
             }
             node = node.getLeafNext();
         } while(node != null);
@@ -247,8 +243,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
         } else {
             sb.append("|");
         }
-//        System.out.print("|");
-//        System.out.print(sb.toString());
         System.out.println();
         return sb.toString();
     }
@@ -260,10 +254,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
      * @return a boolean value of if the block is full
      */
     public boolean isBlockFull() {
-//        int pageLimit = this.conf.chunkSize / this.conf.pageSize;
-//        if (this.entryNum < 2000) {
-//            return false;
-//        }
         return blockFull;
     }
 
@@ -456,7 +446,6 @@ public abstract class BPlusTree<K extends Comparable, V>{
                 node.writeNode(rf, conf);
                 deque.pop();
                 // seems that external tree don't need father node
-//                node.setFatherIndex(fatherDeque.pop());
                 // if temp is leaf, just write temp on disk
             } else {
                 externalNode<K> node = new externalLeaf<K>(temp);

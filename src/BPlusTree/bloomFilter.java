@@ -13,7 +13,6 @@ public class bloomFilter {
     private int gap; // the time gap of the minimal time unit
     private int m; // the slot number of the bloom filter
     private int[] bitMap; // the map store the bit mapping information
-    //TODO test, maybe need unsigned int or other things ...
 
     public bloomFilter(int gap, int m) {
         this.gap = gap;
@@ -37,13 +36,8 @@ public class bloomFilter {
     public void insert(int index) {
         int intNum = index / 32;
         int orderNum = index % 32;
-//        System.out.print("index: "+intNum);
-//        System.out.println(" - "+orderNum);
-//        int mask = 0b01 << 31;
         int mask = 0b01 << 31 >>> orderNum;
-//        System.out.println("before: "+Integer.toBinaryString(bitMap[intNum]));
         bitMap[intNum] = bitMap[intNum] | mask;
-//        System.out.println("after: "+Integer.toBinaryString(bitMap[intNum])+"\n");
     }
 
     // simple division method
@@ -77,11 +71,7 @@ public class bloomFilter {
     public boolean isIndexIn(int index) {
         int intNum = index / 32;
         int orderNum = index % 32;
-//        System.out.print("index: "+intNum);
-//        System.out.println(" - "+orderNum);
         int mask = 0b01 << 31 >>> orderNum;
-//        System.out.println("mask: "+Integer.toBinaryString(mask));
-//        System.out.println("bitmap: "+Integer.toBinaryString(bitMap[intNum])+"\n");
         return (bitMap[intNum] & mask) == mask;
     }
 
@@ -93,10 +83,6 @@ public class bloomFilter {
         return isIndexIn(index1) && isIndexIn(index2) && isIndexIn(index3);
     }
 
-//    public boolean isInGap(int timeStart) {
-//        int realTime = timeStart - timeStart % this.gap;
-//        return isIn(realTime);
-//    }
 
     public boolean isInRegion(int timeStart, int timeEnd) {
         int start = (timeStart / gap) * gap;

@@ -65,7 +65,6 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
                     node.deleteKey(index);
                     this.scratchNumLimit = this.entryNum;
                     break;
-//                    throw new fullTreeException("full!");
                 }
                 this.blockNum += 1; //每分裂一次block num这里+1
                 if (this.split(node) != -1) {
@@ -76,7 +75,6 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
                     break;
                 }
             }
-//            this.root = node.getFather();
         }
     }
 
@@ -114,16 +112,11 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
             node = node.getLeafNext();
         } while(node != null);
 
-        // 这里是为了multi-server改的！！
-//        if(nodeList.size() == 0) {
-//            return null;
-//
         return nodeList;
     }
 
     @Override
     public List<BPTKey<K>> search(int timeStart, int timeEnd, K key1, K key2) {
-//        System.out.println("test query");
         List<BPTKey<K>> domainKeys = new LinkedList<>();
         // this part is using bloom filter to test if there's entry in that time gap
         if (!hasTime(timeStart, timeEnd)) {
@@ -135,7 +128,6 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
         //TODO this is not a good way to
         List<BPTKey<K>> rawKeys = this.search(key1, key2);
         for(BPTKey k: rawKeys) {
-//            System.out.println("test query2");
             //TODO  this place is not generic any more,
             //TODO  the timestamp should have a better way to be brought in
             //TODO  maybe the better way is to let every type realize it in dataTool,
@@ -157,7 +149,6 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
 //    @Override
     public int split(BPTNode<K> node) {
         int returnNum;
-//        System.out.println(node);
         int siblingIsLeaf = 0;
         if(node.getFather() == null) {
             /* 需要新建父节点的情况 */
@@ -193,7 +184,6 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
             node.setLeafNext(siblingNode);
 
             node.setFather(father);
-//            System.out.println("length of 1 child: " + Integer.toString(father.getChild(0).childLength()));
 
             returnNum = -1;
             this.root = father;
@@ -218,8 +208,6 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
                     siblingNode.insertChild(0, childNode);
                     childNode.setFather(siblingNode);
                 }
-//                System.out.print("root: ");
-//                System.out.println(node.childLength());
             }
             father.insertChild(fatherIndex+1, siblingNode);
             returnNum = 0;

@@ -33,11 +33,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
         this.root = tree.rootCopy();
         this.entryNum = 0;
 
-//        this.timeStart = ((BPlusTree<K, V>)tree).getTimeStart();
-//        this.timeEnd = ((BPlusTree<K, V>)tree).getTimeEnd();
-//        this.keyStart = ((BPlusTree<K, V>)tree).getKeyStart();
-//        this.keyEnd = ((BPlusTree<K, V>)tree).getKeyEnd();
-
         this.scratchNumLimit = tree.scratchNumLimit;
         this.blockNum = tree.blockNum;
     }
@@ -73,7 +68,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
         if(checkNum == 1 && this.entryNum > this.scratchNumLimit) {
             blockFull = true;
         }
-
 
         /*这里因为template的时候已经有相应的块数目了，所以不分裂了，超出的部分直接由balance来解决*/
         // because the insert of templated tree could only happen in the bottom
@@ -180,8 +174,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
                     siblingNode.insertChild(0, childNode);
                     childNode.setFather(siblingNode);
                 }
-//                System.out.print("root: ");
-//                System.out.println(node.childLength());
             }
             father.insertChild(fatherIndex + 1, siblingNode);
 
@@ -211,7 +203,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
      */
     public boolean isBalanced() {
         double averageNum;
-//        int minNodeNum = m;
         int maxNodeNum = 0;
         int nodeNum = 0;
 
@@ -222,9 +213,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
 
         while(node != null){
             int keyNum = node.keyLength();
-//            if(keyNum < minNodeNum) {
-//                minNodeNum = keyNum;
-//            }
             if(keyNum > maxNodeNum) {
                 maxNodeNum = keyNum;
             }
@@ -254,17 +242,12 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
             //居然是因为测试方便把 is balance放到balance功能中进行检测
             //这就要求使用template的人手动balance 而非 add的同时balance
             /* 叶节点和entrynum数目的比较顺序都能写反我也是菜 */
-            // 有点私心，写成一定比叶节点数要大两倍
-//        System.out.println((this.leafNum > this.entryNum) || this.isBalanced());
             /* 本来出现一个离奇bug，后来才发现是因为leafNum的存在依赖于isBalance的计算 */
             boolean balanceOrNot = this.isBalanced();
+            /*在要求在数据条目数量超过节点数8倍之后才能运行*/
         if (!force && this.leafNum*8 >= this.entryNum || balanceOrNot) {
             return;
         }
-
-//        System.out.println("why");
-//        System.out.println("leafNum: " + leafNum + ", entryNum: " + entryNum);
-//        System.out.println();
 
         BPTNode<K> searchNode = this.root;
         List<BPTNode<K>> nodeDeque = new LinkedList<>();
@@ -276,17 +259,11 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
             nodeDeque.remove(0);
             searchNode = nodeDeque.get(0);
         }
-//        System.out.print("nodeDeque length: ");
-//        System.out.println(nodeDeque.size());
 
         // 对具体的要把leaf接到哪个node上进行跟踪
         BPTNode<K> readNode = searchNode.getChild(0);
-//        int readNum = 0;
-//        BPTNode<K> readNode = nodeDeque.get(readNum);
         int writeNum = 0;
         BPTNode<K> writeNode = nodeDeque.get(writeNum);
-//        int readNodeNum = readNode.childLength();
-//        int readNodePos = 0;
         int writeNodeNum = writeNode.childLength();
         int writeNodePos = 0;
 
@@ -323,11 +300,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
                 for(int j = 0; j < readNode.keyLength(); j++) {
                     keyDeque.add(readNode.getKey(j));
                 }
-//                readNodePos += 1;
-//                if(readNodePos >= readNodeNum) {
-//                    readNum += 1;
-//                    readNode = nodeDeque.get(readNum);
-//                }
                 readNode = readNode.getLeafNext();
                 readCount += 1;
             }
@@ -342,13 +314,10 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
             }
 
             for(int k = 0; k < averageNum+plus; k++) {
-//                System.out.print(keyDeque.getFirst().getKey());
-//                System.out.print(" ");
                 // TODO 避免对空 keyDeque作remove
                 if(keyDeque.size() == 0) {
                     break;
                 }
-                //
                 newLeaf.insertKey(k, keyDeque.remove());
             }
             prevLeaf = newLeaf;
@@ -406,7 +375,6 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
     @Override
     public void printInfo() {
         StringBuilder ss = new StringBuilder();
-//        System.out.println("time domain: "+String.valueOf(timeStart) + " to "+ String.valueOf(timeEnd));
         System.out.print("tree's m: " + String.valueOf(m) + "; nodeNum: " + String.valueOf(leafNum) + "; entryNum: " + String.valueOf(entryNum));
         if(this.isTemplate())  {
             System.out.println(" is templated");
