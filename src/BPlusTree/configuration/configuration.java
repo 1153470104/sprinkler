@@ -33,7 +33,7 @@ public class configuration {
     public int gap;                     // bloom filter's time gap
     public int slot;                    // slots' number
 
-    public configuration(int keySize, int valueSize, Type keyType, Type valueType) {
+    public configuration(int keySize, int valueSize, Type keyType, Type valueType, int chunkSize) {
         this.headerSize = (Integer.SIZE * 3 + Long.SIZE) / 8;          // header size in bytes
         this.nonLeafHeaderSize = (Short.SIZE + Integer.SIZE) / 8; // 22 bytes
         this.leafHeaderSize = (Short.SIZE + 2 * Long.SIZE + Integer.SIZE) / 8; // 22 bytes
@@ -42,7 +42,7 @@ public class configuration {
         this.m = 20; // tree's m
         this.skewness = 0.2; // template tree's skewness limit
         this.loadGaplimit = 0.2; // dispatcher's index server load gap limit
-        this.chunkSize = 4 * 1024 * 1024; // default chunk size 4 MB
+        this.chunkSize = chunkSize * 1024 * 1024; // default chunk size 4 MB
 
         this.gap = 15; // default time gap 15s, means entries in 15s map into same bit
         this.slot = 203; // the default slot num 203

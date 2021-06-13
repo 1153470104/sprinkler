@@ -73,16 +73,22 @@ public class dispatcher {
      * @throws IOException thrown when any I/O operation fails
      */
     public dispatcher(String dataPath, int indexNum, int cacheLimit, JTextArea dataArea, JTextArea statusArea) throws IOException {
+        this.currentNum = 0;
         this.dataArea = dataArea;
         this.statusArea = statusArea;
         this.dataPath = dataPath;
         this.indexNum = indexNum;
         this.tempEntryId = -1;
-        buffer = new BufferedReader(new FileReader(dataPath));
-        this.cacheLimit = cacheLimit;
-        this.cacheQueue = new LinkedList<>();
+        buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
         this.treeList = new BPlusTree[indexNum];
+        schema = new ArrayList<>();
+        this.schemaCounter = new LinkedList<>();
+        this.counterTime = -1;
+        this.timeGap = 60;  // default time gap
+        this.cacheSpan = 600;  // default cache span
+        this.schemaCodeGap = 500000000;
         initSchema();  // set the schema while initiating
+        System.out.println(getSchema());
     }
 
     /**
@@ -103,12 +109,12 @@ public class dispatcher {
         buffer = new BufferedReader(new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
         this.treeList = new BPlusTree[indexNum];
         schema = new ArrayList<>();
-        initSchema();  // set the schema while initiating
         this.schemaCounter = new LinkedList<>();
         this.counterTime = -1;
         this.timeGap = 60;  // default time gap
         this.cacheSpan = 600;  // default cache span
         this.schemaCodeGap = 500000000;
+        initSchema();  // set the schema while initiating
     }
 
     /**
@@ -149,7 +155,7 @@ public class dispatcher {
         }
     }
 
-    public void updateQueue(long code, int time) {
+    public void updateQueue(long code, int time) throws IOException {
         if (this.counterTime < 0 || this.counterTime + timeGap < time) {
             this.counterTime = time;
             schemaCounter.add(new hashCounter(schemaCodeGap, 203));
@@ -200,12 +206,13 @@ public class dispatcher {
         BufferedReader bf = new BufferedReader(
                 new FileReader(dataPath + "s" + Integer.toString(currentNum)+".txt"));
 
+        hashCounter hc = new hashCounter(schemaCodeGap, 1003);
         maxKey = null;
         minKey = null;
 
         int limit = 0;
         String line = bf.readLine();
-        while(limit < 1000) {
+        while(limit < 2000) {
             StringTokenizer st = new StringTokenizer(line, "|");
             st.nextToken(); /*有必要的，因为nextToken是一个个读的，coordTxt要基于前面的读取*/
             String coordTxt = st.nextToken();
@@ -220,13 +227,20 @@ public class dispatcher {
                     minKey = mc;
                 }
             }
+
+            hc.add(mc.getCode());
             line = bf.readLine();
             limit++;
         }
         /*乱七八糟的bug，为什么我会把下面几行代码放在while里面？？*/
-        long schemaGap = (maxKey.getCode() - minKey.getCode()) / this.indexNum;
-        for(int i = 1; i < indexNum; i++) {
-            schema.add(minKey.getCode() + i * schemaGap);
+        int sum = 0;
+        for(long i = minKey.getCode(); i < maxKey.getCode() && schema.size() < 3 ; i+=schemaCodeGap) {
+            sum += hc.count(i);
+//            System.out.println(hc.count(i));
+            if(sum > 2000 / indexNum) {
+                sum = 0;
+                schema.add(i);
+            }
         }
         bf.close();
 }
@@ -267,7 +281,10 @@ public class dispatcher {
         return !((double) (max - min) / (double) min > loadGapLimit);
     }
 
-    public void balanceSchema(boolean force) {
+    public void balanceSchema(boolean force) throws IOException {
+        if (!force && loadBalance()) {
+            return;
+        }
         int sum = 0;
         List<Integer> countList = new ArrayList<>();
         for(long i = minKey.getCode(); i < maxKey.getCode(); i+=schemaCodeGap) {

@@ -166,7 +166,7 @@ public abstract class BPlusTree<K extends Comparable, V>{
         StringBuilder ss = new StringBuilder();
         ss.append("tree's m: " + String.valueOf(m) + "; entry's num: " + String.valueOf(entryNum));
         if(this.isTemplate())  {
-            ss.append(" is templated");
+            ss.append(" is templated\n");
         } else {
             ss.append("\n");
         }

@@ -22,9 +22,9 @@ public class hashCounter {
         code = code - code % gap;  // use gap to combine some
         int index1 = hashMap1(code);
         counter1[index1] = counter1[index1] + 1;
-        int index2 = hashMap1(code);
+        int index2 = hashMap2(code);
         counter2[index2] = counter2[index2] + 1;
-        int index3 = hashMap1(code);
+        int index3 = hashMap3(code);
         counter3[index3] = counter3[index3] + 1;
     }
 
@@ -34,7 +34,7 @@ public class hashCounter {
         int count2 = counter2[hashMap2(code)];
         if(count2 < min)
             min = count2;
-        int count3 = counter3[(int)hashMap3(code)];
+        int count3 = counter3[hashMap3(code)];
         if(count3 < min)
             min = count3;
         return min;
@@ -49,8 +49,7 @@ public class hashCounter {
     public int hashMap2(long code) {
         double goldRatio = (Math.sqrt(5.0)-1) / 2;
 
-        int a = (int)(((goldRatio * code) - (long)(goldRatio * code)) * m);
-        return a;
+        return (int)(((goldRatio * code) - (long)(goldRatio * code)) * m);
     }
 
     // multiplication method by 0.414

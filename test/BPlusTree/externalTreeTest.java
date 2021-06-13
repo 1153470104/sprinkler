@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class externalTreeTest {
     testTool ts = new testTool();
-    configuration IIconf = new configuration(4, 4, Integer.class, Integer.class);
-    configuration ISconf = new configuration(4, 3, Integer.class, String.class);
+    configuration IIconf = new configuration(4, 4, Integer.class, Integer.class, 2);
+    configuration ISconf = new configuration(4, 3, Integer.class, String.class, 2);
 
     /**
      * this is a small test of generic

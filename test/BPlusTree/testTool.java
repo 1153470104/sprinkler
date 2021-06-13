@@ -34,7 +34,7 @@ public class testTool {
     }
 
     public void initBPT(int m) {
-        configuration conf = new configuration(4, 2, Integer.class, String.class);
+        configuration conf = new configuration(4, 2, Integer.class, String.class, 2);
         conf.m = m;
         bpt = new BPlusTreeScratched<Integer, String>(conf);
         intBpt = new BPlusTreeScratched<Integer, Integer>(m);

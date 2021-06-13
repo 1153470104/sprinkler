@@ -129,30 +129,34 @@ public class externalTree<K extends Comparable, V> {
             nextIndex = ((externalNonLeaf)cur).getPointer(pointerIndex);
             cur = this.readNode(nextIndex);
         }
-        while(cur.searchKey(key2)!=-1) {
-            if(blockBloomFilterList.get(nextIndex).isInRegion(tStart, tEnd)) {
-                int start = cur.searchKey(key1);
-                if (start == -1) start = 0;
-                int end = cur.searchKey(key2);
-                for(int i = start; i < end; i++) {
-                    //getKey already get the key-value pair
-                    domainKeys.add(((externalLeaf)cur).getKey(i));
-                }
-                if(end < cur.getLength()) {
-                    // if the key2 doesn't extend out the boundary,
-                    // test if the last key is equals to key2
-                    // if so, add the end key-value pair into domain-keys
-                    BPTKey temp = ((externalLeaf)cur).getKey(end);
-                    if(temp.key().compareTo(key2) == 0) {
-                        domainKeys.add(temp);
+        try {
+            while (cur.searchKey(key2) != -1) {
+                if (blockBloomFilterList.get(nextIndex).isInRegion(tStart, tEnd)) {
+                    int start = cur.searchKey(key1);
+                    if (start == -1) start = 0;
+                    int end = cur.searchKey(key2);
+                    for (int i = start; i < end; i++) {
+                        //getKey already get the key-value pair
+                        domainKeys.add(((externalLeaf) cur).getKey(i));
+                    }
+                    if (end < cur.getLength()) {
+                        // if the key2 doesn't extend out the boundary,
+                        // test if the last key is equals to key2
+                        // if so, add the end key-value pair into domain-keys
+                        BPTKey temp = ((externalLeaf) cur).getKey(end);
+                        if (temp.key().compareTo(key2) == 0) {
+                            domainKeys.add(temp);
+                        }
                     }
                 }
+                nextIndex = ((externalLeaf) cur).getNextLeaf();
+                if (nextIndex == -1) {
+                    return domainKeys;
+                }
+                cur = this.readNode(nextIndex);
+
             }
-            nextIndex = ((externalLeaf)cur).getNextLeaf();
-            if(nextIndex == -1) {
-                return domainKeys;
-            }
-            cur = this.readNode(nextIndex);
+        }catch (NullPointerException e) {
 
         }
         return domainKeys;
@@ -184,6 +188,7 @@ public class externalTree<K extends Comparable, V> {
                 domainKeys.add(k);
             }
         }
+//        System.out.println("external!!: " + domainKeys.size());
         return domainKeys;
     }
 

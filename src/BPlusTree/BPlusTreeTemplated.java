@@ -136,6 +136,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
                 domainKeys.add(k);
             }
         }
+//        System.out.println("template!!: " + domainKeys.size());
         return domainKeys;
     }
 
@@ -277,7 +278,7 @@ public class BPlusTreeTemplated<K extends Comparable, V> extends BPlusTree<K, V>
         } else {
             complement = leafNum / leftNum;
         }
-        System.out.println("complement: " + complement);
+//        System.out.println("complement: " + complement);
         int plus = 0; //用于complement的辅助变量，为 1或0
 
         Deque<BPTKey<K>> keyDeque = new LinkedList<>();

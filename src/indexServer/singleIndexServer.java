@@ -29,7 +29,7 @@ public class singleIndexServer {
 //        this.externalTreeList = new ArrayList<>();
         /*jesus!!! one bug occur: Long.class was mis-write into long.class
         * so that, the conf.readKey function fails !!! */
-        this.conf = new configuration(8, 21, Long.class, String.class);
+        this.conf = conf;
         currentBpt = new BPlusTreeScratched<MortonCode, String>(conf);
         this.metaServer = metaServer;
     }

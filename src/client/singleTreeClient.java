@@ -20,7 +20,7 @@ public class singleTreeClient {
 
     static {
         try {
-            configuration conf = new configuration(8, 21, Long.class, String.class);
+            configuration conf = new configuration(8, 21, Long.class, String.class, 4);
             indexServer = new singleIndexServer(
                     "resource/data/100000s.txt", conf, metaServer);
             queryServer = new singleQueryServer(metaServer);

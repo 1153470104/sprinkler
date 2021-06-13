@@ -25,7 +25,7 @@ public class multiQueryClient {
     static {
         try {
             int indexM = 20;
-            configuration conf = new configuration(8, 21, Long.class, String.class);
+            configuration conf = new configuration(8, 21, Long.class, String.class, 4);
             dispatcher dp = new dispatcher("resource/data/data_sort/", 4);
 
             indexServer1 = new multiIndexServer(conf, metaServer, dp, 0);

@@ -136,6 +136,7 @@ public class BPlusTreeScratched<K extends Comparable, V> extends BPlusTree<K, V>
                 domainKeys.add(k);
             }
         }
+//        System.out.println("scratch!!: " + domainKeys.size());
         return domainKeys;
     }
 

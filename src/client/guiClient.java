@@ -33,8 +33,8 @@ public class guiClient {
         this.dataArea = dataArea;
         try {
             int indexM = 20;
-            configuration conf = new configuration(8, 21, Long.class, String.class);
-            dispatcher dp = new dispatcher("resource/data/100000s.txt", 4, 500, dataArea, statusArea);
+            configuration conf = new configuration(8, 21, Long.class, String.class, 2);
+            dispatcher dp = new dispatcher("resource/data/data_sort/", 4, 500, dataArea, statusArea);
 
             indexServer1 = new multiIndexServer(conf, metaServer, dp, 0);
             indexServer2 = new multiIndexServer(conf, metaServer, dp, 1);
